@@ -94,7 +94,7 @@ struct SubscriptionListView: View {
             if searchText.isEmpty {
                 Section {
                     DashboardHeader(metrics: metrics, presentAdd: presentAdd)
-                        .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
+                        .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
                 }
