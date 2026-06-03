@@ -100,6 +100,68 @@ struct CurrencyTests {
     }
 }
 
+struct ReceiptParsingTests {
+    let parser = HeuristicReceiptParser()
+
+    @Test func parsesNetflixReceipt() {
+        let text = """
+        Netflix
+        Your receipt
+        Total £17.99
+        Next billing date 15 July 2027
+        Monthly plan
+        """
+        let draft = parser.parse(text)
+        #expect(draft.providerName == "Netflix")
+        #expect(draft.amount == Decimal(string: "17.99"))
+        #expect(draft.currencyCode == "GBP")
+        #expect(draft.billingCycle == .monthly)
+        #expect(draft.nextRenewalDate != nil)
+    }
+
+    @Test func parsesPastedEmailWithDollar() {
+        let text = "Spotify Premium\nWe charged your card $11.99\nBilled monthly"
+        let draft = parser.parse(text)
+        #expect(draft.providerName == "Spotify")
+        #expect(draft.amount == Decimal(string: "11.99"))
+        #expect(draft.currencyCode == "USD")
+        #expect(draft.billingCycle == .monthly)
+    }
+
+    @Test func prefersTotalLineOverSubtotal() {
+        let text = "Subtotal £8.00\nVAT £1.60\nTotal £9.60"
+        let draft = parser.parse(text)
+        #expect(draft.amount == Decimal(string: "9.60"))
+    }
+
+    @Test func handlesEuroSuffixAndCommaDecimal() {
+        let text = "Annual subscription\nTotal 9,99 €"
+        let draft = parser.parse(text)
+        #expect(draft.amount == Decimal(string: "9.99"))
+        #expect(draft.currencyCode == "EUR")
+        #expect(draft.billingCycle == .yearly)
+    }
+
+    @Test func detectsFreeTrial() {
+        let draft = parser.parse("Your free trial of ChatGPT Plus has started. £0.00")
+        #expect(draft.isFreeTrial == true)
+    }
+
+    @Test func emptyTextYieldsEmptyDraft() {
+        #expect(parser.parse("hello there").isEmpty)
+    }
+
+    @Test func draftBuildsSubscriptionWithCatalogueBranding() {
+        let draft = ReceiptDraft(providerName: "Netflix", amount: 17.99,
+                                 currencyCode: "GBP", billingCycle: .monthly)
+        let sub = draft.makeSubscription()
+        #expect(sub.name == "Netflix")
+        #expect(sub.category == .streaming)
+        #expect(sub.catalogueID == "netflix")
+        #expect(sub.symbolName != nil)
+    }
+}
+
 @MainActor
 struct PersistenceTests {
     private func makeContext() throws -> ModelContext {

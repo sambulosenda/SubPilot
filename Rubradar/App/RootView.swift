@@ -14,6 +14,7 @@ enum AppTab: Hashable {
 enum AddSheet: Identifiable {
     case manual
     case catalogue
+    case scan
     var id: Int { hashValue }
 }
 
@@ -52,6 +53,7 @@ struct RootView: View {
             }
         }
         .confirmationDialog("Add a subscription", isPresented: $showAddChooser, titleVisibility: .visible) {
+            Button("Scan a receipt") { presentedSheet = .scan }
             Button("Browse catalogue") { presentedSheet = .catalogue }
             Button("Add manually") { presentedSheet = .manual }
         }
@@ -61,6 +63,8 @@ struct RootView: View {
                 SubscriptionFormView(mode: .create(Subscription()))
             case .catalogue:
                 CatalogueView()
+            case .scan:
+                ImportView()
             }
         }
         .task {

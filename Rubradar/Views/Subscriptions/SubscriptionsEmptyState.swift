@@ -7,6 +7,7 @@ import SwiftUI
 
 /// Shown when no subscriptions exist. Surfaces the catalogue and manual add as CTAs.
 struct SubscriptionsEmptyState: View {
+    var onScan: () -> Void
     var onBrowseCatalogue: () -> Void
     var onAddManually: () -> Void
 
@@ -14,27 +15,32 @@ struct SubscriptionsEmptyState: View {
         ContentUnavailableView {
             Label("No subscriptions yet", systemImage: "rectangle.stack.badge.plus")
         } description: {
-            Text("Track everything you pay for in one place. Add your first subscription to get started.")
+            Text("Track everything you pay for in one place. Scan a receipt, pick from the catalogue, or add one yourself.")
         } actions: {
             GlassEffectContainer(spacing: Spacing.md) {
                 VStack(spacing: Spacing.md) {
                     Button {
-                        onBrowseCatalogue()
+                        onScan()
                     } label: {
-                        Label("Browse catalogue", systemImage: "magnifyingglass")
+                        Label("Scan a receipt", systemImage: "doc.viewfinder")
                             .frame(maxWidth: 280)
                     }
                     .buttonStyle(.glassProminent)
                     .controlSize(.extraLarge)
 
                     Button {
-                        onAddManually()
+                        onBrowseCatalogue()
                     } label: {
-                        Label("Add manually", systemImage: "square.and.pencil")
+                        Label("Browse catalogue", systemImage: "magnifyingglass")
                             .frame(maxWidth: 280)
                     }
                     .buttonStyle(.glass)
                     .controlSize(.large)
+
+                    Button("Add manually", systemImage: "square.and.pencil") {
+                        onAddManually()
+                    }
+                    .padding(.top, Spacing.xs)
                 }
             }
         }
@@ -42,5 +48,5 @@ struct SubscriptionsEmptyState: View {
 }
 
 #Preview {
-    SubscriptionsEmptyState(onBrowseCatalogue: {}, onAddManually: {})
+    SubscriptionsEmptyState(onScan: {}, onBrowseCatalogue: {}, onAddManually: {})
 }

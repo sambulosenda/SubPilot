@@ -65,6 +65,7 @@ struct SubscriptionListView: View {
             Group {
                 if subscriptions.isEmpty {
                     SubscriptionsEmptyState(
+                        onScan: { presentAdd(.scan) },
                         onBrowseCatalogue: { presentAdd(.catalogue) },
                         onAddManually: { presentAdd(.manual) }
                     )
@@ -119,6 +120,9 @@ struct SubscriptionListView: View {
         }
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
+                Button { presentAdd(.scan) } label: {
+                    Label("Scan a receipt", systemImage: "doc.viewfinder")
+                }
                 Button { presentAdd(.catalogue) } label: {
                     Label("Browse catalogue", systemImage: "magnifyingglass")
                 }

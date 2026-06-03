@@ -21,4 +21,14 @@ enum CatalogueLoader {
         }
         return file.providers.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
+
+    /// Finds the catalogue provider whose name best matches free-form text
+    /// (e.g. an OCR'd receipt). Prefers the longest provider name found in the text.
+    static func match(in text: String, providers: [CatalogueProvider]? = nil) -> CatalogueProvider? {
+        let all = providers ?? load()
+        let haystack = text.lowercased()
+        return all
+            .filter { haystack.contains($0.name.lowercased()) }
+            .max { $0.name.count < $1.name.count }
+    }
 }
