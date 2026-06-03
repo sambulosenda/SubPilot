@@ -162,6 +162,81 @@ struct ReceiptParsingTests {
     }
 }
 
+struct RenewalProjectorTests {
+    let calendar = Calendar(identifier: .gregorian)
+
+    private func date(_ y: Int, _ m: Int, _ d: Int) -> Date {
+        DateComponents(calendar: calendar, year: y, month: m, day: d).date!
+    }
+
+    private let rates = ExchangeRates(base: "GBP", date: Date(), rates: ["USD": 1.25])
+
+    @Test func excludesCancelledSubscriptions() {
+        let sub = Subscription(amount: 10, billingCycle: .monthly,
+                               nextRenewalDate: date(2026, 6, 20), isCancelled: true)
+        let events = RenewalProjector.events(for: [sub], from: date(2026, 6, 1), calendar: calendar)
+        #expect(events.isEmpty)
+    }
+
+    @Test func rollsStaleAnchorForwardToFuture() {
+        let sub = Subscription(amount: 10, billingCycle: .monthly, nextRenewalDate: date(2026, 4, 10))
+        let events = RenewalProjector.events(for: [sub], from: date(2026, 6, 15), calendar: calendar)
+        #expect(events.first?.date == date(2026, 7, 10))
+        #expect(events.allSatisfy { $0.date >= date(2026, 6, 15) })
+    }
+
+    @Test func yearlyYieldsSingleEventWithinHorizon() {
+        let sub = Subscription(amount: 99, billingCycle: .yearly, nextRenewalDate: date(2026, 9, 1))
+        let events = RenewalProjector.events(for: [sub], from: date(2026, 6, 1),
+                                             horizonMonths: 12, calendar: calendar)
+        #expect(events.count == 1)
+        #expect(events.first?.date == date(2026, 9, 1))
+    }
+
+    @Test func freeTrialFirstEventIsMarked() {
+        let sub = Subscription(amount: 12, billingCycle: .monthly, nextRenewalDate: date(2026, 6, 1),
+                               isFreeTrial: true, trialEndDate: date(2026, 6, 8))
+        let events = RenewalProjector.events(for: [sub], from: date(2026, 6, 1), calendar: calendar)
+        #expect(events.first?.date == date(2026, 6, 8))
+        #expect(events.first?.isTrialEnd == true)
+        // Subsequent recurrences are normal renewals.
+        #expect(events.dropFirst().allSatisfy { !$0.isTrialEnd })
+    }
+
+    @Test func eventsAreSortedByDate() {
+        let subs = [
+            Subscription(amount: 5, billingCycle: .monthly, nextRenewalDate: date(2026, 6, 25)),
+            Subscription(amount: 5, billingCycle: .monthly, nextRenewalDate: date(2026, 6, 10)),
+        ]
+        let events = RenewalProjector.events(for: subs, from: date(2026, 6, 1),
+                                             horizonMonths: 1, calendar: calendar)
+        let dates = events.map(\.date)
+        #expect(dates == dates.sorted())
+    }
+
+    @Test func groupsByMonthAndSumsConverted() {
+        let subs = [
+            Subscription(amount: 10, currencyCode: "GBP", billingCycle: .monthly, nextRenewalDate: date(2026, 6, 20)),
+            Subscription(amount: 25, currencyCode: "USD", billingCycle: .monthly, nextRenewalDate: date(2026, 6, 25)),
+        ]
+        let events = RenewalProjector.events(for: subs, from: date(2026, 6, 1),
+                                             horizonMonths: 1, calendar: calendar)
+        let months = RenewalMonth.group(events, preferred: "GBP", rates: rates, calendar: calendar)
+        #expect(months.count == 1)
+        #expect(months.first?.total == 30) // 10 GBP + (25 USD / 1.25 = 20 GBP)
+        #expect(months.first?.hasUnconvertible == false)
+    }
+
+    @Test func flagsUnconvertibleCurrencyInMonth() {
+        let sub = Subscription(amount: 5, currencyCode: "ZZZ", billingCycle: .monthly,
+                               nextRenewalDate: date(2026, 6, 20))
+        let events = RenewalProjector.events(for: [sub], from: date(2026, 6, 1),
+                                             horizonMonths: 1, calendar: calendar)
+        let months = RenewalMonth.group(events, preferred: "GBP", rates: rates, calendar: calendar)
+        #expect(months.first?.hasUnconvertible == true)
+    }
+}
+
 @MainActor
 struct PersistenceTests {
     private func makeContext() throws -> ModelContext {

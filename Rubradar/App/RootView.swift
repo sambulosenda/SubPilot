@@ -38,7 +38,7 @@ struct RootView: View {
             }
 
             Tab("Calendar", systemImage: "calendar", value: AppTab.calendar) {
-                CalendarPlaceholderView()
+                RenewalCalendarView()
             }
 
             Tab("Settings", systemImage: "gearshape.fill", value: AppTab.settings) {
