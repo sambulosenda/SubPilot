@@ -29,8 +29,11 @@ struct RootView: View {
 
     var body: some View {
         TabView(selection: $selection) {
-            Tab("Subscriptions", systemImage: "rectangle.stack.fill", value: AppTab.subscriptions) {
-                SubscriptionListView(presentAdd: { presentedSheet = $0 })
+            Tab("Home", systemImage: "house.fill", value: AppTab.subscriptions) {
+                SubscriptionListView(
+                    presentAdd: { presentedSheet = $0 },
+                    onViewAllRenewals: { selection = .calendar }
+                )
             }
 
             Tab("Add", systemImage: "plus.circle.fill", value: AppTab.add) {

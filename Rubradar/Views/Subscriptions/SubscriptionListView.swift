@@ -27,9 +27,12 @@ enum SortOption: String, CaseIterable, Identifiable {
     }
 }
 
+/// The Home screen: a spend dashboard above the list of tracked subscriptions.
 struct SubscriptionListView: View {
     /// Requests the parent shell to present an add flow.
     var presentAdd: (AddSheet) -> Void
+    /// Asks the shell to switch to the Calendar tab ("View all").
+    var onViewAllRenewals: () -> Void = {}
 
     @Query private var subscriptions: [Subscription]
     @Environment(CurrencyService.self) private var currency
@@ -38,14 +41,17 @@ struct SubscriptionListView: View {
     @State private var sortOption: SortOption = .nextRenewal
     @State private var searchText = ""
 
-    private var summary: SpendSummary {
-        SpendSummary.make(from: subscriptions, preferred: preferredCurrency, rates: currency.rates)
+    private var metrics: HomeMetrics {
+        HomeMetrics.make(from: subscriptions, preferred: preferredCurrency, rates: currency.rates)
     }
 
     private var visibleSubscriptions: [Subscription] {
         let filtered = subscriptions.filter { sub in
-            searchText.isEmpty
-                || sub.name.localizedCaseInsensitiveContains(searchText)
+            if searchText.isEmpty {
+                return !sub.isCancelled // Home lists active subscriptions only.
+            }
+            // Search spans everything, so cancelled subs stay reachable to reopen.
+            return sub.name.localizedCaseInsensitiveContains(searchText)
                 || sub.category.label.localizedCaseInsensitiveContains(searchText)
         }
         return filtered.sorted(by: sortComparator)
@@ -58,6 +64,11 @@ struct SubscriptionListView: View {
         case .amount: a.monthlyEquivalent > b.monthlyEquivalent
         case .category: a.category.label.localizedCaseInsensitiveCompare(b.category.label) == .orderedAscending
         }
+    }
+
+    /// "Up next" only reads true when the default next-renewal order is in effect.
+    private var listSectionTitle: String {
+        sortOption == .nextRenewal && searchText.isEmpty ? "Up next" : "Your subscriptions"
     }
 
     var body: some View {
@@ -73,7 +84,7 @@ struct SubscriptionListView: View {
                     list
                 }
             }
-            .navigationTitle("Subscriptions")
+            .navigationTitle("Home")
             .toolbar { toolbarContent }
         }
     }
@@ -82,14 +93,22 @@ struct SubscriptionListView: View {
         List {
             if searchText.isEmpty {
                 Section {
-                    SpendSummaryCard(summary: summary, isStale: currency.isStale)
-                        .listRowInsets(EdgeInsets())
+                    DashboardHeader(metrics: metrics, presentAdd: presentAdd)
+                        .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
                         .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
                 }
             }
-            ForEach(visibleSubscriptions) { sub in
-                NavigationLink(value: sub) {
-                    SubscriptionRow(subscription: sub)
+
+            if !visibleSubscriptions.isEmpty {
+                Section {
+                    ForEach(visibleSubscriptions) { sub in
+                        NavigationLink(value: sub) {
+                            SubscriptionRow(subscription: sub)
+                        }
+                    }
+                } header: {
+                    sectionHeader
                 }
             }
         }
@@ -105,6 +124,16 @@ struct SubscriptionListView: View {
         }
     }
 
+    private var sectionHeader: some View {
+        HStack {
+            Text(listSectionTitle)
+            Spacer()
+            Button("View all") { onViewAllRenewals() }
+                .font(.subheadline.weight(.semibold))
+                .textCase(nil)
+        }
+    }
+
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
@@ -116,21 +145,6 @@ struct SubscriptionListView: View {
                 }
             } label: {
                 Label("Sort", systemImage: "arrow.up.arrow.down")
-            }
-        }
-        ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-                Button { presentAdd(.scan) } label: {
-                    Label("Scan a receipt", systemImage: "doc.viewfinder")
-                }
-                Button { presentAdd(.catalogue) } label: {
-                    Label("Browse catalogue", systemImage: "magnifyingglass")
-                }
-                Button { presentAdd(.manual) } label: {
-                    Label("Add manually", systemImage: "square.and.pencil")
-                }
-            } label: {
-                Label("Add", systemImage: "plus")
             }
         }
     }

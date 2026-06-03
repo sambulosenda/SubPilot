@@ -12,12 +12,13 @@ private struct CardModifier: ViewModifier {
         content
             .padding(Spacing.md)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .glassEffect(.regular, in: .rect(cornerRadius: Radius.card))
+            .background(Color.cardBackground, in: .rect(cornerRadius: Radius.card))
     }
 }
 
 extension View {
-    /// Wraps content in a Liquid Glass card.
+    /// Wraps content in an opaque grouped-style card. Content sits on a solid,
+    /// legible surface — Liquid Glass is reserved for chrome (tab bar, controls).
     func cardStyle() -> some View { modifier(CardModifier()) }
 }
 

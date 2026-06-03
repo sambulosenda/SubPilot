@@ -237,6 +237,61 @@ struct RenewalProjectorTests {
     }
 }
 
+struct HomeMetricsTests {
+    let calendar = Calendar(identifier: .gregorian)
+    private let rates = ExchangeRates(base: "GBP", date: Date(), rates: ["USD": 1.25])
+
+    private func date(_ y: Int, _ m: Int, _ d: Int) -> Date {
+        DateComponents(calendar: calendar, year: y, month: m, day: d).date!
+    }
+
+    @Test func countsActiveSubscriptionsOnly() {
+        let subs = [
+            Subscription(amount: 10, billingCycle: .monthly, nextRenewalDate: date(2026, 6, 20)),
+            Subscription(amount: 5, billingCycle: .monthly, nextRenewalDate: date(2026, 6, 25)),
+            Subscription(amount: 9, billingCycle: .monthly, nextRenewalDate: date(2026, 6, 28), isCancelled: true),
+        ]
+        let metrics = HomeMetrics.make(from: subs, preferred: "GBP", rates: rates,
+                                       now: date(2026, 6, 1), calendar: calendar)
+        #expect(metrics.activeCount == 2)
+    }
+
+    @Test func daysUntilNextChargeUsesSoonestEvent() {
+        let subs = [
+            Subscription(amount: 10, billingCycle: .monthly, nextRenewalDate: date(2026, 6, 20)),
+            Subscription(amount: 5, billingCycle: .monthly, nextRenewalDate: date(2026, 6, 6)),
+        ]
+        let metrics = HomeMetrics.make(from: subs, preferred: "GBP", rates: rates,
+                                       now: date(2026, 6, 1), calendar: calendar)
+        #expect(metrics.daysUntilNextCharge == 5)
+        #expect(metrics.nextChargeLabel == "5 days")
+    }
+
+    @Test func dueThisMonthFractionIsFullWhenAllSpendRenewsThisMonth() {
+        let sub = Subscription(amount: 10, currencyCode: "GBP", billingCycle: .monthly,
+                               nextRenewalDate: date(2026, 6, 20))
+        let metrics = HomeMetrics.make(from: [sub], preferred: "GBP", rates: rates,
+                                       now: date(2026, 6, 1), calendar: calendar)
+        #expect(metrics.dueThisMonthFraction == 1)
+    }
+
+    @Test func dueThisMonthFractionIsZeroWhenNothingRenewsThisMonth() {
+        // Yearly bill three months out — no charge this calendar month.
+        let sub = Subscription(amount: 120, currencyCode: "GBP", billingCycle: .yearly,
+                               nextRenewalDate: date(2026, 9, 1))
+        let metrics = HomeMetrics.make(from: [sub], preferred: "GBP", rates: rates,
+                                       now: date(2026, 6, 1), calendar: calendar)
+        #expect(metrics.dueThisMonthFraction == 0)
+    }
+
+    @Test func emptyHasNoNextChargeLabel() {
+        let metrics = HomeMetrics.make(from: [], preferred: "GBP", rates: rates,
+                                       now: date(2026, 6, 1), calendar: calendar)
+        #expect(metrics.daysUntilNextCharge == nil)
+        #expect(metrics.nextChargeLabel == "—")
+    }
+}
+
 @MainActor
 struct PersistenceTests {
     private func makeContext() throws -> ModelContext {
