@@ -4,21 +4,69 @@
 //
 
 import SwiftUI
+import SwiftData
 
-/// Placeholder for settings (preferred currency, reminders, backup — later milestones).
-struct SettingsPlaceholderView: View {
+/// App settings: preferred currency, reminders, and FX status.
+struct SettingsView: View {
+    @Environment(CurrencyService.self) private var currency
+    @Environment(\.modelContext) private var modelContext
+
+    @AppStorage("preferredCurrencyCode") private var preferredCurrency =
+        Locale.current.currency?.identifier ?? "GBP"
+    @AppStorage("remindersEnabled") private var remindersEnabled = true
+
     var body: some View {
         NavigationStack {
-            ContentUnavailableView(
-                "Settings coming soon",
-                systemImage: "gearshape",
-                description: Text("Preferred currency, reminders and iCloud backup will live here.")
-            )
+            Form {
+                Section("Currency") {
+                    Picker("Preferred currency", selection: $preferredCurrency) {
+                        ForEach(currency.rates.supportedCodes, id: \.self) { code in
+                            Text(code).tag(code)
+                        }
+                    }
+                }
+
+                Section {
+                    Toggle("Renewal reminders", isOn: $remindersEnabled)
+                } header: {
+                    Text("Reminders")
+                } footer: {
+                    Text("Get a local notification before each subscription renews. Set the timing per subscription when editing it.")
+                }
+
+                Section {
+                    LabeledContent("Rates updated", value: ratesUpdatedText)
+                    Button {
+                        Task { await currency.refresh() }
+                    } label: {
+                        if currency.isRefreshing {
+                            ProgressView()
+                        } else {
+                            Text("Refresh rates now")
+                        }
+                    }
+                    .disabled(currency.isRefreshing)
+                } header: {
+                    Text("Exchange rates")
+                } footer: {
+                    Text("Rates from frankfurter.app, refreshed daily. A bundled set is used offline.")
+                }
+            }
             .navigationTitle("Settings")
+            .onChange(of: remindersEnabled) {
+                Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
+            }
         }
+    }
+
+    private var ratesUpdatedText: String {
+        if currency.lastUpdated == Date(timeIntervalSince1970: 0) { return "Offline set" }
+        return currency.lastUpdated.formatted(.dateTime.day().month().year())
     }
 }
 
 #Preview {
-    SettingsPlaceholderView()
+    SettingsView()
+        .environment(CurrencyService.shared)
+        .modelContainer(.preview)
 }

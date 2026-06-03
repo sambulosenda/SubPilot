@@ -13,6 +13,7 @@ struct RubradarApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environment(CurrencyService.shared)
         }
         .modelContainer(.app)
     }

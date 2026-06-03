@@ -75,6 +75,13 @@ struct SubscriptionFormView: View {
 
                 Section("Renewal") {
                     DatePicker("Next renewal", selection: $model.nextRenewalDate, displayedComponents: .date)
+                    Picker("Remind me", selection: $model.reminderLeadDays) {
+                        Text("On the day").tag(0)
+                        Text("1 day before").tag(1)
+                        Text("2 days before").tag(2)
+                        Text("3 days before").tag(3)
+                        Text("1 week before").tag(7)
+                    }
                 }
 
                 Section("Free trial") {
@@ -114,6 +121,7 @@ struct SubscriptionFormView: View {
             model.apply(to: existing)
         }
         didSave = true
+        Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
         dismiss()
         onSaved?()
     }

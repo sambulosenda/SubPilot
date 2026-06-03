@@ -38,8 +38,8 @@ final class Subscription {
     var logoAssetName: String?
     var brandColorHex: String?
 
-    // Forward-compatible (defaults today, used by later milestones)
-    var reminderLeadDays: Int = 0
+    /// Days before the renewal/trial-end to remind. PRD default is 3.
+    var reminderLeadDays: Int = 3
 
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
@@ -61,7 +61,7 @@ final class Subscription {
         symbolName: String? = nil,
         logoAssetName: String? = nil,
         brandColorHex: String? = nil,
-        reminderLeadDays: Int = 0,
+        reminderLeadDays: Int = 3,
         createdAt: Date = Date()
     ) {
         self.id = id

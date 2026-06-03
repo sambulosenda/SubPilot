@@ -21,6 +21,7 @@ enum AddSheet: Identifiable {
 /// tab doesn't navigate — it offers a chooser that presents the catalogue or a
 /// blank manual form as a sheet.
 struct RootView: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var selection: AppTab = .subscriptions
     @State private var presentedSheet: AddSheet?
     @State private var showAddChooser = false
@@ -40,7 +41,7 @@ struct RootView: View {
             }
 
             Tab("Settings", systemImage: "gearshape.fill", value: AppTab.settings) {
-                SettingsPlaceholderView()
+                SettingsView()
             }
         }
         .onChange(of: selection) { old, new in
@@ -61,6 +62,11 @@ struct RootView: View {
             case .catalogue:
                 CatalogueView()
             }
+        }
+        .task {
+            await CurrencyService.shared.refreshIfNeeded()
+            await NotificationManager.shared.requestAuthorization()
+            await NotificationManager.shared.rescheduleAll(modelContext: modelContext)
         }
     }
 }

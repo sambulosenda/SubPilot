@@ -58,6 +58,48 @@ struct CatalogueTests {
     }
 }
 
+struct CurrencyTests {
+    private let rates = ExchangeRates(
+        base: "GBP",
+        date: Date(),
+        rates: ["USD": 1.25, "EUR": 1.20]
+    )
+
+    @Test func baseConvertsToItself() {
+        #expect(rates.convert(10, from: "GBP", to: "GBP") == 10)
+    }
+
+    @Test func convertsViaBase() {
+        // 10 USD -> GBP: 10 / 1.25 = 8
+        #expect(rates.convert(10, from: "USD", to: "GBP") == 8)
+        // 12 EUR -> USD: (12 / 1.20) * 1.25 = 12.5
+        #expect(rates.convert(12, from: "EUR", to: "USD") == 12.5)
+    }
+
+    @Test func unknownCurrencyReturnsNil() {
+        #expect(rates.convert(10, from: "XYZ", to: "GBP") == nil)
+    }
+
+    @Test func summarySumsActiveOnlyInPreferred() {
+        let subs = [
+            Subscription(amount: 10, currencyCode: "GBP", billingCycle: .monthly),
+            Subscription(amount: 25, currencyCode: "USD", billingCycle: .monthly),      // -> 20 GBP
+            Subscription(amount: 120, currencyCode: "GBP", billingCycle: .yearly),       // -> 10 GBP/mo
+            Subscription(amount: 99, currencyCode: "GBP", billingCycle: .monthly, isCancelled: true), // excluded
+        ]
+        let summary = SpendSummary.make(from: subs, preferred: "GBP", rates: rates)
+        #expect(summary.monthlyTotal == 40)
+        #expect(summary.yearlyTotal == 480)
+        #expect(summary.hasUnconvertible == false)
+    }
+
+    @Test func summaryFlagsUnconvertible() {
+        let subs = [Subscription(amount: 5, currencyCode: "ZZZ", billingCycle: .monthly)]
+        let summary = SpendSummary.make(from: subs, preferred: "GBP", rates: rates)
+        #expect(summary.hasUnconvertible == true)
+    }
+}
+
 @MainActor
 struct PersistenceTests {
     private func makeContext() throws -> ModelContext {

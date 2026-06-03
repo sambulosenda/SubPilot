@@ -32,8 +32,15 @@ struct SubscriptionListView: View {
     var presentAdd: (AddSheet) -> Void
 
     @Query private var subscriptions: [Subscription]
+    @Environment(CurrencyService.self) private var currency
+    @AppStorage("preferredCurrencyCode") private var preferredCurrency =
+        Locale.current.currency?.identifier ?? "GBP"
     @State private var sortOption: SortOption = .nextRenewal
     @State private var searchText = ""
+
+    private var summary: SpendSummary {
+        SpendSummary.make(from: subscriptions, preferred: preferredCurrency, rates: currency.rates)
+    }
 
     private var visibleSubscriptions: [Subscription] {
         let filtered = subscriptions.filter { sub in
@@ -72,6 +79,13 @@ struct SubscriptionListView: View {
 
     private var list: some View {
         List {
+            if searchText.isEmpty {
+                Section {
+                    SpendSummaryCard(summary: summary, isStale: currency.isStale)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                }
+            }
             ForEach(visibleSubscriptions) { sub in
                 NavigationLink(value: sub) {
                     SubscriptionRow(subscription: sub)
@@ -121,4 +135,5 @@ struct SubscriptionListView: View {
 #Preview {
     SubscriptionListView(presentAdd: { _ in })
         .modelContainer(.preview)
+        .environment(CurrencyService.shared)
 }

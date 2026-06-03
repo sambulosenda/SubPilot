@@ -85,6 +85,7 @@ struct SubscriptionDetailView: View {
                 subscription.isCancelled.toggle()
                 subscription.updatedAt = Date()
                 stateChanged.toggle()
+                reschedule()
             } label: {
                 Label(subscription.isCancelled ? "Mark as active" : "Mark as cancelled",
                       systemImage: subscription.isCancelled ? "arrow.clockwise.circle" : "xmark.circle")
@@ -97,6 +98,7 @@ struct SubscriptionDetailView: View {
                 }
                 subscription.updatedAt = Date()
                 stateChanged.toggle()
+                reschedule()
             } label: {
                 Label(subscription.isFreeTrial ? "Not a free trial" : "Mark as free trial",
                       systemImage: "gift")
@@ -120,7 +122,13 @@ struct SubscriptionDetailView: View {
 
     private func delete() {
         modelContext.delete(subscription)
+        reschedule()
         dismiss()
+    }
+
+    private func reschedule() {
+        let context = modelContext
+        Task { await NotificationManager.shared.rescheduleAll(modelContext: context) }
     }
 }
 

@@ -29,6 +29,7 @@ final class SubscriptionFormModel {
     var nextRenewalDate: Date
     var category: SubscriptionCategory
     var notes: String
+    var reminderLeadDays: Int
     var isFreeTrial: Bool
     var trialEndDate: Date
 
@@ -47,6 +48,7 @@ final class SubscriptionFormModel {
         nextRenewalDate = source.nextRenewalDate
         category = source.category
         notes = source.notes
+        reminderLeadDays = source.reminderLeadDays
         isFreeTrial = source.isFreeTrial
         trialEndDate = source.trialEndDate ?? source.nextRenewalDate
         symbolName = source.symbolName
@@ -68,6 +70,7 @@ final class SubscriptionFormModel {
         subscription.nextRenewalDate = nextRenewalDate
         subscription.category = category
         subscription.notes = notes
+        subscription.reminderLeadDays = reminderLeadDays
         subscription.isFreeTrial = isFreeTrial
         subscription.trialEndDate = isFreeTrial ? trialEndDate : nil
         subscription.symbolName = symbolName
