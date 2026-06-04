@@ -23,8 +23,19 @@ enum AddSheet: Identifiable {
 /// presents a sheet rather than occupying a tab.
 struct RootView: View {
     @Environment(\.modelContext) private var modelContext
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var selection: AppTab = .subscriptions
     @State private var presentedSheet: AddSheet?
+
+    /// Drives the first-run onboarding cover. Finishing/skipping sets the
+    /// stored flag, which flips this to `false` and dismisses. The setter also
+    /// persists completion so any system-driven dismissal can't re-present it.
+    private var onboardingPresented: Binding<Bool> {
+        Binding(
+            get: { !hasCompletedOnboarding },
+            set: { presented in if !presented { hasCompletedOnboarding = true } }
+        )
+    }
 
     var body: some View {
         TabView(selection: $selection) {
@@ -53,9 +64,17 @@ struct RootView: View {
                 ImportView()
             }
         }
+        .fullScreenCover(isPresented: onboardingPresented) {
+            OnboardingView {
+                hasCompletedOnboarding = true
+                Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
+            }
+            .interactiveDismissDisabled()
+        }
         .task {
             await CurrencyService.shared.refreshIfNeeded()
-            await NotificationManager.shared.requestAuthorization()
+            // Notification permission is requested via the onboarding primer
+            // (FR-21), not cold here. rescheduleAll no-ops until authorized.
             await NotificationManager.shared.rescheduleAll(modelContext: modelContext)
         }
     }
