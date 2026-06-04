@@ -7,8 +7,9 @@ import SwiftUI
 import SwiftData
 import UIKit
 import UserNotifications
+import CloudKit
 
-/// App settings: preferred currency, reminders, and FX status.
+/// App settings: iCloud sync, preferred currency, reminders, and FX status.
 struct SettingsView: View {
     @Environment(CurrencyService.self) private var currency
     @Environment(\.modelContext) private var modelContext
@@ -24,6 +25,10 @@ struct SettingsView: View {
     /// when reminders are enabled in-app but blocked at the system level.
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
 
+    /// iCloud account availability, so we can show whether sync/backup is active
+    /// and nudge the user to sign in when it isn't.
+    @State private var iCloudStatus: CKAccountStatus = .couldNotDetermine
+
     /// Convertible currencies, always including the current selection so the
     /// picker never shows a blank value when the preferred code has no FX rate.
     private var currencyOptions: [String] {
@@ -35,6 +40,25 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    LabeledContent("iCloud Sync") {
+                        Label(iCloudStatusText, systemImage: iCloudStatusSymbol)
+                            .labelStyle(.titleAndIcon)
+                            .foregroundStyle(iCloudStatus == .available ? .green : .secondary)
+                    }
+                    if iCloudStatus == .noAccount {
+                        Button("Open iCloud Settings") {
+                            if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                        }
+                    }
+                } header: {
+                    Text("iCloud")
+                } footer: {
+                    Text(iCloudStatus == .available
+                         ? "Your subscriptions sync and back up across your devices via iCloud."
+                         : "Sign in to iCloud to sync and back up your subscriptions across your devices.")
+                }
+
                 Section("Currency") {
                     Picker("Preferred currency", selection: $preferredCurrency) {
                         ForEach(currencyOptions, id: \.self) { code in
@@ -78,13 +102,22 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
-            .task { await refreshNotificationStatus() }
+            .task {
+                await refreshNotificationStatus()
+                await refreshICloudStatus()
+            }
             .onChange(of: remindersEnabled) {
                 Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
             }
             .onChange(of: scenePhase) { _, phase in
-                // The user may have flipped the system toggle while away.
-                if phase == .active { Task { await refreshNotificationStatus() } }
+                // The user may have flipped a system toggle (notifications or
+                // iCloud sign-in) while away.
+                if phase == .active {
+                    Task {
+                        await refreshNotificationStatus()
+                        await refreshICloudStatus()
+                    }
+                }
             }
         }
     }
@@ -118,6 +151,26 @@ struct SettingsView: View {
 
     private func refreshNotificationStatus() async {
         notificationStatus = await NotificationManager.shared.authorizationStatus
+    }
+
+    private func refreshICloudStatus() async {
+        let container = CKContainer(identifier: ModelContainer.cloudKitContainerID)
+        iCloudStatus = (try? await container.accountStatus()) ?? .couldNotDetermine
+    }
+
+    private var iCloudStatusText: String {
+        switch iCloudStatus {
+        case .available: "On"
+        case .noAccount: "Not signed in"
+        case .restricted: "Restricted"
+        case .temporarilyUnavailable: "Unavailable"
+        case .couldNotDetermine: "Checking…"
+        @unknown default: "Unavailable"
+        }
+    }
+
+    private var iCloudStatusSymbol: String {
+        iCloudStatus == .available ? "checkmark.icloud.fill" : "icloud.slash"
     }
 
     private var ratesUpdatedText: String {

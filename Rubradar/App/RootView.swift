@@ -5,6 +5,7 @@
 
 import SwiftUI
 import SwiftData
+import CoreData
 
 enum AppTab: Hashable {
     case subscriptions, calendar, settings
@@ -76,6 +77,22 @@ struct RootView: View {
             // Notification permission is requested via the onboarding primer
             // (FR-21), not cold here. rescheduleAll no-ops until authorized.
             await NotificationManager.shared.rescheduleAll(modelContext: modelContext)
+        }
+        .task {
+            // Subscriptions synced in from another device (CloudKit import) need
+            // local reminders scheduled. Consuming the async sequence on this
+            // MainActor task keeps state updates on the main thread; the loop is
+            // cancelled automatically when the view disappears. Debounce so a
+            // burst of imports reschedules just once.
+            var pending: Task<Void, Never>?
+            for await _ in NotificationCenter.default.notifications(named: .NSPersistentStoreRemoteChange) {
+                pending?.cancel()
+                pending = Task {
+                    try? await Task.sleep(for: .seconds(1.5))
+                    guard !Task.isCancelled else { return }
+                    await NotificationManager.shared.rescheduleAll(modelContext: modelContext)
+                }
+            }
         }
     }
 }
