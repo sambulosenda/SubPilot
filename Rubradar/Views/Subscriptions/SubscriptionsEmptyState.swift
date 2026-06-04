@@ -49,15 +49,23 @@ struct SubscriptionsEmptyState: View {
         GlassEffectContainer(spacing: Spacing.md) {
             VStack(spacing: Spacing.md) {
                 Button(action: onScan) {
-                    Label("Scan a receipt", systemImage: "doc.viewfinder")
-                        .frame(maxWidth: .infinity)
+                    HStack(spacing: Spacing.xs) {
+                        Image(systemName: "doc.viewfinder")
+                            .accessibilityHidden(true)
+                        Text("Scan a receipt")
+                    }
+                    .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glassProminent)
                 .controlSize(.extraLarge)
 
                 Button(action: onBrowseCatalogue) {
-                    Label("Browse catalogue", systemImage: "magnifyingglass")
-                        .frame(maxWidth: .infinity)
+                    HStack(spacing: Spacing.xs) {
+                        Image(systemName: "magnifyingglass")
+                            .accessibilityHidden(true)
+                        Text("Browse catalogue")
+                    }
+                    .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glass)
                 .controlSize(.extraLarge)

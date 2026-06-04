@@ -28,9 +28,13 @@ struct DashboardHeader: View {
             Button {
                 presentAdd(.manual)
             } label: {
-                Label("Add a Subscription", systemImage: "plus")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
+                HStack(spacing: Spacing.xs) {
+                    Image(systemName: "plus")
+                        .accessibilityHidden(true)
+                    Text("Add a Subscription")
+                }
+                .font(.headline)
+                .frame(maxWidth: .infinity)
             }
             .buttonStyle(.glassProminent)
             .controlSize(.extraLarge)

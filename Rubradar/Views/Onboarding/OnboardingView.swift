@@ -98,8 +98,12 @@ struct OnboardingView: View {
             VStack(spacing: Spacing.md) {
                 if page == .reminders {
                     Button(action: enableReminders) {
-                        Label("Enable reminders", systemImage: "bell.badge.fill")
-                            .frame(maxWidth: .infinity)
+                        HStack(spacing: Spacing.xs) {
+                            Image(systemName: "bell.badge.fill")
+                                .accessibilityHidden(true)
+                            Text("Enable reminders")
+                        }
+                        .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.glassProminent)
                     .controlSize(.extraLarge)
