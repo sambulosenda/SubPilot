@@ -17,8 +17,8 @@ final class BankImportModel {
     var rows: [[String]] = []
     var mapping = ColumnMapping(hasHeaderRow: false, dateIndex: 0, descriptionIndex: 1,
                                 amountIndex: 2, debitIndex: nil, creditIndex: nil)
-    var detections: [DetectedSubscription] = []
-    var selected: Set<String> = []
+    /// Detected subscriptions, mapped to review candidates for `ImportReviewView`.
+    var candidates: [ImportCandidate] = []
     var errorMessage: String?
 
     let preferredCurrency: String
@@ -60,22 +60,18 @@ final class BankImportModel {
         let transactions = StatementParser.transactions(rows: rows, mapping: mapping,
                                                          defaultCurrency: preferredCurrency)
         let detected = RecurringChargeDetector().detect(transactions, catalogue: catalogue)
-        detections = SubscriptionDeduplicator.mark(detected, against: existing)
-        // Pre-select confident, not-yet-tracked detections.
-        selected = Set(detections.filter { !$0.alreadyTracked && $0.confidence >= 0.6 }.map(\.id))
+        let marked = SubscriptionDeduplicator.mark(detected, against: existing)
+        candidates = marked.map { item in
+            let count = item.occurrenceCount == 1 ? "1 charge" : "\(item.occurrenceCount) charges"
+            return ImportCandidate(
+                id: item.id,
+                subscription: item.makeDraft().makeSubscription(),
+                subtitle: "\(count) · \(item.cycle.label)",
+                alreadyTracked: item.alreadyTracked,
+                // Pre-select confident, not-yet-tracked detections.
+                isPreselected: item.confidence >= 0.6
+            )
+        }
         phase = .review
-    }
-
-    func toggle(_ id: String) {
-        if selected.contains(id) { selected.remove(id) } else { selected.insert(id) }
-    }
-
-    var selectedDetections: [DetectedSubscription] {
-        detections.filter { selected.contains($0.id) }
-    }
-
-    func provider(for detected: DetectedSubscription) -> CatalogueProvider? {
-        guard let id = detected.matchedProviderID else { return nil }
-        return catalogue.first { $0.id == id }
     }
 }

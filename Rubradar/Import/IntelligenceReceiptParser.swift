@@ -29,6 +29,12 @@ struct IntelligenceReceiptParser {
         var isFreeTrial: Bool
     }
 
+    @Generable
+    struct ParsedReceipt {
+        @Guide(description: "Every distinct subscription or recurring charge listed, one entry per service.")
+        var subscriptions: [Parsed]
+    }
+
     static var isAvailable: Bool {
         if case .available = SystemLanguageModel.default.availability { return true }
         return false
@@ -46,6 +52,26 @@ struct IntelligenceReceiptParser {
             generating: Parsed.self
         )
         return Self.draft(from: response.content)
+    }
+
+    /// Extracts every subscription line item from a multi-item receipt (e.g. an
+    /// Apple receipt listing several apps).
+    func parseMultiple(_ text: String) async throws -> [ReceiptDraft] {
+        let session = LanguageModelSession(
+            instructions: """
+            You extract every subscription billing line item from a receipt or
+            confirmation email — for example an Apple receipt that lists several
+            apps. Return one entry per distinct service. Only use information that
+            is actually present; leave a field empty (or zero) when unsure.
+            """
+        )
+        let response = try await session.respond(
+            to: "List every subscription in this receipt:\n\n\(text)",
+            generating: ParsedReceipt.self
+        )
+        return response.content.subscriptions
+            .map { Self.draft(from: $0) }
+            .filter { !$0.isEmpty }
     }
 
     static func draft(from p: Parsed) -> ReceiptDraft {
@@ -83,6 +109,7 @@ struct IntelligenceReceiptParser {
 struct IntelligenceReceiptParser {
     static var isAvailable: Bool { false }
     func parse(_ text: String) async throws -> ReceiptDraft { ReceiptDraft() }
+    func parseMultiple(_ text: String) async throws -> [ReceiptDraft] { [] }
 }
 
 #endif

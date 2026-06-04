@@ -16,6 +16,7 @@ struct ImportView: View {
     var onParsed: ((Subscription) -> Void)?
 
     @Environment(\.dismiss) private var dismiss
+    @Query private var existingSubscriptions: [Subscription]
 
     @State private var photoItem: PhotosPickerItem?
     @State private var pastedText = ""
@@ -24,6 +25,8 @@ struct ImportView: View {
     @State private var isWorking = false
     @State private var errorMessage: String?
     @State private var draftSubscription: Subscription?
+    /// Set when a receipt yields several subscriptions (e.g. an Apple receipt).
+    @State private var reviewBundle: ReviewBundle?
 
     var body: some View {
         NavigationStack {
@@ -73,6 +76,24 @@ struct ImportView: View {
             }
             .sheet(item: $draftSubscription) { draft in
                 SubscriptionFormView(mode: .create(draft), onSaved: { dismiss() })
+            }
+            .sheet(item: $reviewBundle) { bundle in
+                NavigationStack {
+                    ImportReviewView(
+                        candidates: bundle.candidates,
+                        footer: "We found these subscriptions in your receipt. Pick the ones to add.",
+                        emptyTitle: "No subscriptions found",
+                        emptyMessage: "We couldn't find subscriptions in that receipt.",
+                        onFinish: { reviewBundle = nil; dismiss() }
+                    )
+                    .navigationTitle("Add subscriptions")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") { reviewBundle = nil }
+                        }
+                    }
+                }
             }
         }
     }
@@ -125,18 +146,48 @@ struct ImportView: View {
         isWorking = true
         Task {
             do {
-                let result = try await ReceiptImporter().run(source)
+                let drafts = try await ReceiptImporter().runMultiple(source)
                 if let onParsed {
-                    onParsed(result.draft.makeSubscription())
+                    // Filling an open form takes a single subscription.
+                    onParsed((drafts.first ?? ReceiptDraft()).makeSubscription())
                     isWorking = false
                     dismiss()
                     return
                 }
-                draftSubscription = result.draft.makeSubscription()
+                if drafts.count > 1 {
+                    reviewBundle = ReviewBundle(candidates: makeCandidates(from: drafts))
+                } else {
+                    draftSubscription = (drafts.first ?? ReceiptDraft()).makeSubscription()
+                }
             } catch {
                 errorMessage = friendlyMessage(for: error)
             }
             isWorking = false
+        }
+    }
+
+    private func makeCandidates(from drafts: [ReceiptDraft]) -> [ImportCandidate] {
+        drafts.enumerated().map { index, draft in
+            let subscription = draft.makeSubscription()
+            return ImportCandidate(
+                id: "\(index)-\(subscription.name.lowercased())",
+                subscription: subscription,
+                subtitle: subscription.billingCycle.label,
+                alreadyTracked: isTracked(subscription),
+                isPreselected: true
+            )
+        }
+    }
+
+    /// Flags a draft that matches an existing subscription (same catalogue entry,
+    /// or same normalised name and a comparable amount).
+    private func isTracked(_ draft: Subscription) -> Bool {
+        existingSubscriptions.contains { existing in
+            if let id = draft.catalogueID, existing.catalogueID == id { return true }
+            guard MerchantNormalizer.key(for: existing.name) == MerchantNormalizer.key(for: draft.name) else { return false }
+            let a = NSDecimalNumber(decimal: existing.amount).doubleValue
+            let b = NSDecimalNumber(decimal: draft.amount).doubleValue
+            return abs(a - b) < 0.5
         }
     }
 
@@ -146,6 +197,12 @@ struct ImportView: View {
         }
         return "Something went wrong reading that. Please try again."
     }
+}
+
+/// Wraps the candidates for `.sheet(item:)` presentation of the review.
+private struct ReviewBundle: Identifiable {
+    let id = UUID()
+    let candidates: [ImportCandidate]
 }
 
 #Preview {

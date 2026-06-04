@@ -23,13 +23,34 @@ struct ReceiptImporter {
 
     func run(_ source: ReceiptSource) async throws -> ReceiptImportResult {
         let text = try await extractText(from: source)
-        let heuristic = HeuristicReceiptParser().parse(text)
+        let (draft, usedIntelligence) = await parseSingle(from: text)
+        return ReceiptImportResult(draft: draft, usedIntelligence: usedIntelligence, rawText: text)
+    }
+
+    /// Parses a receipt that may list several subscriptions (e.g. an Apple
+    /// receipt itemising multiple apps). Prefers the on-device LLM, then a
+    /// heuristic multi-item split, and finally falls back to a single draft.
+    func runMultiple(_ source: ReceiptSource) async throws -> [ReceiptDraft] {
+        let text = try await extractText(from: source)
 
         if IntelligenceReceiptParser.isAvailable,
-           let smart = try? await IntelligenceReceiptParser().parse(text), !smart.isEmpty {
-            return ReceiptImportResult(draft: smart.overlaid(on: heuristic), usedIntelligence: true, rawText: text)
+           let items = try? await IntelligenceReceiptParser().parseMultiple(text), items.count >= 2 {
+            return items
         }
-        return ReceiptImportResult(draft: heuristic, usedIntelligence: false, rawText: text)
+        let appleItems = AppleReceiptParser.parse(text)
+        if appleItems.count >= 2 { return appleItems }
+
+        let (single, _) = await parseSingle(from: text)
+        return single.isEmpty ? [] : [single]
+    }
+
+    private func parseSingle(from text: String) async -> (ReceiptDraft, Bool) {
+        let heuristic = HeuristicReceiptParser().parse(text)
+        if IntelligenceReceiptParser.isAvailable,
+           let smart = try? await IntelligenceReceiptParser().parse(text), !smart.isEmpty {
+            return (smart.overlaid(on: heuristic), true)
+        }
+        return (heuristic, false)
     }
 
     private func extractText(from source: ReceiptSource) async throws -> String {

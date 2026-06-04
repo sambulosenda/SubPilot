@@ -12,14 +12,10 @@ import UniformTypeIdentifiers
 /// and add the detected subscriptions. Everything runs on-device.
 struct BankImportView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Profile.sortIndex) private var profiles: [Profile]
     @Query private var existingSubscriptions: [Subscription]
-    @AppStorage("selectedProfileID") private var selectedProfileID = ""
 
     @State private var model: BankImportModel
     @State private var showFileImporter = false
-    @State private var didAdd = false
 
     init() {
         let currency = UserDefaults.standard.string(forKey: "preferredCurrencyCode")
@@ -46,7 +42,6 @@ struct BankImportView: View {
                 } message: {
                     Text(model.errorMessage ?? "")
                 }
-                .sensoryFeedback(.success, trigger: didAdd)
         }
     }
 
@@ -120,49 +115,26 @@ struct BankImportView: View {
         }
     }
 
-    // MARK: - Step 3: review
+    // MARK: - Step 3: review (shared with the receipt importer)
 
     private var reviewStep: some View {
-        Group {
-            if model.detections.isEmpty {
-                ContentUnavailableView(
-                    "No subscriptions found",
-                    systemImage: "magnifyingglass",
-                    description: Text("We couldn't spot recurring charges in this statement. Try a statement covering a longer period, or add subscriptions manually."))
-            } else {
-                List {
-                    Section {
-                        ForEach(model.detections) { detected in
-                            DetectedSubscriptionRow(
-                                detected: detected,
-                                provider: model.provider(for: detected),
-                                isSelected: model.selected.contains(detected.id),
-                                onToggle: { model.toggle(detected.id) }
-                            )
-                        }
-                    } footer: {
-                        Text("We look for charges that repeat on a regular schedule. Pick the ones you'd like to track.")
-                    }
-                }
-            }
-        }
+        ImportReviewView(
+            candidates: model.candidates,
+            footer: "We look for charges that repeat on a regular schedule. Pick the ones you'd like to track.",
+            emptyTitle: "No subscriptions found",
+            emptyMessage: "We couldn't spot recurring charges in this statement. Try a statement covering a longer period, or add subscriptions manually."
+        )
     }
 
     // MARK: - Bottom action bar
 
     @ViewBuilder
     private var bottomBar: some View {
-        switch model.phase {
-        case .confirmColumns:
+        // The review step supplies its own "Add" bar via ImportReviewView.
+        if model.phase == .confirmColumns {
             primaryButton("Find subscriptions") {
                 Task { await model.runDetection(existing: existingSubscriptions) }
             }
-        case .review where !model.selected.isEmpty:
-            primaryButton("Add \(model.selected.count) subscription\(model.selected.count == 1 ? "" : "s")") {
-                addSelected()
-            }
-        default:
-            EmptyView()
         }
     }
 
@@ -173,26 +145,6 @@ struct BankImportView: View {
         .buttonStyle(.glassProminent)
         .controlSize(.extraLarge)
         .padding()
-    }
-
-    private func addSelected() {
-        let profile = activeProfile
-        for detected in model.selectedDetections {
-            let subscription = detected.makeDraft().makeSubscription()
-            modelContext.insert(subscription)
-            subscription.profile = profile
-        }
-        try? modelContext.save()
-        didAdd = true
-        Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
-        dismiss()
-    }
-
-    private var activeProfile: Profile? {
-        if !selectedProfileID.isEmpty, let profile = profiles.first(where: { $0.id.uuidString == selectedProfileID }) {
-            return profile
-        }
-        return profiles.first
     }
 
     // MARK: - File picking
@@ -253,59 +205,6 @@ struct BankImportView: View {
 
     private var errorBinding: Binding<Bool> {
         Binding(get: { model.errorMessage != nil }, set: { if !$0 { model.errorMessage = nil } })
-    }
-}
-
-/// One detected subscription in the review list. Extracted as its own view so
-/// each row diffs independently (mirrors `SubscriptionRow`).
-private struct DetectedSubscriptionRow: View {
-    let detected: DetectedSubscription
-    let provider: CatalogueProvider?
-    let isSelected: Bool
-    let onToggle: () -> Void
-
-    var body: some View {
-        Button(action: onToggle) {
-            HStack(spacing: Spacing.md) {
-                BrandLogoView(symbolName: provider?.symbolName, logoAssetName: provider?.logoAssetName,
-                              brandDomain: provider?.domain, tint: tint,
-                              category: provider?.category ?? .other, size: 40)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(detected.displayName).font(.headline).lineLimit(1)
-                    Text(subtitle).font(.caption).foregroundStyle(.secondary)
-                }
-                Spacer(minLength: Spacing.sm)
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(priceLabel).font(.subheadline.weight(.semibold)).lineLimit(1)
-                    if detected.alreadyTracked {
-                        Text("Already tracked").font(.caption2).foregroundStyle(.secondary)
-                    }
-                }
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundStyle(isSelected ? Color.accentColor : .secondary)
-                    .accessibilityHidden(true)
-            }
-        }
-        .buttonStyle(.plain)
-        .disabled(detected.alreadyTracked)
-        .opacity(detected.alreadyTracked ? 0.55 : 1)
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
-    }
-
-    private var tint: Color {
-        if let hex = provider?.brandColorHex, let color = Color(hex: hex) { return color }
-        return provider?.category.tint ?? .secondary
-    }
-
-    private var subtitle: String {
-        let count = detected.occurrenceCount == 1 ? "1 charge" : "\(detected.occurrenceCount) charges"
-        return "\(count) · \(detected.cycle.label)"
-    }
-
-    private var priceLabel: String {
-        "\(detected.amount.formatted(.currency(code: detected.currencyCode))) / \(detected.cycle.shortLabel)"
     }
 }
 
