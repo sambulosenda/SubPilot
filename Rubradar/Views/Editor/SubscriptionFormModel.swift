@@ -83,6 +83,10 @@ final class SubscriptionFormModel {
     /// Applies just the category + branding of a recognised provider. Used by the
     /// name auto-detect, which must not clobber the amount/cycle the user is typing.
     func applyBrand(_ provider: CatalogueProvider) {
+        // Idempotent: the name auto-detect calls this on every keystroke once a
+        // provider matches. Re-applying the same brand would write identical
+        // values to the observable model and trigger redundant view updates.
+        guard catalogueID != provider.id else { return }
         category = provider.category
         catalogueID = provider.id
         symbolName = provider.symbolName

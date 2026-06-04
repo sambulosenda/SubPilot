@@ -53,6 +53,9 @@ final class CurrencyService {
             guard let http = response as? HTTPURLResponse, http.statusCode == 200 else { return }
             let decoded = try JSONDecoder().decode(FrankfurterResponse.self, from: data)
             let fresh = decoded.asExchangeRates()
+            // Skip the write when nothing changed (e.g. a same-day manual refresh)
+            // so currency readers aren't invalidated, and the cache isn't rewritten.
+            guard fresh != rates else { return }
             rates = fresh
             if let encoded = try? JSONEncoder().encode(fresh) {
                 UserDefaults.standard.set(encoded, forKey: defaultsKey)
