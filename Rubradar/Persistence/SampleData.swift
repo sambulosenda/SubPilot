@@ -10,8 +10,18 @@ import SwiftData
 enum SampleData {
     @MainActor
     static func seed(into context: ModelContext) {
-        for sub in makeSamples() {
+        let personal = Profile(name: "Personal", symbolName: "person.crop.circle.fill",
+                               colorHex: "30B0A6", sortIndex: 0)
+        let business = Profile(name: "Business", symbolName: "briefcase.fill",
+                               colorHex: "0A84FF", sortIndex: 1)
+        context.insert(personal)
+        context.insert(business)
+
+        let samples = makeSamples()
+        for (index, sub) in samples.enumerated() {
             context.insert(sub)
+            // Spread a few onto Business so the switcher has something to show.
+            sub.profile = (index % 3 == 0) ? business : personal
         }
     }
 

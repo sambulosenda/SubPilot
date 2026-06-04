@@ -12,9 +12,12 @@ struct RenewalCalendarView: View {
     @Environment(CurrencyService.self) private var currency
     @AppStorage("preferredCurrencyCode") private var preferredCurrency =
         Locale.current.currency?.identifier ?? "GBP"
+    /// Follows the profile chosen on Home ("" = All Profiles).
+    @AppStorage("selectedProfileID") private var selectedProfileID = ""
 
     private var months: [RenewalMonth] {
-        let events = RenewalProjector.events(for: subscriptions)
+        let scoped = subscriptions.filter { $0.belongsToProfile(id: selectedProfileID) }
+        let events = RenewalProjector.events(for: scoped)
         return RenewalMonth.group(events, preferred: preferredCurrency, rates: currency.rates)
     }
 

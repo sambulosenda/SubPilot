@@ -59,6 +59,14 @@ struct SettingsView: View {
                          : "Sign in to iCloud to sync and back up your subscriptions across your devices.")
                 }
 
+                Section {
+                    NavigationLink {
+                        ManageProfilesView()
+                    } label: {
+                        Label("Profiles", systemImage: "person.2.crop.square.stack.fill")
+                    }
+                }
+
                 Section("Currency") {
                     Picker("Preferred currency", selection: $preferredCurrency) {
                         ForEach(currencyOptions, id: \.self) { code in

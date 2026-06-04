@@ -20,7 +20,7 @@ extension ModelContainer {
     /// provisioned yet on this build), we fall back to the same on-disk store
     /// without mirroring so the app always launches instead of crashing.
     static let app: ModelContainer = {
-        let schema = Schema([Subscription.self])
+        let schema = Schema([Subscription.self, Profile.self])
         let cloudConfig = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
@@ -48,7 +48,7 @@ extension ModelContainer {
     static let preview: ModelContainer = {
         do {
             let container = try ModelContainer(
-                for: Subscription.self,
+                for: Subscription.self, Profile.self,
                 configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
             )
             SampleData.seed(into: container.mainContext)

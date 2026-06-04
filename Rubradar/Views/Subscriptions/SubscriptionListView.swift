@@ -35,22 +35,32 @@ struct SubscriptionListView: View {
     var onViewAllRenewals: () -> Void = {}
 
     @Query(animation: .default) private var subscriptions: [Subscription]
+    @Query(sort: \Profile.sortIndex, animation: .default) private var profiles: [Profile]
     @Environment(CurrencyService.self) private var currency
     @AppStorage("preferredCurrencyCode") private var preferredCurrency =
         Locale.current.currency?.identifier ?? "GBP"
+    /// Selected profile's UUID string; empty means "All Profiles".
+    @AppStorage("selectedProfileID") private var selectedProfileID = ""
     @State private var sortOption: SortOption = .nextRenewal
     @State private var searchText = ""
+    @State private var showManageProfiles = false
+
+    /// Subscriptions in the selected profile ("" = All), before search/cancel
+    /// filtering. Drives the dashboard totals so they scope to the profile.
+    private var profileSubscriptions: [Subscription] {
+        subscriptions.filter { $0.belongsToProfile(id: selectedProfileID) }
+    }
 
     private var metrics: HomeMetrics {
-        HomeMetrics.make(from: subscriptions, preferred: preferredCurrency, rates: currency.rates)
+        HomeMetrics.make(from: profileSubscriptions, preferred: preferredCurrency, rates: currency.rates)
     }
 
     private var visibleSubscriptions: [Subscription] {
-        let filtered = subscriptions.filter { sub in
+        let filtered = profileSubscriptions.filter { sub in
             if searchText.isEmpty {
                 return !sub.isCancelled // Home lists active subscriptions only.
             }
-            // Search spans everything, so cancelled subs stay reachable to reopen.
+            // Search spans the profile, so cancelled subs stay reachable to reopen.
             return sub.name.localizedCaseInsensitiveContains(searchText)
                 || sub.category.label.localizedCaseInsensitiveContains(searchText)
         }
@@ -89,6 +99,16 @@ struct SubscriptionListView: View {
             // screen) instead of stranding a large "Home" title above a gap.
             .navigationBarTitleDisplayMode(subscriptions.isEmpty ? .inline : .automatic)
             .toolbar { toolbarContent }
+            .sheet(isPresented: $showManageProfiles) {
+                NavigationStack { ManageProfilesView() }
+            }
+            .onChange(of: profiles.map(\.id)) {
+                // A deleted selected profile would otherwise filter to nothing.
+                if !selectedProfileID.isEmpty,
+                   !profiles.contains(where: { $0.id.uuidString == selectedProfileID }) {
+                    selectedProfileID = ""
+                }
+            }
         }
     }
 
@@ -137,8 +157,39 @@ struct SubscriptionListView: View {
         }
     }
 
+    private var currentProfileName: String {
+        guard !selectedProfileID.isEmpty,
+              let profile = profiles.first(where: { $0.id.uuidString == selectedProfileID })
+        else { return "All Profiles" }
+        return profile.name
+    }
+
+    private var profileMenu: some View {
+        Menu {
+            Picker("Profile", selection: $selectedProfileID) {
+                Label("All Profiles", systemImage: "square.stack.3d.up.fill").tag("")
+                ForEach(profiles) { profile in
+                    Label(profile.name, systemImage: profile.symbolName).tag(profile.id.uuidString)
+                }
+            }
+            Divider()
+            Button("Manage Profiles…", systemImage: "slider.horizontal.3") {
+                showManageProfiles = true
+            }
+        } label: {
+            HStack(spacing: Spacing.xs) {
+                Text(currentProfileName).fontWeight(.semibold)
+                Image(systemName: "chevron.down").font(.caption2.weight(.bold))
+            }
+        }
+        .accessibilityLabel("Profile: \(currentProfileName)")
+    }
+
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
+        if !subscriptions.isEmpty {
+            ToolbarItem(placement: .topBarLeading) { profileMenu }
+        }
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
                 Picker("Sort by", selection: $sortOption) {

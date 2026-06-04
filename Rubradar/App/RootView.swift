@@ -73,6 +73,8 @@ struct RootView: View {
             .interactiveDismissDisabled()
         }
         .task {
+            // Guarantee a default profile exists and adopt any pre-profile data.
+            ProfileSetup.ensureDefault(in: modelContext)
             await CurrencyService.shared.refreshIfNeeded()
             // Notification permission is requested via the onboarding primer
             // (FR-21), not cold here. rescheduleAll no-ops until authorized.

@@ -26,6 +26,11 @@ struct SubscriptionFormView: View {
     /// Set when the user taps a category chip — freezes auto-detect from overriding it.
     @State private var categoryManuallySet = false
 
+    @Query(sort: \Profile.sortIndex) private var profiles: [Profile]
+    @AppStorage("selectedProfileID") private var selectedProfileID = ""
+    /// Profile this subscription belongs to; resolved on appear, applied on save.
+    @State private var formProfileID = ""
+
     init(mode: FormMode, onSaved: (() -> Void)? = nil) {
         self.mode = mode
         self.onSaved = onSaved
@@ -75,6 +80,17 @@ struct SubscriptionFormView: View {
                 Section("Details") {
                     TextField("Name", text: $model.name)
                         .textInputAutocapitalization(.words)
+                }
+
+                if profiles.count > 1 {
+                    Section("Profile") {
+                        Picker("Profile", selection: $formProfileID) {
+                            ForEach(profiles) { profile in
+                                Label(profile.name, systemImage: profile.symbolName)
+                                    .tag(profile.id.uuidString)
+                            }
+                        }
+                    }
                 }
 
                 Section("Category") {
@@ -147,6 +163,7 @@ struct SubscriptionFormView: View {
                 if !mode.isEditing && catalogue.isEmpty {
                     catalogue = CatalogueLoader.load()
                 }
+                if formProfileID.isEmpty { formProfileID = defaultProfileID }
             }
             .onChange(of: model.name) { _, newName in
                 // Recognise a known service as the user types and pre-pick its
@@ -169,14 +186,31 @@ struct SubscriptionFormView: View {
         }
     }
 
+    /// Profile a freshly-opened form should select: the edited sub's own profile,
+    /// else the profile currently focused on Home, else the first profile.
+    private var defaultProfileID: String {
+        if case .edit(let existing) = mode, let id = existing.profile?.id.uuidString {
+            return id
+        }
+        if !selectedProfileID.isEmpty, profiles.contains(where: { $0.id.uuidString == selectedProfileID }) {
+            return selectedProfileID
+        }
+        return profiles.first?.id.uuidString ?? ""
+    }
+
     private func save() {
+        let target: Subscription
         switch mode {
         case .create:
-            let subscription = Subscription()
-            model.apply(to: subscription)
-            modelContext.insert(subscription)
+            target = Subscription()
+            model.apply(to: target)
+            modelContext.insert(target)
         case .edit(let existing):
             model.apply(to: existing)
+            target = existing
+        }
+        if let profile = profiles.first(where: { $0.id.uuidString == formProfileID }) {
+            target.profile = profile
         }
         didSave = true
         Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }

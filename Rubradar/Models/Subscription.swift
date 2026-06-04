@@ -32,6 +32,10 @@ final class Subscription {
     var isFreeTrial: Bool = false
     var trialEndDate: Date?
 
+    /// Owning profile (Personal / Business / custom). Optional for CloudKit and
+    /// so existing data lightweight-migrates; the inverse lives on `Profile`.
+    var profile: Profile?
+
     // Branding / catalogue linkage
     var catalogueID: String?
     var symbolName: String?
