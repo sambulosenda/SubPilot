@@ -9,6 +9,10 @@ import SwiftData
 /// Searchable catalogue of common providers. Tapping one opens a pre-filled
 /// add form (FR-01).
 struct CatalogueView: View {
+    /// When set, tapping a provider hands it back to the caller (to fill an open
+    /// form) instead of presenting a fresh pre-filled form. `nil` = standalone.
+    var onSelect: ((CatalogueProvider) -> Void)?
+
     @Environment(\.dismiss) private var dismiss
 
     @State private var providers: [CatalogueProvider] = []
@@ -35,7 +39,12 @@ struct CatalogueView: View {
                     Section(section.category.label) {
                         ForEach(section.items) { provider in
                             Button {
-                                draft = provider.makeDraft()
+                                if let onSelect {
+                                    onSelect(provider)
+                                    dismiss()
+                                } else {
+                                    draft = provider.makeDraft()
+                                }
                             } label: {
                                 row(provider)
                             }

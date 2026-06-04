@@ -11,6 +11,10 @@ import UniformTypeIdentifiers
 /// AI import flow (FR-03/04/05): pick a photo, a PDF, or paste text from a
 /// receipt or confirmation email, parse it on-device, then confirm on the form.
 struct ImportView: View {
+    /// When set, a parsed receipt is handed back to the caller (to fill an open
+    /// form) instead of presenting a fresh confirmation form. `nil` = standalone.
+    var onParsed: ((Subscription) -> Void)?
+
     @Environment(\.dismiss) private var dismiss
 
     @State private var photoItem: PhotosPickerItem?
@@ -124,6 +128,12 @@ struct ImportView: View {
             do {
                 let result = try await ReceiptImporter().run(source)
                 usedIntelligence = result.usedIntelligence
+                if let onParsed {
+                    onParsed(result.draft.makeSubscription())
+                    isWorking = false
+                    dismiss()
+                    return
+                }
                 draftSubscription = result.draft.makeSubscription()
             } catch {
                 errorMessage = friendlyMessage(for: error)

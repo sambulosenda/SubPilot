@@ -11,8 +11,6 @@ struct DashboardHeader: View {
     let metrics: HomeMetrics
     var presentAdd: (AddSheet) -> Void
 
-    @State private var showAddChooser = false
-
     /// Amount of the soonest upcoming charge, in its own currency.
     private var nextChargeAmount: String {
         metrics.nextEvent?.subscription.formattedAmount ?? "—"
@@ -28,7 +26,7 @@ struct DashboardHeader: View {
             }
 
             Button {
-                showAddChooser = true
+                presentAdd(.manual)
             } label: {
                 Label("Add a Subscription", systemImage: "plus")
                     .font(.headline)
@@ -38,11 +36,6 @@ struct DashboardHeader: View {
             .controlSize(.extraLarge)
         }
         .padding(.top, Spacing.xs)
-        .confirmationDialog("Add a subscription", isPresented: $showAddChooser, titleVisibility: .visible) {
-            Button("Scan a receipt") { presentAdd(.scan) }
-            Button("Browse catalogue") { presentAdd(.catalogue) }
-            Button("Add manually") { presentAdd(.manual) }
-        }
     }
 }
 

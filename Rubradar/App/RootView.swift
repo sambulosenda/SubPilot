@@ -25,7 +25,6 @@ struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selection: AppTab = .subscriptions
     @State private var presentedSheet: AddSheet?
-    @State private var showAddChooser = false
 
     var body: some View {
         TabView(selection: $selection) {
@@ -49,16 +48,12 @@ struct RootView: View {
             }
         }
         .onChange(of: selection) { old, new in
-            // The Add tab is an action, not a destination — revert and offer the chooser.
+            // The Add tab is an action, not a destination — revert and open the
+            // streamlined add form directly (catalogue/scan live inside it).
             if new == .add {
                 selection = old
-                showAddChooser = true
+                presentedSheet = .manual
             }
-        }
-        .confirmationDialog("Add a subscription", isPresented: $showAddChooser, titleVisibility: .visible) {
-            Button("Scan a receipt") { presentedSheet = .scan }
-            Button("Browse catalogue") { presentedSheet = .catalogue }
-            Button("Add manually") { presentedSheet = .manual }
         }
         .sheet(item: $presentedSheet) { sheet in
             switch sheet {

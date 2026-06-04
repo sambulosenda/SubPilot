@@ -34,10 +34,11 @@ final class SubscriptionFormModel {
     var trialEndDate: Date
 
     // Branding carried over from a catalogue draft, preserved on save.
-    private let symbolName: String?
-    private let logoAssetName: String?
-    private let brandColorHex: String?
-    private let catalogueID: String?
+    // `var` so a catalogue pick or receipt scan can fill the open form in place.
+    private var symbolName: String?
+    private var logoAssetName: String?
+    private var brandColorHex: String?
+    private var catalogueID: String?
 
     init(source: Subscription) {
         name = source.name
@@ -59,6 +60,35 @@ final class SubscriptionFormModel {
 
     var trimmedName: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
     var isValid: Bool { !trimmedName.isEmpty && amount >= 0 }
+
+    /// Overwrites the working copy from a freshly-built draft (catalogue pick or
+    /// parsed receipt) so the open form fills in place — no second form sheet.
+    /// The user can still edit anything afterwards before saving.
+    func fill(from source: Subscription) {
+        name = source.name
+        amount = source.amount
+        currencyCode = source.currencyCode
+        billingCycle = source.billingCycle
+        customCycleDays = source.customCycleDays ?? customCycleDays
+        nextRenewalDate = source.nextRenewalDate
+        category = source.category
+        isFreeTrial = source.isFreeTrial
+        trialEndDate = source.trialEndDate ?? source.nextRenewalDate
+        symbolName = source.symbolName
+        logoAssetName = source.logoAssetName
+        brandColorHex = source.brandColorHex
+        catalogueID = source.catalogueID
+    }
+
+    /// Applies just the category + branding of a recognised provider. Used by the
+    /// name auto-detect, which must not clobber the amount/cycle the user is typing.
+    func applyBrand(_ provider: CatalogueProvider) {
+        category = provider.category
+        catalogueID = provider.id
+        symbolName = provider.symbolName
+        logoAssetName = provider.logoAssetName
+        brandColorHex = provider.brandColorHex
+    }
 
     /// Writes the working values onto a stored `Subscription`.
     func apply(to subscription: Subscription) {
