@@ -85,6 +85,9 @@ struct SubscriptionListView: View {
                 }
             }
             .navigationTitle("Home")
+            // Empty: let the empty state be the hero (its own headline owns the
+            // screen) instead of stranding a large "Home" title above a gap.
+            .navigationBarTitleDisplayMode(subscriptions.isEmpty ? .inline : .automatic)
             .toolbar { toolbarContent }
         }
     }

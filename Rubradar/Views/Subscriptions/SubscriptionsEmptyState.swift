@@ -5,44 +5,67 @@
 
 import SwiftUI
 
-/// Shown when no subscriptions exist. Surfaces the catalogue and manual add as CTAs.
+/// Shown when no subscriptions exist. Surfaces the catalogue, receipt scan, and
+/// manual add as a clear primary/secondary/tertiary CTA stack. Owns the screen
+/// (the host uses an inline nav title when empty) so this block is the single
+/// focal point rather than competing with a large "Home" title.
 struct SubscriptionsEmptyState: View {
     var onScan: () -> Void
     var onBrowseCatalogue: () -> Void
     var onAddManually: () -> Void
 
     var body: some View {
-        ContentUnavailableView {
-            Label("No subscriptions yet", systemImage: "rectangle.stack.badge.plus")
-        } description: {
-            Text("Track everything you pay for in one place. Scan a receipt, pick from the catalogue, or add one yourself.")
-        } actions: {
-            GlassEffectContainer(spacing: Spacing.md) {
-                VStack(spacing: Spacing.md) {
-                    Button {
-                        onScan()
-                    } label: {
-                        Label("Scan a receipt", systemImage: "doc.viewfinder")
-                            .frame(maxWidth: 280)
-                    }
-                    .buttonStyle(.glassProminent)
-                    .controlSize(.extraLarge)
+        VStack(spacing: Spacing.xl) {
+            header
+            actions
+        }
+        .padding(.horizontal, Spacing.xl)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
 
-                    Button {
-                        onBrowseCatalogue()
-                    } label: {
-                        Label("Browse catalogue", systemImage: "magnifyingglass")
-                            .frame(maxWidth: 280)
-                    }
-                    .buttonStyle(.glass)
-                    .controlSize(.large)
+    private var header: some View {
+        VStack(spacing: Spacing.lg) {
+            Image(systemName: "rectangle.stack.badge.plus")
+                .font(.system(size: 48))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(.tint)
+                .frame(width: 96, height: 96)
+                .background(.tint.opacity(0.12), in: .circle)
+                .accessibilityHidden(true)
 
-                    Button("Add manually", systemImage: "square.and.pencil") {
-                        onAddManually()
-                    }
-                    .padding(.top, Spacing.xs)
-                }
+            VStack(spacing: Spacing.sm) {
+                Text("No subscriptions yet")
+                    .font(.title2.bold())
+                Text("Track everything you pay for in one place. Scan a receipt, pick from the catalogue, or add one yourself.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
             }
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var actions: some View {
+        GlassEffectContainer(spacing: Spacing.md) {
+            VStack(spacing: Spacing.md) {
+                Button(action: onScan) {
+                    Label("Scan a receipt", systemImage: "doc.viewfinder")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.glassProminent)
+                .controlSize(.extraLarge)
+
+                Button(action: onBrowseCatalogue) {
+                    Label("Browse catalogue", systemImage: "magnifyingglass")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.glass)
+                .controlSize(.extraLarge)
+
+                Button("Add manually", systemImage: "square.and.pencil", action: onAddManually)
+                    .padding(.top, Spacing.xs)
+            }
+            .frame(maxWidth: 320)
         }
     }
 }
