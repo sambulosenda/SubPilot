@@ -41,7 +41,8 @@ struct ReceiptDraft: Equatable {
             catalogueID: matched?.id,
             symbolName: matched?.symbolName,
             logoAssetName: matched?.logoAssetName,
-            brandColorHex: matched?.brandColorHex
+            brandColorHex: matched?.brandColorHex,
+            brandDomain: matched?.domain
         )
     }
 }

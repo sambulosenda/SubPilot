@@ -37,6 +37,8 @@ final class Subscription {
     var symbolName: String?
     var logoAssetName: String?
     var brandColorHex: String?
+    /// Registrable domain (e.g. "netflix.com") used to fetch a real logo.
+    var brandDomain: String?
 
     /// Days before the renewal/trial-end to remind. PRD default is 3.
     var reminderLeadDays: Int = 3
@@ -61,6 +63,7 @@ final class Subscription {
         symbolName: String? = nil,
         logoAssetName: String? = nil,
         brandColorHex: String? = nil,
+        brandDomain: String? = nil,
         reminderLeadDays: Int = 3,
         createdAt: Date = Date()
     ) {
@@ -80,6 +83,7 @@ final class Subscription {
         self.symbolName = symbolName
         self.logoAssetName = logoAssetName
         self.brandColorHex = brandColorHex
+        self.brandDomain = brandDomain
         self.reminderLeadDays = reminderLeadDays
         self.createdAt = createdAt
         self.updatedAt = createdAt

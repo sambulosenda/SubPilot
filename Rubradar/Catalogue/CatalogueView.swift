@@ -80,6 +80,7 @@ struct CatalogueView: View {
             BrandLogoView(
                 symbolName: provider.symbolName,
                 logoAssetName: provider.logoAssetName,
+                brandDomain: provider.domain,
                 tint: Color(hex: provider.brandColorHex ?? "") ?? provider.category.tint,
                 category: provider.category,
                 size: 36

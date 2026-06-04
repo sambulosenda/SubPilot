@@ -38,6 +38,7 @@ final class SubscriptionFormModel {
     private var symbolName: String?
     private var logoAssetName: String?
     private var brandColorHex: String?
+    private var brandDomain: String?
     private var catalogueID: String?
 
     init(source: Subscription) {
@@ -55,6 +56,7 @@ final class SubscriptionFormModel {
         symbolName = source.symbolName
         logoAssetName = source.logoAssetName
         brandColorHex = source.brandColorHex
+        brandDomain = source.brandDomain
         catalogueID = source.catalogueID
     }
 
@@ -77,6 +79,7 @@ final class SubscriptionFormModel {
         symbolName = source.symbolName
         logoAssetName = source.logoAssetName
         brandColorHex = source.brandColorHex
+        brandDomain = source.brandDomain
         catalogueID = source.catalogueID
     }
 
@@ -92,6 +95,7 @@ final class SubscriptionFormModel {
         symbolName = provider.symbolName
         logoAssetName = provider.logoAssetName
         brandColorHex = provider.brandColorHex
+        brandDomain = provider.domain
     }
 
     /// Writes the working values onto a stored `Subscription`.
@@ -110,6 +114,7 @@ final class SubscriptionFormModel {
         subscription.symbolName = symbolName
         subscription.logoAssetName = logoAssetName
         subscription.brandColorHex = brandColorHex
+        subscription.brandDomain = brandDomain
         subscription.catalogueID = catalogueID
         subscription.updatedAt = Date()
     }

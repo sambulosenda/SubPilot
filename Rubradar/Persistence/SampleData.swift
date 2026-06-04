@@ -29,7 +29,8 @@ enum SampleData {
                 category: .streaming,
                 catalogueID: "netflix",
                 symbolName: "play.tv.fill",
-                brandColorHex: "#E50914"
+                brandColorHex: "#E50914",
+                brandDomain: "netflix.com"
             ),
             Subscription(
                 name: "Spotify Premium",
@@ -40,7 +41,8 @@ enum SampleData {
                 category: .music,
                 catalogueID: "spotify",
                 symbolName: "music.note",
-                brandColorHex: "#1DB954"
+                brandColorHex: "#1DB954",
+                brandDomain: "spotify.com"
             ),
             Subscription(
                 name: "Adobe Creative Cloud",
@@ -51,7 +53,8 @@ enum SampleData {
                 category: .software,
                 catalogueID: "adobe-cc",
                 symbolName: "app.badge.fill",
-                brandColorHex: "#FF0000"
+                brandColorHex: "#FF0000",
+                brandDomain: "adobe.com"
             ),
             Subscription(
                 name: "ChatGPT Plus",
@@ -63,7 +66,8 @@ enum SampleData {
                 isFreeTrial: true,
                 trialEndDate: days(2),
                 catalogueID: "chatgpt-plus",
-                symbolName: "bubble.left.and.text.bubble.right.fill"
+                symbolName: "bubble.left.and.text.bubble.right.fill",
+                brandDomain: "openai.com"
             ),
             Subscription(
                 name: "Old Gym Membership",
@@ -84,7 +88,8 @@ enum SampleData {
                 category: .streaming,
                 catalogueID: "disney-plus",
                 symbolName: "sparkles.tv.fill",
-                brandColorHex: "#113CCF"
+                brandColorHex: "#113CCF",
+                brandDomain: "disneyplus.com"
             ),
         ]
     }
