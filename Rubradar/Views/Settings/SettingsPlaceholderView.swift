@@ -108,6 +108,14 @@ struct SettingsView: View {
                 } footer: {
                     Text("Rates from frankfurter.app, refreshed daily. A bundled set is used offline.")
                 }
+
+                Section {
+                    NavigationLink {
+                        SupportView()
+                    } label: {
+                        Label("Help & Support", systemImage: "questionmark.circle.fill")
+                    }
+                }
             }
             .navigationTitle("Settings")
             .task {
