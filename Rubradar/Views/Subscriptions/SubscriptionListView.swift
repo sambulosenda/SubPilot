@@ -147,6 +147,9 @@ struct SubscriptionListView: View {
                 Label("Sort", systemImage: "arrow.up.arrow.down")
             }
         }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Add subscription", systemImage: "plus") { presentAdd(.manual) }
+        }
     }
 }
 

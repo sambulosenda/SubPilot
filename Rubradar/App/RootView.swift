@@ -7,7 +7,7 @@ import SwiftUI
 import SwiftData
 
 enum AppTab: Hashable {
-    case subscriptions, add, calendar, settings
+    case subscriptions, calendar, settings
 }
 
 /// Which add flow to present.
@@ -18,9 +18,9 @@ enum AddSheet: Identifiable {
     var id: Int { hashValue }
 }
 
-/// App shell: a tab bar over the four primary destinations. The centre "Add"
-/// tab doesn't navigate — it offers a chooser that presents the catalogue or a
-/// blank manual form as a sheet.
+/// App shell: a tab bar over the three primary destinations. Adding a
+/// subscription is an in-content action (Home toolbar + dashboard CTA), so it
+/// presents a sheet rather than occupying a tab.
 struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selection: AppTab = .subscriptions
@@ -35,24 +35,12 @@ struct RootView: View {
                 )
             }
 
-            Tab("Add", systemImage: "plus.circle.fill", value: AppTab.add) {
-                Color.clear
-            }
-
             Tab("Calendar", systemImage: "calendar", value: AppTab.calendar) {
                 RenewalCalendarView()
             }
 
             Tab("Settings", systemImage: "gearshape.fill", value: AppTab.settings) {
                 SettingsView()
-            }
-        }
-        .onChange(of: selection) { old, new in
-            // The Add tab is an action, not a destination — revert and open the
-            // streamlined add form directly (catalogue/scan live inside it).
-            if new == .add {
-                selection = old
-                presentedSheet = .manual
             }
         }
         .sheet(item: $presentedSheet) { sheet in
