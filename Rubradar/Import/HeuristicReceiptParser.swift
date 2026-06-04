@@ -15,6 +15,19 @@ struct HeuristicReceiptParser {
     ]
     private static let knownCodes = ["GBP", "USD", "EUR", "CAD", "AUD", "JPY", "CHF", "INR", "NZD"]
 
+    // Amount-matching patterns are constant — compile the regexes once instead of
+    // per line per receipt.
+    private static let numberPattern = "[0-9]{1,3}(?:[.,][0-9]{3})*(?:[.,][0-9]{1,2})?|[0-9]+(?:[.,][0-9]{1,2})?"
+    private static let symbolChars = "£$€¥"
+    private static let codeAlternation = knownCodes.joined(separator: "|")
+
+    private static let symbolPrefixedRegex = try? NSRegularExpression(pattern: "([\(symbolChars)])\\s?(\(numberPattern))")
+    private static let symbolSuffixedRegex = try? NSRegularExpression(pattern: "(\(numberPattern))\\s?([\(symbolChars)])")
+    private static let codeRegex = try? NSRegularExpression(
+        pattern: "(?:(\(codeAlternation))\\s?)?(\(numberPattern))(?:\\s?(\(codeAlternation)))?",
+        options: [.caseInsensitive]
+    )
+
     func parse(_ text: String, referenceDate: Date = Date()) -> ReceiptDraft {
         var draft = ReceiptDraft()
 
@@ -62,12 +75,11 @@ struct HeuristicReceiptParser {
     /// Finds `£9.99`, `9.99 GBP`, `$12`, etc. in a single line.
     static func amounts(in line: String) -> [(Decimal, String?)] {
         var results: [(Decimal, String?)] = []
-        let number = "[0-9]{1,3}(?:[.,][0-9]{3})*(?:[.,][0-9]{1,2})?|[0-9]+(?:[.,][0-9]{1,2})?"
-        let symbols = "£$€¥"
+        let range = NSRange(line.startIndex..., in: line)
 
         // Symbol-prefixed: £9.99
-        if let regex = try? NSRegularExpression(pattern: "([\(symbols)])\\s?(\(number))") {
-            for match in regex.matches(in: line, range: NSRange(line.startIndex..., in: line)) {
+        if let regex = symbolPrefixedRegex {
+            for match in regex.matches(in: line, range: range) {
                 if let symRange = Range(match.range(at: 1), in: line),
                    let numRange = Range(match.range(at: 2), in: line),
                    let value = decimal(from: String(line[numRange])) {
@@ -78,8 +90,8 @@ struct HeuristicReceiptParser {
         }
 
         // Symbol-suffixed: 9,99 €
-        if let regex = try? NSRegularExpression(pattern: "(\(number))\\s?([\(symbols)])") {
-            for match in regex.matches(in: line, range: NSRange(line.startIndex..., in: line)) {
+        if let regex = symbolSuffixedRegex {
+            for match in regex.matches(in: line, range: range) {
                 if let numRange = Range(match.range(at: 1), in: line),
                    let symRange = Range(match.range(at: 2), in: line),
                    let value = decimal(from: String(line[numRange])) {
@@ -90,9 +102,8 @@ struct HeuristicReceiptParser {
         }
 
         // Code-suffixed/prefixed: 9.99 GBP / GBP 9.99
-        let codes = knownCodes.joined(separator: "|")
-        if let regex = try? NSRegularExpression(pattern: "(?:(\(codes))\\s?)?(\(number))(?:\\s?(\(codes)))?", options: [.caseInsensitive]) {
-            for match in regex.matches(in: line, range: NSRange(line.startIndex..., in: line)) {
+        if let regex = codeRegex {
+            for match in regex.matches(in: line, range: range) {
                 guard let numRange = Range(match.range(at: 2), in: line),
                       let value = decimal(from: String(line[numRange])) else { continue }
                 var code: String?

@@ -37,11 +37,12 @@ struct SubscriptionFormView: View {
 
     private static let commonCurrencies = ["GBP", "USD", "EUR", "CAD", "AUD", "JPY", "CHF", "INR"]
 
-    private var currencyOptions: [String] {
-        let all = Locale.commonISOCurrencyCodes
-        let rest = all.filter { !Self.commonCurrencies.contains($0) }
-        return Self.commonCurrencies + rest
-    }
+    /// Common currencies first, then the rest of the ISO list. Built once — the
+    /// set is constant, so it must not rebuild on every keystroke in the form.
+    private static let currencyOptions: [String] = {
+        let rest = Locale.commonISOCurrencyCodes.filter { !commonCurrencies.contains($0) }
+        return commonCurrencies + rest
+    }()
 
     var body: some View {
         NavigationStack {
@@ -88,7 +89,7 @@ struct SubscriptionFormView: View {
                             .multilineTextAlignment(.trailing)
                     }
                     Picker("Currency", selection: $model.currencyCode) {
-                        ForEach(currencyOptions, id: \.self) { code in
+                        ForEach(Self.currencyOptions, id: \.self) { code in
                             Text(code).tag(code)
                         }
                     }
