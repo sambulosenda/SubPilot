@@ -34,7 +34,7 @@ struct SubscriptionListView: View {
     /// Asks the shell to switch to the Calendar tab ("View all").
     var onViewAllRenewals: () -> Void = {}
 
-    @Query private var subscriptions: [Subscription]
+    @Query(animation: .default) private var subscriptions: [Subscription]
     @Environment(CurrencyService.self) private var currency
     @AppStorage("preferredCurrencyCode") private var preferredCurrency =
         Locale.current.currency?.identifier ?? "GBP"
@@ -153,5 +153,5 @@ struct SubscriptionListView: View {
 #Preview {
     SubscriptionListView(presentAdd: { _ in })
         .modelContainer(.preview)
-        .environment(CurrencyService.shared)
+        .environment(CurrencyService())
 }

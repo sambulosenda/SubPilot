@@ -8,7 +8,7 @@ import SwiftData
 
 /// A timeline of upcoming renewals, grouped by month with a per-month spend subtotal.
 struct RenewalCalendarView: View {
-    @Query private var subscriptions: [Subscription]
+    @Query(animation: .default) private var subscriptions: [Subscription]
     @Environment(CurrencyService.self) private var currency
     @AppStorage("preferredCurrencyCode") private var preferredCurrency =
         Locale.current.currency?.identifier ?? "GBP"
@@ -145,5 +145,5 @@ private struct DateBadge: View {
 #Preview {
     RenewalCalendarView()
         .modelContainer(.preview)
-        .environment(CurrencyService.shared)
+        .environment(CurrencyService())
 }

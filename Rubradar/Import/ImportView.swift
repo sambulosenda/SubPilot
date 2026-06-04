@@ -24,7 +24,6 @@ struct ImportView: View {
     @State private var isWorking = false
     @State private var errorMessage: String?
     @State private var draftSubscription: Subscription?
-    @State private var usedIntelligence = false
 
     var body: some View {
         NavigationStack {
@@ -127,7 +126,6 @@ struct ImportView: View {
         Task {
             do {
                 let result = try await ReceiptImporter().run(source)
-                usedIntelligence = result.usedIntelligence
                 if let onParsed {
                     onParsed(result.draft.makeSubscription())
                     isWorking = false

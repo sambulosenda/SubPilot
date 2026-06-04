@@ -76,4 +76,5 @@ struct RootView: View {
 #Preview {
     RootView()
         .modelContainer(.preview)
+        .environment(CurrencyService())
 }

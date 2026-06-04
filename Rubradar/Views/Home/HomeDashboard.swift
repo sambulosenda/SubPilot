@@ -48,8 +48,9 @@ private struct HeroSpendCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
-            Text("Total monthly".uppercased())
+            Text("Total monthly")
                 .font(.caption.weight(.semibold))
+                .textCase(.uppercase)
                 .foregroundStyle(.secondary)
 
             Text(metrics.summary.formattedMonthly)

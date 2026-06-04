@@ -70,7 +70,7 @@ struct CatalogueView: View {
                 SubscriptionFormView(mode: .create(draft), onSaved: { dismiss() })
             }
         }
-        .onAppear {
+        .task {
             if providers.isEmpty { providers = CatalogueLoader.load() }
         }
     }

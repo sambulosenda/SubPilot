@@ -15,12 +15,20 @@ struct SettingsView: View {
         Locale.current.currency?.identifier ?? "GBP"
     @AppStorage("remindersEnabled") private var remindersEnabled = true
 
+    /// Convertible currencies, always including the current selection so the
+    /// picker never shows a blank value when the preferred code has no FX rate.
+    private var currencyOptions: [String] {
+        var codes = Set(currency.rates.supportedCodes)
+        codes.insert(preferredCurrency)
+        return codes.sorted()
+    }
+
     var body: some View {
         NavigationStack {
             Form {
                 Section("Currency") {
                     Picker("Preferred currency", selection: $preferredCurrency) {
-                        ForEach(currency.rates.supportedCodes, id: \.self) { code in
+                        ForEach(currencyOptions, id: \.self) { code in
                             Text(code).tag(code)
                         }
                     }
@@ -67,6 +75,6 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
-        .environment(CurrencyService.shared)
+        .environment(CurrencyService())
         .modelContainer(.preview)
 }
