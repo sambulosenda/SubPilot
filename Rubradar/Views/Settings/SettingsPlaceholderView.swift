@@ -8,6 +8,7 @@ import SwiftData
 import UIKit
 import UserNotifications
 import CloudKit
+import StoreKit
 
 /// App settings: iCloud sync, preferred currency, reminders, and FX status.
 struct SettingsView: View {
@@ -110,6 +111,18 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    Button {
+                        Task { await openAppStoreSubscriptions() }
+                    } label: {
+                        Label("App Store Subscriptions", systemImage: "list.bullet.rectangle.portrait")
+                    }
+                } header: {
+                    Text("Find subscriptions")
+                } footer: {
+                    Text("Open Apple's subscription list to see what you pay for through the App Store, then add them here. Apple doesn't let apps import this list automatically.")
+                }
+
+                Section {
                     NavigationLink {
                         SupportView()
                     } label: {
@@ -162,6 +175,24 @@ struct SettingsView: View {
             }
         default:
             EmptyView()
+        }
+    }
+
+    /// Opens Apple's system subscription-management sheet (all the user's App
+    /// Store subscriptions). Apple exposes no API to read this list, so we can
+    /// only surface it for the user to view; falls back to the account URL.
+    private func openAppStoreSubscriptions() async {
+        if let scene = UIApplication.shared.connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+            do {
+                try await AppStore.showManageSubscriptions(in: scene)
+                return
+            } catch {
+                // Fall through to the deep link below.
+            }
+        }
+        if let url = URL(string: "itms-apps://apps.apple.com/account/subscriptions") {
+            openURL(url)
         }
     }
 
