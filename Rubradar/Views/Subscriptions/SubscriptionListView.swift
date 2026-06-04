@@ -88,6 +88,7 @@ struct SubscriptionListView: View {
                     SubscriptionsEmptyState(
                         onScan: { presentAdd(.scan) },
                         onBrowseCatalogue: { presentAdd(.catalogue) },
+                        onImportStatement: { presentAdd(.bankImport) },
                         onAddManually: { presentAdd(.manual) }
                     )
                 } else {
@@ -202,7 +203,14 @@ struct SubscriptionListView: View {
             }
         }
         ToolbarItem(placement: .topBarTrailing) {
-            Button("Add subscription", systemImage: "plus") { presentAdd(.manual) }
+            Menu {
+                Button("Add manually", systemImage: "square.and.pencil") { presentAdd(.manual) }
+                Button("Browse catalogue", systemImage: "magnifyingglass") { presentAdd(.catalogue) }
+                Button("Scan a receipt", systemImage: "doc.viewfinder") { presentAdd(.scan) }
+                Button("Import bank statement", systemImage: "doc.badge.arrow.up") { presentAdd(.bankImport) }
+            } label: {
+                Label("Add subscription", systemImage: "plus")
+            }
         }
     }
 }

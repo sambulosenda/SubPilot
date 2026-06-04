@@ -16,6 +16,7 @@ enum AddSheet: Identifiable {
     case manual
     case catalogue
     case scan
+    case bankImport
     var id: Int { hashValue }
 }
 
@@ -63,6 +64,8 @@ struct RootView: View {
                 CatalogueView()
             case .scan:
                 ImportView()
+            case .bankImport:
+                BankImportView()
             }
         }
         .fullScreenCover(isPresented: onboardingPresented) {

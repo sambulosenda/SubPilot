@@ -115,7 +115,9 @@ struct HeuristicReceiptParser {
         return results
     }
 
-    private static func decimal(from raw: String) -> Decimal? {
+    /// Parses a numeric string into a `Decimal`, disambiguating `,`/`.` as
+    /// thousands vs decimal separators. Shared with the bank-statement importer.
+    static func decimal(from raw: String) -> Decimal? {
         var s = raw
         if s.contains(",") && s.contains(".") {
             s = s.replacingOccurrences(of: ",", with: "")          // comma = thousands

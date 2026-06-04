@@ -12,6 +12,7 @@ import SwiftUI
 struct SubscriptionsEmptyState: View {
     var onScan: () -> Void
     var onBrowseCatalogue: () -> Void
+    var onImportStatement: () -> Void
     var onAddManually: () -> Void
 
     var body: some View {
@@ -70,6 +71,17 @@ struct SubscriptionsEmptyState: View {
                 .buttonStyle(.glass)
                 .controlSize(.extraLarge)
 
+                Button(action: onImportStatement) {
+                    HStack(spacing: Spacing.xs) {
+                        Image(systemName: "doc.badge.arrow.up")
+                            .accessibilityHidden(true)
+                        Text("Import bank statement")
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.glass)
+                .controlSize(.extraLarge)
+
                 Button("Add manually", systemImage: "square.and.pencil", action: onAddManually)
                     .padding(.top, Spacing.xs)
             }
@@ -79,5 +91,5 @@ struct SubscriptionsEmptyState: View {
 }
 
 #Preview {
-    SubscriptionsEmptyState(onScan: {}, onBrowseCatalogue: {}, onAddManually: {})
+    SubscriptionsEmptyState(onScan: {}, onBrowseCatalogue: {}, onImportStatement: {}, onAddManually: {})
 }

@@ -25,8 +25,11 @@ struct DashboardHeader: View {
                 StatCard(icon: "creditcard.fill", value: nextChargeAmount, caption: "Next charge")
             }
 
-            Button {
-                presentAdd(.manual)
+            Menu {
+                Button("Add manually", systemImage: "square.and.pencil") { presentAdd(.manual) }
+                Button("Browse catalogue", systemImage: "magnifyingglass") { presentAdd(.catalogue) }
+                Button("Scan a receipt", systemImage: "doc.viewfinder") { presentAdd(.scan) }
+                Button("Import bank statement", systemImage: "doc.badge.arrow.up") { presentAdd(.bankImport) }
             } label: {
                 HStack(spacing: Spacing.xs) {
                     Image(systemName: "plus")
