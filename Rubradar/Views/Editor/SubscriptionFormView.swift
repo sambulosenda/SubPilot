@@ -30,7 +30,13 @@ struct SubscriptionFormView: View {
         self.mode = mode
         self.onSaved = onSaved
         switch mode {
-        case .create(let draft), .edit(let draft):
+        case .create(let draft):
+            let model = SubscriptionFormModel(source: draft)
+            // New subscriptions inherit the global default reminder timing;
+            // the per-subscription picker below still overrides it.
+            model.reminderLeadDays = ReminderLead.storedDefault
+            _model = State(initialValue: model)
+        case .edit(let draft):
             _model = State(initialValue: SubscriptionFormModel(source: draft))
         }
     }
@@ -107,11 +113,9 @@ struct SubscriptionFormView: View {
                 Section("Renewal") {
                     DatePicker("Next renewal", selection: $model.nextRenewalDate, displayedComponents: .date)
                     Picker("Remind me", selection: $model.reminderLeadDays) {
-                        Text("On the day").tag(0)
-                        Text("1 day before").tag(1)
-                        Text("2 days before").tag(2)
-                        Text("3 days before").tag(3)
-                        Text("1 week before").tag(7)
+                        ForEach(ReminderLead.options, id: \.days) { option in
+                            Text(option.label).tag(option.days)
+                        }
                     }
                 }
 

@@ -14,6 +14,7 @@ struct SettingsView: View {
     @AppStorage("preferredCurrencyCode") private var preferredCurrency =
         Locale.current.currency?.identifier ?? "GBP"
     @AppStorage("remindersEnabled") private var remindersEnabled = true
+    @AppStorage(ReminderLead.defaultsKey) private var defaultReminderLeadDays = ReminderLead.defaultDays
 
     /// Convertible currencies, always including the current selection so the
     /// picker never shows a blank value when the preferred code has no FX rate.
@@ -36,10 +37,17 @@ struct SettingsView: View {
 
                 Section {
                     Toggle("Renewal reminders", isOn: $remindersEnabled)
+                    if remindersEnabled {
+                        Picker("Default reminder", selection: $defaultReminderLeadDays) {
+                            ForEach(ReminderLead.options, id: \.days) { option in
+                                Text(option.label).tag(option.days)
+                            }
+                        }
+                    }
                 } header: {
                     Text("Reminders")
                 } footer: {
-                    Text("Get a local notification before each subscription renews. Set the timing per subscription when editing it.")
+                    Text("Get a local notification at 9 AM before each subscription renews. New subscriptions use the default timing above; change it per subscription when editing.")
                 }
 
                 Section {

@@ -7,6 +7,31 @@ import Foundation
 import SwiftData
 import UserNotifications
 
+/// The selectable "remind me N days before" options, shared by the add/edit
+/// form's per-subscription picker and the Settings default picker so they
+/// can't drift apart.
+enum ReminderLead {
+    /// `(label, days)` pairs in display order.
+    static let options: [(label: String, days: Int)] = [
+        ("On the day", 0),
+        ("1 day before", 1),
+        ("2 days before", 2),
+        ("3 days before", 3),
+        ("1 week before", 7),
+    ]
+
+    /// Default lead for a brand-new subscription when the user hasn't set one.
+    static let defaultDays = 3
+
+    /// UserDefaults key backing the global default (see Settings).
+    static let defaultsKey = "defaultReminderLeadDays"
+
+    /// The user's chosen global default, falling back to `defaultDays`.
+    static var storedDefault: Int {
+        UserDefaults.standard.object(forKey: defaultsKey) as? Int ?? defaultDays
+    }
+}
+
 /// Schedules local reminders for upcoming renewals and trial conversions.
 /// No push server — everything is local (`UNUserNotificationCenter`).
 @MainActor
