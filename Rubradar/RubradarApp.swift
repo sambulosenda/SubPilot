@@ -12,7 +12,7 @@ import SwiftData
 struct RubradarApp: App {
     var body: some Scene {
         WindowGroup {
-            RootView()
+            AppRootView()
                 .environment(CurrencyService.shared)
         }
         .modelContainer(.app)
