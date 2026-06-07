@@ -98,6 +98,7 @@ struct RootView: View {
             // Guarantee a default profile exists and adopt any pre-profile data.
             ProfileSetup.ensureDefault(in: modelContext)
             await CurrencyService.shared.refreshIfNeeded()
+            WidgetSync.refresh(modelContext: modelContext)
             // Notification permission is requested via the onboarding primer
             // (FR-21), not cold here. rescheduleAll no-ops until authorized.
             await NotificationManager.shared.rescheduleAll(modelContext: modelContext)
@@ -106,6 +107,9 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, phase in
             // A receipt may have been shared in while the app was backgrounded.
             if phase == .active { checkSharedInbox() }
+            // Capture any edits made this session in the widget snapshot before
+            // the user glances at the Home/Lock Screen.
+            if phase == .background { WidgetSync.refresh(modelContext: modelContext) }
         }
         .task {
             // Subscriptions synced in from another device (CloudKit import) need
@@ -120,6 +124,7 @@ struct RootView: View {
                     try? await Task.sleep(for: .seconds(1.5))
                     guard !Task.isCancelled else { return }
                     await NotificationManager.shared.rescheduleAll(modelContext: modelContext)
+                    WidgetSync.refresh(modelContext: modelContext)
                 }
             }
         }
