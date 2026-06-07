@@ -6,8 +6,9 @@
 import SwiftUI
 
 /// Brief branded launch screen shown over a cold start while the app warms up.
-/// Draws a radar-sweep mark — a nod to the app's name — that animates in, then
-/// hands off to the main UI via a cross-fade owned by `AppRootView`.
+/// Presents the SubPilot app-icon tile — so the splash matches the icon the user
+/// just tapped — which scales/fades in, then hands off to the main UI via a
+/// cross-fade owned by `AppRootView`.
 ///
 /// The background matches the system-generated launch screen (`systemBackground`)
 /// so there's no flash between the static launch image and this view; only the
@@ -16,14 +17,23 @@ struct SplashView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appeared = false
 
+    /// iOS masks app icons with a continuous "squircle"; matching its corner
+    /// ratio (~0.2237 of the side) makes the tile read as the real app icon.
+    private static let markSize: CGFloat = 132
+    private var cornerRadius: CGFloat { Self.markSize * 0.2237 }
+
     var body: some View {
         ZStack {
             Color(.systemBackground)
                 .ignoresSafeArea()
 
             VStack(spacing: Spacing.lg) {
-                RadarMark(tint: .accentColor, sweeping: appeared && !reduceMotion)
-                    .frame(width: 132, height: 132)
+                Image("BrandMark")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: Self.markSize, height: Self.markSize)
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                    .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
                     .scaleEffect(appeared || reduceMotion ? 1 : 0.86)
                     .opacity(appeared ? 1 : 0)
 
@@ -42,55 +52,6 @@ struct SplashView: View {
         .onAppear {
             withAnimation(reduceMotion ? .easeIn(duration: 0.3) : .smooth(duration: 0.55)) {
                 appeared = true
-            }
-        }
-    }
-}
-
-// MARK: - Radar mark
-
-/// Concentric rings with a rotating sweep, evoking a radar display. The sweep
-/// only spins while `sweeping` is true so Reduce Motion can hold it static.
-private struct RadarMark: View {
-    var tint: Color
-    var sweeping: Bool
-
-    @State private var angle: Angle = .degrees(0)
-
-    var body: some View {
-        ZStack {
-            // Three concentric rings, evenly inset from the outer frame.
-            ForEach(0..<3, id: \.self) { ring in
-                Circle()
-                    .strokeBorder(tint.opacity(0.28), lineWidth: 1.5)
-                    .padding(CGFloat(ring) * 22)
-            }
-
-            // The sweep: an angular gradient that's clear for most of the turn
-            // and ramps to the tint at its leading edge, leaving a trailing fade.
-            Circle()
-                .fill(
-                    AngularGradient(
-                        stops: [
-                            .init(color: tint.opacity(0), location: 0.0),
-                            .init(color: tint.opacity(0), location: 0.72),
-                            .init(color: tint.opacity(0.45), location: 1.0),
-                        ],
-                        center: .center
-                    )
-                )
-                .rotationEffect(angle)
-
-            // Center pip with a soft halo so it reads as the radar origin.
-            Circle()
-                .fill(tint)
-                .frame(width: 11, height: 11)
-                .shadow(color: tint.opacity(0.6), radius: 5)
-        }
-        .onChange(of: sweeping, initial: true) { _, isOn in
-            guard isOn else { return }
-            withAnimation(.linear(duration: 1.4).repeatForever(autoreverses: false)) {
-                angle = .degrees(360)
             }
         }
     }
