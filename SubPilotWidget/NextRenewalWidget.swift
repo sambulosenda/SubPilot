@@ -56,6 +56,7 @@ struct NextRenewalWidget: Widget {
         StaticConfiguration(kind: kind, provider: NextRenewalProvider()) { entry in
             NextRenewalView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
+                .widgetURL(entry.snapshot.upcoming.isEmpty ? WidgetDeepLink.home : WidgetDeepLink.renewals)
         }
         .configurationDisplayName("Next Renewal")
         .description("Your next subscription charge and total monthly spend.")
@@ -117,6 +118,8 @@ struct NextRenewalView: View {
                 emptyLine
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilitySummary)
     }
 
     private var mediumView: some View {
@@ -129,6 +132,7 @@ struct NextRenewalView: View {
                         .minimumScaleFactor(0.6)
                         .lineLimit(1)
                 }
+                .accessibilityElement(children: .combine)
                 Spacer()
                 if let profile = entry.snapshot.profileName {
                     Text(profile)
@@ -159,6 +163,7 @@ struct NextRenewalView: View {
                 .font(.callout)
                 .foregroundStyle(tint(event))
                 .frame(width: 20)
+                .accessibilityHidden(true)
             Text(event.name)
                 .font(.subheadline.weight(.medium))
                 .lineLimit(1)
@@ -171,6 +176,7 @@ struct NextRenewalView: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 
     // MARK: Lock Screen
@@ -192,6 +198,8 @@ struct NextRenewalView: View {
                 Text("No upcoming renewals").font(.caption)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilitySummary)
         .widgetAccentable()
     }
 
@@ -219,6 +227,8 @@ struct NextRenewalView: View {
                 Image(systemName: "checkmark")
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(next.map { "\(max(daysUntil($0.date), 0)) days until \($0.name) renews" } ?? "No upcoming renewals")
         .widgetAccentable()
     }
 
@@ -257,6 +267,15 @@ private extension NextRenewalView {
         Calendar.current.dateComponents(
             [.day], from: referenceDay, to: Calendar.current.startOfDay(for: date)
         ).day ?? 0
+    }
+
+    /// One spoken sentence for the compact (small / Lock Screen) layouts, where
+    /// the terse visual reads poorly field-by-field under VoiceOver.
+    var accessibilitySummary: String {
+        let total = "Monthly total \(entry.snapshot.formattedMonthlyTotal)"
+        guard let event = next else { return "\(total). No upcoming renewals." }
+        let when = timingLabel(event).replacingOccurrences(of: " • ", with: ", ")
+        return "\(total). Next renewal \(event.name), \(when), \(event.formattedAmount)."
     }
 
     func timingLabel(_ event: WidgetSnapshot.Event) -> String {

@@ -111,6 +111,15 @@ struct RootView: View {
             // the user glances at the Home/Lock Screen.
             if phase == .background { WidgetSync.refresh(modelContext: modelContext) }
         }
+        .onOpenURL { url in
+            // Deep links from the widget (subpilot://renewals | subpilot://home).
+            guard url.scheme == WidgetDeepLink.scheme else { return }
+            switch url.host {
+            case "renewals": selection = .calendar
+            case "home": selection = .subscriptions
+            default: break
+            }
+        }
         .task {
             // Subscriptions synced in from another device (CloudKit import) need
             // local reminders scheduled. Consuming the async sequence on this

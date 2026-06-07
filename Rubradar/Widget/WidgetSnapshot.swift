@@ -100,3 +100,14 @@ extension WidgetSnapshot {
         )
     }
 }
+
+/// Deep links the widget hands to the app via `widgetURL`. The widget owns the
+/// containing app, so the system delivers these straight to the app's
+/// `onOpenURL` — no `CFBundleURLTypes` registration needed.
+enum WidgetDeepLink {
+    static let scheme = "subpilot"
+    /// Opens the renewals calendar.
+    static let renewals = URL(string: "\(scheme)://renewals")!
+    /// Opens the subscriptions home.
+    static let home = URL(string: "\(scheme)://home")!
+}
