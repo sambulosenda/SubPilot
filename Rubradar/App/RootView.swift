@@ -8,7 +8,7 @@ import SwiftData
 import CoreData
 
 enum AppTab: Hashable {
-    case subscriptions, calendar, settings
+    case subscriptions, calendar, assistant, settings
 }
 
 /// Which add flow to present.
@@ -50,6 +50,10 @@ struct RootView: View {
 
             Tab("Calendar", systemImage: "calendar", value: AppTab.calendar) {
                 RenewalCalendarView()
+            }
+
+            Tab("Assistant", systemImage: "sparkles", value: AppTab.assistant) {
+                AssistantView()
             }
 
             Tab("Settings", systemImage: "gearshape.fill", value: AppTab.settings) {
