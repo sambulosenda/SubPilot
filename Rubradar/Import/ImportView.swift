@@ -15,12 +15,17 @@ struct ImportView: View {
     /// form) instead of presenting a fresh confirmation form. `nil` = standalone.
     var onParsed: ((Subscription) -> Void)?
 
+    /// When set (e.g. from a Share Extension hand-off), this source is parsed
+    /// automatically on appear instead of waiting for the user to pick one.
+    var initialSource: ReceiptSource?
+
     @Environment(\.dismiss) private var dismiss
     @Query private var existingSubscriptions: [Subscription]
 
     @State private var photoItem: PhotosPickerItem?
     @State private var pastedText = ""
     @State private var showPDFImporter = false
+    @State private var didAutoRun = false
 
     @State private var isWorking = false
     @State private var errorMessage: String?
@@ -42,6 +47,11 @@ struct ImportView: View {
                 }
             }
             .disabled(isWorking)
+            .task {
+                guard let initialSource, !didAutoRun else { return }
+                didAutoRun = true
+                run(initialSource)
+            }
             .overlay {
                 if isWorking {
                     ProgressView("Reading receipt…")

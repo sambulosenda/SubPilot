@@ -11,13 +11,25 @@ enum AppTab: Hashable {
     case subscriptions, calendar, assistant, settings
 }
 
-/// Which add flow to present.
+/// Which add flow to present. `.sharedImport` carries a receipt handed in by the
+/// Share Extension so it rides the same single `.sheet(item:)` as every add flow
+/// (one sheet modifier avoids only-one-sheet-at-a-time conflicts).
 enum AddSheet: Identifiable {
     case manual
     case catalogue
     case scan
     case bankImport
-    var id: Int { hashValue }
+    case sharedImport(ReceiptSource)
+
+    var id: String {
+        switch self {
+        case .manual: "manual"
+        case .catalogue: "catalogue"
+        case .scan: "scan"
+        case .bankImport: "bankImport"
+        case .sharedImport: "sharedImport"
+        }
+    }
 }
 
 /// App shell: a tab bar over the three primary destinations. Adding a
@@ -25,6 +37,7 @@ enum AddSheet: Identifiable {
 /// presents a sheet rather than occupying a tab.
 struct RootView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var selection: AppTab = .subscriptions
     @State private var presentedSheet: AddSheet?
@@ -70,6 +83,8 @@ struct RootView: View {
                 ImportView()
             case .bankImport:
                 BankImportView()
+            case .sharedImport(let source):
+                ImportView(initialSource: source)
             }
         }
         .fullScreenCover(isPresented: onboardingPresented) {
@@ -86,6 +101,11 @@ struct RootView: View {
             // Notification permission is requested via the onboarding primer
             // (FR-21), not cold here. rescheduleAll no-ops until authorized.
             await NotificationManager.shared.rescheduleAll(modelContext: modelContext)
+            checkSharedInbox()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // A receipt may have been shared in while the app was backgrounded.
+            if phase == .active { checkSharedInbox() }
         }
         .task {
             // Subscriptions synced in from another device (CloudKit import) need
@@ -102,6 +122,15 @@ struct RootView: View {
                     await NotificationManager.shared.rescheduleAll(modelContext: modelContext)
                 }
             }
+        }
+    }
+
+    /// Presents the import flow for the next receipt shared in from the extension.
+    /// Skips while onboarding or another sheet is up; the next foreground retries.
+    private func checkSharedInbox() {
+        guard hasCompletedOnboarding, presentedSheet == nil else { return }
+        if let source = SharedInbox.consumeNext() {
+            presentedSheet = .sharedImport(source)
         }
     }
 }
