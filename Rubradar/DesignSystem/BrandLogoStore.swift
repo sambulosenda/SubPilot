@@ -35,6 +35,16 @@ actor BrandLogoStore {
         config.urlCache = URLCache(memoryCapacity: 8 << 20, diskCapacity: 64 << 20)
         config.requestCachePolicy = .returnCacheDataElseLoad
         session = URLSession(configuration: config)
+        // Bound decoded-image memory (the catalogue has 240+ logos). Evicted
+        // entries re-decode quickly from the on-disk URLCache without network.
+        memory.totalCostLimit = 32 << 20 // ~32 MB of decoded bitmaps
+        memory.countLimit = 256
+    }
+
+    /// Approximate decoded-bitmap byte cost for NSCache accounting.
+    private func cost(of image: UIImage) -> Int {
+        let pixels = image.size.width * image.scale * image.size.height * image.scale
+        return Int(pixels) * 4
     }
 
     /// True once a real token has been configured.
@@ -68,7 +78,7 @@ actor BrandLogoStore {
         inFlight[key] = task
         let image = await task.value
         inFlight[key] = nil
-        if let image { memory.setObject(image, forKey: key as NSString) }
+        if let image { memory.setObject(image, forKey: key as NSString, cost: cost(of: image)) }
         return image
     }
 }

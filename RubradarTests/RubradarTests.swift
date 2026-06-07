@@ -56,6 +56,26 @@ struct CatalogueTests {
         #expect(draft?.category == .streaming)
         #expect(draft?.catalogueID == "netflix")
     }
+
+    /// Guards against a silent decode failure: CatalogueLoader returns [] if any
+    /// row's category/cycle doesn't match the enums, which would empty the UI.
+    @Test func catalogueDecodesFullyWithUniqueIDsAndDomains() {
+        let providers = CatalogueLoader.load(bundle: .main)
+        #expect(providers.count == 243)
+        #expect(Set(providers.map(\.id)).count == providers.count)
+        #expect(providers.allSatisfy { ($0.domain ?? "").contains(".") })
+    }
+
+    @Test func catalogueCoversEveryCategory() {
+        let providers = CatalogueLoader.load(bundle: .main)
+        #expect(Set(providers.map(\.category)) == Set(SubscriptionCategory.allCases))
+    }
+
+    @Test func catalogueMatchesNewProvidersInReceiptText() {
+        let providers = CatalogueLoader.load(bundle: .main)
+        #expect(CatalogueLoader.match(in: "Your NordVPN receipt", providers: providers)?.name == "NordVPN")
+        #expect(CatalogueLoader.match(in: "DUOLINGO Super", providers: providers)?.name == "Duolingo")
+    }
 }
 
 struct CurrencyTests {
