@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  # Cancel superseded runs on the same ref to save runner minutes.
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: Build & test
+    # iOS 26 SDK requires Xcode 26, which ships on the macOS 26 runner image.
+    runs-on: macos-26
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Show toolchain
+        run: xcodebuild -version
+
+      - name: Pick a booted iOS simulator
+        id: sim
+        run: |
+          set -euo pipefail
+          DEVICE_ID=$(xcrun simctl list devices available \
+            | grep -m1 -E 'iPhone' \
+            | grep -oE '[0-9A-Fa-f-]{36}')
+          if [ -z "$DEVICE_ID" ]; then
+            echo "::error::No available iPhone simulator found"; exit 1
+          fi
+          echo "udid=$DEVICE_ID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$DEVICE_ID" || true
+
+      - name: Build & test
+        env:
+          SIM_UDID: ${{ steps.sim.outputs.udid }}
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project Rubradar.xcodeproj \
+            -scheme Rubradar \
+            -destination "id=$SIM_UDID" \
+            -skip-testing:RubradarUITests \
+            -resultBundlePath TestResults.xcresult \
+            -skipPackagePluginValidation
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults.xcresult
+          if-no-files-found: ignore
