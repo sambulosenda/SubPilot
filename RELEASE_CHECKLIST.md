@@ -1,0 +1,58 @@
+# SubPilot — App Store release checklist
+
+Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
+
+## Blockers (must clear before submit)
+
+- [ ] **CloudKit production schema deployed.** App mirrors SwiftData → CloudKit
+  private DB (`iCloud.com.sambulosenda.subradar`). Open CloudKit Console →
+  promote the **Development** schema to **Production** before release, or sync
+  breaks / records fail for real users. Re-promote whenever the model changes.
+- [ ] **App Group on the distribution App ID.** `group.com.sambulosenda.subradar`
+  must be enabled on `com.sambulosenda.subradar`, `.SubPilotWidget`, and
+  `.ShareExtension` App IDs for the distribution profile (automatic signing
+  handles dev). Needed by the widget + share extension.
+- [ ] **First device/TestFlight build signs cleanly** with the three extension
+  bundle IDs + App Group + CloudKit entitlements provisioned.
+
+## Project / build (done in repo)
+
+- [x] Widget extension (`SubPilotWidget`) wired, builds, embeds.
+- [x] Share Extension (`ShareExtension`) wired as a real target, builds, embeds.
+- [x] App Groups entitlement on app + both extensions.
+- [x] `ITSAppUsesNonExemptEncryption = NO` set (skips the per-upload export
+  compliance prompt — valid only if you add no non-exempt crypto).
+- [ ] Bump `MARKETING_VERSION` / `CURRENT_PROJECT_VERSION` per release (now 1.0 / 1).
+
+## App Store Connect
+
+- [ ] App record created; bundle id `com.sambulosenda.subradar` registered.
+- [ ] Distribution certificate + provisioning (or Xcode automatic) for upload.
+- [ ] Screenshots (6.9" + 6.5" iPhone at minimum), description, keywords,
+  promo text, support URL, category, age rating.
+- [ ] **Privacy policy URL** + **App Privacy** answers. Declare:
+  - CloudKit (user subscription data, stored in their iCloud — not "collected"
+    by you, but disclose).
+  - **logo.dev** network call (domain → brand logo) in `BrandLogoStore`
+    (publishable token embedded). Confirm ToS allows shipping; declare the
+    network usage.
+  - No tracking / no ads / no third-party analytics (confirm).
+- [ ] Sign in with Apple: N/A (no accounts).
+
+## Pre-submit testing (real device)
+
+- [ ] CloudKit sync across two devices signed into the same iCloud.
+- [ ] AI assistant tab on an Apple-Intelligence-capable device (FoundationModels
+  availability path + the unavailable fallback).
+- [ ] Receipt import: PhotosPicker + Share Extension (share a PDF/image into
+  SubPilot → app drains `ShareInbox` → import review).
+- [ ] Widgets on device: Home (small/medium) + Lock Screen, with real data;
+  countdown decrements; updates after adding/editing a subscription.
+- [ ] Notifications: permission primer + a scheduled renewal reminder fires.
+- [ ] Cold launch with no iCloud account (local-only fallback, no crash).
+
+## Nice-to-have (not blocking)
+
+- [ ] `widgetURL` deep-link so tapping the widget opens the relevant screen.
+- [ ] Real brand logos in the widget (cache logo.dev images into the App Group).
+- [ ] Localized strings / String Catalog review.
