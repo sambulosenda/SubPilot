@@ -123,6 +123,7 @@ struct SubscriptionDetailView: View {
     private func delete() {
         modelContext.delete(subscription)
         reschedule()
+        WidgetSync.refresh(modelContext: modelContext)
         dismiss()
     }
 

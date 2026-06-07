@@ -39,6 +39,10 @@ struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    // Mirror the two prefs the widget snapshot keys off so a profile switch or a
+    // currency change repaints the widget immediately (see the .onChange below).
+    @AppStorage("selectedProfileID") private var selectedProfileID = ""
+    @AppStorage("preferredCurrencyCode") private var preferredCurrencyCode = ""
     @State private var selection: AppTab = .subscriptions
     @State private var presentedSheet: AddSheet?
 
@@ -110,6 +114,13 @@ struct RootView: View {
             // Capture any edits made this session in the widget snapshot before
             // the user glances at the Home/Lock Screen.
             if phase == .background { WidgetSync.refresh(modelContext: modelContext) }
+        }
+        .onChange(of: selectedProfileID) {
+            // The widget renders the selected profile's totals + renewals.
+            WidgetSync.refresh(modelContext: modelContext)
+        }
+        .onChange(of: preferredCurrencyCode) {
+            WidgetSync.refresh(modelContext: modelContext)
         }
         .onOpenURL { url in
             // Deep links from the widget (subpilot://renewals | subpilot://home).

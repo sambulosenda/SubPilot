@@ -214,6 +214,9 @@ struct SubscriptionFormView: View {
         }
         didSave = true
         Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
+        // Push the change to the Home/Lock Screen widget now; otherwise it shows
+        // stale totals + next-renewal until the app is next backgrounded.
+        WidgetSync.refresh(modelContext: modelContext)
         dismiss()
         onSaved?()
     }

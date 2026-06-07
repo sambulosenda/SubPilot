@@ -99,6 +99,7 @@ struct ImportReviewView: View {
         try? modelContext.save()
         didAdd = true
         Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
+        WidgetSync.refresh(modelContext: modelContext)
         if let onFinish { onFinish() } else { dismiss() }
     }
 
