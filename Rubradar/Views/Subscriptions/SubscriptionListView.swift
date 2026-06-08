@@ -114,7 +114,9 @@ struct SubscriptionListView: View {
     }
 
     private var list: some View {
-        List {
+        // Filter+sort once per body pass; reused by the rows and the empty overlay.
+        let visible = visibleSubscriptions
+        return List {
             if searchText.isEmpty {
                 Section {
                     DashboardHeader(metrics: metrics, presentAdd: presentAdd)
@@ -124,9 +126,9 @@ struct SubscriptionListView: View {
                 }
             }
 
-            if !visibleSubscriptions.isEmpty {
+            if !visible.isEmpty {
                 Section {
-                    ForEach(visibleSubscriptions) { sub in
+                    ForEach(visible) { sub in
                         NavigationLink(value: sub) {
                             SubscriptionRow(subscription: sub)
                         }
@@ -142,7 +144,7 @@ struct SubscriptionListView: View {
         .searchable(text: $searchText, prompt: "Search subscriptions")
         .tabBarMinimizeBehavior(.onScrollDown)
         .overlay {
-            if !searchText.isEmpty && visibleSubscriptions.isEmpty {
+            if !searchText.isEmpty && visible.isEmpty {
                 ContentUnavailableView.search(text: searchText)
             }
         }
