@@ -39,4 +39,5 @@ struct AppRootView: View {
     AppRootView()
         .modelContainer(.preview)
         .environment(CurrencyService())
+        .environment(PurchaseManager.preview(isPro: true))
 }

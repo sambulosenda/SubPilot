@@ -42,6 +42,21 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		F1D600000000000000000030 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F1D600000000000000000031 /* SubPilotWidget.appex in Embed Foundation Extensions */,
+				F2D600000000000000000031 /* ShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		4FD3FAC92FD0B47400C8A3E6 /* Rubradar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rubradar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FD3FAD62FD0B47500C8A3E6 /* RubradarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RubradarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -49,6 +64,32 @@
 		F1D6000000000000000000A1 /* SubPilotWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SubPilotWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2D6000000000000000000A1 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F1D6000000000000000000A3 /* Exceptions for "Rubradar" folder in "SubPilotWidget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/Category.swift,
+				Widget/WidgetSnapshot.swift,
+				Widget/WidgetSnapshotStore.swift,
+			);
+			target = F1D600000000000000000010 /* SubPilotWidget */;
+		};
+		F1D6000000000000000000A4 /* Exceptions for "SubPilotWidget" folder in "SubPilotWidget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = F1D600000000000000000010 /* SubPilotWidget */;
+		};
+		F2D6000000000000000000A4 /* Exceptions for "ShareExtension" folder in "ShareExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = F2D600000000000000000010 /* ShareExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4FD3FACB2FD0B47400C8A3E6 /* Rubradar */ = {
@@ -87,32 +128,6 @@
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F1D6000000000000000000A3 /* Exceptions for "Rubradar" folder in "SubPilotWidget" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Models/Category.swift,
-				Widget/WidgetSnapshot.swift,
-				Widget/WidgetSnapshotStore.swift,
-			);
-			target = F1D600000000000000000010 /* SubPilotWidget */;
-		};
-		F1D6000000000000000000A4 /* Exceptions for "SubPilotWidget" folder in "SubPilotWidget" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = F1D600000000000000000010 /* SubPilotWidget */;
-		};
-		F2D6000000000000000000A4 /* Exceptions for "ShareExtension" folder in "ShareExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = F2D600000000000000000010 /* ShareExtension */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFrameworksBuildPhase section */
 		4FD3FAC62FD0B47400C8A3E6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -150,21 +165,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		F1D600000000000000000030 /* Embed Foundation Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				F1D600000000000000000031 /* SubPilotWidget.appex in Embed Foundation Extensions */,
-				F2D600000000000000000031 /* ShareExtension.appex in Embed Foundation Extensions */,
-			);
-			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXGroup section */
 		4FD3FAC02FD0B47400C8A3E6 = {
@@ -589,12 +589,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Rubradar/Rubradar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y53KNKBDS8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = SubPilot;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -624,12 +624,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Rubradar/Rubradar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y53KNKBDS8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = SubPilot;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

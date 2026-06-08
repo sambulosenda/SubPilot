@@ -14,6 +14,7 @@ struct AssistantView: View {
     @Query(animation: .default) private var subscriptions: [Subscription]
     @Query(sort: \Profile.sortIndex, animation: .default) private var profiles: [Profile]
     @Environment(CurrencyService.self) private var currency
+    @Environment(PurchaseManager.self) private var purchases
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("preferredCurrencyCode") private var preferredCurrency =
         Locale.current.currency?.identifier ?? "GBP"
@@ -64,7 +65,9 @@ struct AssistantView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if availability == .available {
+                if !purchases.isPro {
+                    assistantLocked
+                } else if availability == .available {
                     chatBody
                 } else {
                     AssistantUnavailableView(availability: availability)
@@ -85,6 +88,20 @@ struct AssistantView: View {
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { availability = AssistantChat.availability }
+        }
+    }
+
+    // MARK: - Pro gate
+
+    /// Shown to free users in place of the chat — the assistant is a Pro feature.
+    private var assistantLocked: some View {
+        ContentUnavailableView {
+            Label("Assistant is a Pro feature", systemImage: "sparkles")
+        } description: {
+            Text("Ask about your spending and renewals — answered privately on your device.")
+        } actions: {
+            Button("Unlock Pro") { purchases.paywallContext = .assistant }
+                .buttonStyle(.glassProminent)
         }
     }
 
@@ -293,8 +310,16 @@ struct AssistantUnavailableView: View {
     }
 }
 
-#Preview {
+#Preview("Pro") {
     AssistantView()
         .modelContainer(.preview)
         .environment(CurrencyService())
+        .environment(PurchaseManager.preview(isPro: true))
+}
+
+#Preview("Locked") {
+    AssistantView()
+        .modelContainer(.preview)
+        .environment(CurrencyService())
+        .environment(PurchaseManager.preview(isPro: false))
 }

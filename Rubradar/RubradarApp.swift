@@ -14,6 +14,7 @@ struct RubradarApp: App {
         WindowGroup {
             AppRootView()
                 .environment(CurrencyService.shared)
+                .environment(PurchaseManager.shared)
         }
         .modelContainer(.app)
     }

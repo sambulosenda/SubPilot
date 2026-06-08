@@ -12,8 +12,10 @@ import SwiftData
 /// be pushed inside Settings or presented in a sheet's stack.
 struct ManageProfilesView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(PurchaseManager.self) private var purchases
     @Query(sort: \Profile.sortIndex) private var profiles: [Profile]
     @State private var editorTarget: ProfileEditorTarget?
+    @State private var showPaywall = false
 
     var body: some View {
         List {
@@ -41,13 +43,22 @@ struct ManageProfilesView: View {
         .sheet(item: $editorTarget) { target in
             ProfileEditorView(target: target)
         }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(context: .profiles)
+        }
     }
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) { EditButton() }
         ToolbarItem(placement: .topBarTrailing) {
-            Button("Add Profile", systemImage: "plus") { editorTarget = .create }
+            Button("Add Profile", systemImage: "plus") {
+                if PurchaseGate.canAddProfile(currentCount: profiles.count, isPro: purchases.isPro) {
+                    editorTarget = .create
+                } else {
+                    showPaywall = true
+                }
+            }
         }
     }
 
@@ -236,4 +247,5 @@ struct ProfileEditorView: View {
 #Preview {
     NavigationStack { ManageProfilesView() }
         .modelContainer(.preview)
+        .environment(PurchaseManager.preview(isPro: true))
 }

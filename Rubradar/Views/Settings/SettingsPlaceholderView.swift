@@ -13,6 +13,7 @@ import StoreKit
 /// App settings: iCloud sync, preferred currency, reminders, and FX status.
 struct SettingsView: View {
     @Environment(CurrencyService.self) private var currency
+    @Environment(PurchaseManager.self) private var purchases
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
@@ -41,6 +42,28 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    if purchases.isPro {
+                        LabeledContent("SubPilot Pro") {
+                            Label("Active", systemImage: "checkmark.seal.fill")
+                                .labelStyle(.titleAndIcon)
+                                .foregroundStyle(.green)
+                        }
+                    } else {
+                        Button {
+                            purchases.paywallContext = .generic
+                        } label: {
+                            Label("Unlock SubPilot Pro", systemImage: "crown.fill")
+                        }
+                    }
+                    Button("Restore Purchases") {
+                        Task { await purchases.restore() }
+                    }
+                    .disabled(purchases.purchaseInProgress)
+                } header: {
+                    Text("SubPilot Pro")
+                }
+
                 Section {
                     LabeledContent("iCloud Sync") {
                         Label(iCloudStatusText, systemImage: iCloudStatusSymbol)
@@ -229,5 +252,6 @@ struct SettingsView: View {
 #Preview {
     SettingsView()
         .environment(CurrencyService())
+        .environment(PurchaseManager.preview(isPro: false))
         .modelContainer(.preview)
 }

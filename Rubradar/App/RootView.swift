@@ -38,6 +38,7 @@ enum AddSheet: Identifiable {
 struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(PurchaseManager.self) private var purchases
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     // Mirror the two prefs the widget snapshot keys off so a profile switch or a
     // currency change repaints the widget immediately (see the .onChange below).
@@ -57,10 +58,11 @@ struct RootView: View {
     }
 
     var body: some View {
+        @Bindable var purchases = purchases
         TabView(selection: $selection) {
             Tab("Home", systemImage: "house.fill", value: AppTab.subscriptions) {
                 SubscriptionListView(
-                    presentAdd: { presentedSheet = $0 },
+                    presentAdd: requestAdd,
                     onViewAllRenewals: { selection = .calendar }
                 )
             }
@@ -90,6 +92,9 @@ struct RootView: View {
             case .sharedImport(let source):
                 ImportView(initialSource: source)
             }
+        }
+        .sheet(item: $purchases.paywallContext) { context in
+            PaywallView(context: context)
         }
         .fullScreenCover(isPresented: onboardingPresented) {
             OnboardingView {
@@ -150,6 +155,29 @@ struct RootView: View {
         }
     }
 
+    /// Routes an add request through the Pro gates before presenting. Receipt
+    /// scanning and bank import are Pro-only; manual/catalogue add is capped on
+    /// the free tier. Every add entry point funnels through this one closure.
+    private func requestAdd(_ sheet: AddSheet) {
+        switch sheet {
+        case .scan:
+            guard purchases.isPro else { purchases.paywallContext = .receiptScan; return }
+        case .bankImport:
+            guard purchases.isPro else { purchases.paywallContext = .bankImport; return }
+        case .manual, .catalogue:
+            let activeCount = (try? modelContext.fetchCount(
+                FetchDescriptor<Subscription>(predicate: #Predicate { !$0.isCancelled })
+            )) ?? 0
+            guard PurchaseGate.canAddSubscription(activeCount: activeCount, isPro: purchases.isPro) else {
+                purchases.paywallContext = .subscriptionLimit
+                return
+            }
+        case .sharedImport:
+            break // Handed in via the iOS share sheet; presented as-is.
+        }
+        presentedSheet = sheet
+    }
+
     /// Presents the import flow for the next receipt shared in from the extension.
     /// Skips while onboarding or another sheet is up; the next foreground retries.
     private func checkSharedInbox() {
@@ -164,4 +192,5 @@ struct RootView: View {
     RootView()
         .modelContainer(.preview)
         .environment(CurrencyService())
+        .environment(PurchaseManager.preview(isPro: true))
 }
