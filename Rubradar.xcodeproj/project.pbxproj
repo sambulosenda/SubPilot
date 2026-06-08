@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F7E28372FD6FEE800583D34 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F7E28362FD6FEE800583D34 /* StoreKit.framework */; };
 		F1D600000000000000000031 /* SubPilotWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F1D6000000000000000000A1 /* SubPilotWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F2D600000000000000000031 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F2D6000000000000000000A1 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -58,6 +59,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4F7E28362FD6FEE800583D34 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4FD3FAC92FD0B47400C8A3E6 /* Rubradar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rubradar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FD3FAD62FD0B47500C8A3E6 /* RubradarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RubradarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FD3FAE02FD0B47500C8A3E6 /* RubradarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RubradarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,6 +135,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F7E28372FD6FEE800583D34 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +170,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4F7E28352FD6FEE800583D34 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4F7E28362FD6FEE800583D34 /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		4FD3FAC02FD0B47400C8A3E6 = {
 			isa = PBXGroup;
 			children = (
@@ -175,6 +186,7 @@
 				4FD3FAE32FD0B47500C8A3E6 /* RubradarUITests */,
 				F1D6000000000000000000A2 /* SubPilotWidget */,
 				F2D6000000000000000000A2 /* ShareExtension */,
+				4F7E28352FD6FEE800583D34 /* Frameworks */,
 				4FD3FACA2FD0B47400C8A3E6 /* Products */,
 			);
 			sourceTree = "<group>";

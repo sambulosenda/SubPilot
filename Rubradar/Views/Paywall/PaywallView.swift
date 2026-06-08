@@ -135,6 +135,7 @@ struct PaywallView: View {
                         product: product,
                         tier: tierName(product),
                         detail: detail(for: product),
+                        badge: product.id == PurchaseManager.ProductID.annual ? annualSavingsBadge : nil,
                         isSelected: product.id == selectedID
                     ) {
                         selectedID = product.id
@@ -191,6 +192,19 @@ struct PaywallView: View {
 
     private var selectedProduct: Product? { purchases.product(for: selectedID) }
 
+    /// Percentage saved by paying annually vs. 12× the monthly price (e.g. "SAVE 58%").
+    /// Computed from the live products so it stays correct if prices change.
+    private var annualSavingsBadge: String? {
+        guard let monthly = purchases.product(for: PurchaseManager.ProductID.monthly),
+              let annual = purchases.product(for: PurchaseManager.ProductID.annual) else { return nil }
+        let yearlyAtMonthlyRate = monthly.price * 12
+        guard yearlyAtMonthlyRate > 0 else { return nil }
+        let fractionSaved = (yearlyAtMonthlyRate - annual.price) / yearlyAtMonthlyRate
+        let percent = Int((NSDecimalNumber(decimal: fractionSaved).doubleValue * 100).rounded())
+        guard percent > 0 else { return nil }
+        return "SAVE \(percent)%"
+    }
+
     private var ctaTitle: String {
         if let product = selectedProduct, hasFreeTrial(product) { return "Start Free Trial" }
         return "Unlock Pro"
@@ -238,6 +252,7 @@ private struct ProductOptionRow: View {
     let product: Product
     let tier: String
     let detail: String
+    let badge: String?
     let isSelected: Bool
     let onSelect: () -> Void
 
@@ -256,7 +271,15 @@ private struct ProductOptionRow: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-                Spacer(minLength: 0)
+                Spacer(minLength: Spacing.sm)
+                if let badge {
+                    Text(badge)
+                        .font(.caption2.weight(.bold))
+                        .padding(.horizontal, Spacing.sm)
+                        .padding(.vertical, 3)
+                        .background(.tint, in: .capsule)
+                        .foregroundStyle(.white)
+                }
             }
             .padding(Spacing.md)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -267,7 +290,7 @@ private struct ProductOptionRow: View {
             }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("\(tier), \(detail)")
+        .accessibilityLabel(badge.map { "\(tier), \(detail), \($0)" } ?? "\(tier), \(detail)")
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 }
