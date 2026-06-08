@@ -21,7 +21,7 @@ struct PaywallView: View {
 
     /// Apple-hosted standard EULA. Privacy policy URL is set once the policy is hosted.
     private let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
-    private let privacyURL = URL(string: "https://sambulosenda.github.io/subpilot/privacy")!
+    private let privacyURL = URL(string: "https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9")!
 
     private let benefits: [(symbol: String, text: String)] = [
         ("infinity", "Track unlimited subscriptions"),
