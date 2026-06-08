@@ -29,15 +29,14 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 
 - [x] App record created (name "SubPilot"); bundle id `com.sambulosenda.subradar` registered.
 - [x] Distribution certificate + provisioning (Xcode automatic) — first build uploaded.
-- [ ] Screenshots (6.9" + 6.5" iPhone at minimum), description, keywords,
-  promo text, support URL, category, age rating.
-- [ ] **Privacy policy URL** + **App Privacy** answers. Declare:
-  - CloudKit (user subscription data, stored in their iCloud — not "collected"
-    by you, but disclose).
-  - **logo.dev** network call (domain → brand logo) in `BrandLogoStore`
-    (publishable token embedded). Confirm ToS allows shipping; declare the
-    network usage.
-  - No tracking / no ads / no third-party analytics (confirm).
+- [~] Listing copy **drafted** in `STORE_METADATA.md` (name, subtitle, keywords,
+  description, promo, what's-new, category=Finance, age=4+). Still needed:
+  **screenshots** (6.9" + 6.5"), a **support URL** (https), and pasting it in.
+- [~] **Privacy policy drafted** in `PRIVACY_POLICY.md`; **App Privacy = "Data
+  Not Collected"** (verified: no analytics/ads/tracking, no external deps; only
+  outbound calls are CloudKit, img.logo.dev [brand domain], api.frankfurter.app
+  [currency code] — none personal). Still needed: **host the policy** at an
+  https URL and paste it + the answers into App Store Connect.
 - [ ] Sign in with Apple: N/A (no accounts).
 
 ## Pre-submit testing (real device)
