@@ -7,12 +7,14 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 - [x] **CloudKit production schema deployed** (2026-06-08). Promoted
   `CD_Profile` + `CD_Subscription` record types + indexes to Production for
   `iCloud.com.sambulosenda.subradar`. Re-promote whenever the model changes.
-- [ ] **App Group on the distribution App ID.** `group.com.sambulosenda.subradar`
-  must be enabled on `com.sambulosenda.subradar`, `.SubPilotWidget`, and
-  `.ShareExtension` App IDs for the distribution profile (automatic signing
-  handles dev). Needed by the widget + share extension.
-- [ ] **First device/TestFlight build signs cleanly** with the three extension
-  bundle IDs + App Group + CloudKit entitlements provisioned.
+- [x] **App Group on the distribution App ID** — provisioned automatically; the
+  distribution upload (2026-06-08) signed all three App IDs
+  (`com.sambulosenda.subradar`, `.SubPilotWidget`, `.ShareExtension`) with the
+  App Group + CloudKit entitlements.
+- [x] **First device/TestFlight build signs cleanly** — 1.0 (1) uploaded
+  2026-06-08, built with **Xcode 26.2 GA (17C52)**. NOTE: must archive with the
+  GA Xcode, not Xcode-beta (26.4 / 17E5179g) — App Store rejects beta-SDK builds
+  (error 90534).
 
 ## Project / build (done in repo)
 
@@ -25,8 +27,8 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 
 ## App Store Connect
 
-- [ ] App record created; bundle id `com.sambulosenda.subradar` registered.
-- [ ] Distribution certificate + provisioning (or Xcode automatic) for upload.
+- [x] App record created (name "SubPilot"); bundle id `com.sambulosenda.subradar` registered.
+- [x] Distribution certificate + provisioning (Xcode automatic) — first build uploaded.
 - [ ] Screenshots (6.9" + 6.5" iPhone at minimum), description, keywords,
   promo text, support URL, category, age rating.
 - [ ] **Privacy policy URL** + **App Privacy** answers. Declare:
