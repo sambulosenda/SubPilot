@@ -4,10 +4,9 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 
 ## Blockers (must clear before submit)
 
-- [ ] **CloudKit production schema deployed.** App mirrors SwiftData → CloudKit
-  private DB (`iCloud.com.sambulosenda.subradar`). Open CloudKit Console →
-  promote the **Development** schema to **Production** before release, or sync
-  breaks / records fail for real users. Re-promote whenever the model changes.
+- [x] **CloudKit production schema deployed** (2026-06-08). Promoted
+  `CD_Profile` + `CD_Subscription` record types + indexes to Production for
+  `iCloud.com.sambulosenda.subradar`. Re-promote whenever the model changes.
 - [ ] **App Group on the distribution App ID.** `group.com.sambulosenda.subradar`
   must be enabled on `com.sambulosenda.subradar`, `.SubPilotWidget`, and
   `.ShareExtension` App IDs for the distribution profile (automatic signing
