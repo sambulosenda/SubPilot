@@ -101,11 +101,15 @@ final class NotificationManager: NSObject {
                     subscriptionID: sub.id
                 )
             }
+            // Project the stored anchor to the next *future* charge; the anchor is
+            // never advanced once a renewal passes, so reading it raw would schedule
+            // in the past (skipped) and reminders would stop after the first cycle.
+            let nextCharge = sub.projectedNextRenewal()
             schedule(
                 id: "renewal-\(sub.id.uuidString)",
                 title: "\(sub.name) renews soon",
-                body: "\(sub.formattedAmount) will be charged on \(sub.nextRenewalDate.formatted(.dateTime.day().month())).",
-                fireDate: reminderDate(before: sub.nextRenewalDate, leadDays: sub.reminderLeadDays),
+                body: "\(sub.formattedAmount) will be charged on \(nextCharge.formatted(.dateTime.day().month())).",
+                fireDate: reminderDate(before: nextCharge, leadDays: sub.reminderLeadDays),
                 subscriptionID: sub.id
             )
         }

@@ -9,7 +9,7 @@ struct SubscriptionRow: View {
     let subscription: Subscription
 
     private var renewalText: String {
-        subscription.nextRenewalDate.formatted(.dateTime.day().month(.abbreviated))
+        subscription.projectedNextRenewal().formatted(.dateTime.day().month(.abbreviated))
     }
 
     var body: some View {

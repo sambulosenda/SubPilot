@@ -32,7 +32,7 @@ struct SubscriptionDetailView: View {
 
             Section("Renewal") {
                 detailRow("Next renewal",
-                          subscription.nextRenewalDate.formatted(.dateTime.day().month().year()))
+                          subscription.projectedNextRenewal().formatted(.dateTime.day().month().year()))
                 if subscription.isFreeTrial, let end = subscription.trialEndDate {
                     detailRow("Trial ends", end.formatted(.dateTime.day().month().year()))
                 }

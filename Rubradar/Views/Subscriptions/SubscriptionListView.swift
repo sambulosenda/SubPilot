@@ -69,7 +69,7 @@ struct SubscriptionListView: View {
 
     private func sortComparator(_ a: Subscription, _ b: Subscription) -> Bool {
         switch sortOption {
-        case .nextRenewal: a.nextRenewalDate < b.nextRenewalDate
+        case .nextRenewal: a.projectedNextRenewal() < b.projectedNextRenewal()
         case .name: a.name.localizedCaseInsensitiveCompare(b.name) == .orderedAscending
         case .amount: a.monthlyEquivalent > b.monthlyEquivalent
         case .category: a.category.label.localizedCaseInsensitiveCompare(b.category.label) == .orderedAscending

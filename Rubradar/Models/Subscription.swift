@@ -123,6 +123,22 @@ extension Subscription {
         return amount / months
     }
 
+    /// The next renewal — or first post-trial charge — at or after `now`, rolling
+    /// the stored `nextRenewalDate` anchor forward by the billing cycle. The anchor
+    /// is never advanced once a charge passes, so every surface that shows "the next
+    /// renewal" (Home row, detail, sort, reminders) must project from it rather than
+    /// read it raw. Mirrors `RenewalProjector`; a free trial anchors on its end date.
+    func projectedNextRenewal(asOf now: Date = Date(), calendar: Calendar = .current) -> Date {
+        let start = calendar.startOfDay(for: now)
+        var date = (isFreeTrial && trialEndDate != nil) ? trialEndDate! : nextRenewalDate
+        var steps = 0
+        while date < start && steps < 600 {
+            date = billingCycle.nextDate(after: date, customDays: customCycleDays, calendar: calendar)
+            steps += 1
+        }
+        return date
+    }
+
     /// Localised price like "£9.99".
     var formattedAmount: String {
         amount.formatted(.currency(code: currencyCode))
