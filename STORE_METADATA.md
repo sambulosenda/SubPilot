@@ -16,20 +16,38 @@ Apple rejects).
 
 ## Subtitle (30)
 
-Recommended: `Track renewals & spending` (25)
+Recommended: `Renewal reminders & budgeting` (29)
 
-Alternatives:
-- `Never miss a renewal again` (26)
-- `Renewal reminders & budget` (26)
+> Subtitle words ARE indexed. This carries three keywords — renewal, reminder,
+> budget — which are therefore REMOVED from the keyword field below (no point
+> paying for them twice). Earlier draft `Track renewals & spending` wasted reach
+> by repeating `track` (already in the name "Tracker") and `spending`/`renewals`
+> (also in the keyword field).
+
+Alternatives (same de-dup rule applies — keep keyword field in sync):
+- `Bill reminders & budgeting` (26) — swaps renewal→bill in the indexed set
+- `Never miss a renewal again` (26) — benefit-first, weaker keyword coverage
 
 ## Promotional text (170 — editable any time without a new build)
 
 `See every subscription, monthly total, and upcoming renewal at a glance — with
 reminders before each charge so a free trial never turns into a surprise bill.`
 
-## Keywords (100, comma-separated, no spaces — don't repeat words from the name)
+## Keywords (100, comma-separated, no spaces — don't repeat words from the name OR subtitle)
 
-`renewal,recurring,bills,budget,trial,reminder,manage,spending,money,expenses,finance,cancel,track`
+`recurring,bill,trial,manage,spending,money,expense,finance,cancel,due,payment,alert,saver,cost,price`
+
+> 100/100 chars. Changes from the first draft:
+> - Dropped `track` (dupes "Tracker" in the name), `renewal`/`reminder`/`budget`
+>   (now in the subtitle), so none are paid for twice.
+> - Singularised `bills→bill`, `expenses→expense` (Apple indexes both forms;
+>   singular saves characters).
+> - Added 5 high-intent terms: `due, payment, alert, saver, cost, price`.
+> - Apple stems, so `subscription` (name) covers subscriptions; don't re-add it.
+>
+> Caveat: these picks aren't backed by volume/difficulty data yet. Validate with
+> `/keyword-research` before locking. "subscription tracker" (in the name) is
+> hyper-competitive — lean on long-tail terms for early ranking wins.
 
 ## Description
 
@@ -81,9 +99,8 @@ Thanks for trying SubPilot — feedback is welcome at sambulosendas@gmail.com.
 - **Primary category:** Finance
 - **Secondary category:** Productivity (or Utilities)
 - **Age rating:** 4+ (no objectionable content)
-- **Support URL:** _required_ — you must provide one. Easiest options: a simple
-  GitHub Pages / Notion page, or a one-line page with a contact email. A bare
-  `mailto:` is not accepted; it must be an `https://` URL.
+- **Support URL:** `https://sambulosenda.com/` — has a visible contact email
+  (`sambulosendas@gmail.com`) + social links, which satisfies guideline 1.5.
 - **Marketing URL:** optional.
 - **Privacy Policy URL:** _required_ — host `PRIVACY_POLICY.md` and link it
   (see below).

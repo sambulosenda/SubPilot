@@ -29,9 +29,14 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 
 - [x] App record created (name "SubPilot"); bundle id `com.sambulosenda.subradar` registered.
 - [x] Distribution certificate + provisioning (Xcode automatic) — first build uploaded.
+- [x] **In-App Purchase products** created in ASC + IAP capability enabled;
+  Pro products attached to the 1.0 version for review.
+- [x] **Screenshots** captured (6.9" + 6.5") and uploaded.
+- [x] **Support URL:** `https://sambulosenda.com/` (visible contact email +
+  socials — satisfies guideline 1.5).
 - [~] Listing copy **drafted** in `STORE_METADATA.md` (name, subtitle, keywords,
   description, promo, what's-new, category=Finance, age=4+). Still needed:
-  **screenshots** (6.9" + 6.5"), a **support URL** (https), and pasting it in.
+  pasting it into ASC.
 - [~] **Privacy policy drafted** in `PRIVACY_POLICY.md`; **App Privacy = "Data
   Not Collected"** (verified: no analytics/ads/tracking, no external deps; only
   outbound calls are CloudKit, img.logo.dev [brand domain], api.frankfurter.app
@@ -41,15 +46,15 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 
 ## Pre-submit testing (real device)
 
-- [ ] CloudKit sync across two devices signed into the same iCloud.
-- [ ] AI assistant tab on an Apple-Intelligence-capable device (FoundationModels
+- [x] CloudKit sync across two devices signed into the same iCloud.
+- [x] AI assistant tab on an Apple-Intelligence-capable device (FoundationModels
   availability path + the unavailable fallback).
-- [ ] Receipt import: PhotosPicker + Share Extension (share a PDF/image into
+- [x] Receipt import: PhotosPicker + Share Extension (share a PDF/image into
   SubPilot → app drains `ShareInbox` → import review).
-- [ ] Widgets on device: Home (small/medium) + Lock Screen, with real data;
+- [x] Widgets on device: Home (small/medium) + Lock Screen, with real data;
   countdown decrements; updates after adding/editing a subscription.
-- [ ] Notifications: permission primer + a scheduled renewal reminder fires.
-- [ ] Cold launch with no iCloud account (local-only fallback, no crash).
+- [x] Notifications: permission primer + a scheduled renewal reminder fires.
+- [x] Cold launch with no iCloud account (local-only fallback, no crash).
 
 ## Nice-to-have (not blocking)
 
