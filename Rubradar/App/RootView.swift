@@ -9,6 +9,24 @@ import CoreData
 
 enum AppTab: Hashable {
     case subscriptions, calendar, assistant, settings
+
+    /// Tab the shell opens on. Normally Home; overridable in DEBUG via the
+    /// `-StartTab <calendar|assistant|settings>` launch argument so App Store
+    /// screenshots of each tab can be captured by relaunching, no UI taps needed.
+    static var launchSelection: AppTab {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "-StartTab"), i + 1 < args.count {
+            switch args[i + 1] {
+            case "calendar": return .calendar
+            case "assistant": return .assistant
+            case "settings": return .settings
+            default: break
+            }
+        }
+        #endif
+        return .subscriptions
+    }
 }
 
 /// Which add flow to present. `.sharedImport` carries a receipt handed in by the
@@ -44,7 +62,7 @@ struct RootView: View {
     // currency change repaints the widget immediately (see the .onChange below).
     @AppStorage("selectedProfileID") private var selectedProfileID = ""
     @AppStorage("preferredCurrencyCode") private var preferredCurrencyCode = ""
-    @State private var selection: AppTab = .subscriptions
+    @State private var selection: AppTab = .launchSelection
     @State private var presentedSheet: AddSheet?
 
     /// Drives the first-run onboarding cover. Finishing/skipping sets the

@@ -42,6 +42,24 @@ extension ModelContainer {
         }
     }()
 
+    #if DEBUG
+    /// In-memory container seeded with `SampleData`, selected at launch via the
+    /// `-DemoSeed` argument. Used to capture deterministic App Store screenshots
+    /// without touching the user's real CloudKit/on-disk store. Never ships in
+    /// Release (the whole block is compiled out).
+    static let demoSeeded: ModelContainer = {
+        let container = try! ModelContainer(
+            for: Subscription.self, Profile.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+        )
+        // First access happens from the main-actor App body, so this is safe.
+        MainActor.assumeIsolated {
+            SampleData.seed(into: container.mainContext)
+        }
+        return container
+    }()
+    #endif
+
     /// An in-memory container seeded with sample data, for SwiftUI previews.
     /// CloudKit mirroring is disabled so previews/tests never touch the network.
     @MainActor

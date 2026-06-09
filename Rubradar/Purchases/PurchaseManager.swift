@@ -65,6 +65,10 @@ final class PurchaseManager {
     static func preview(isPro: Bool = true) -> PurchaseManager {
         PurchaseManager(previewIsPro: isPro)
     }
+
+    /// Pro-unlocked, StoreKit-free instance injected by `-DemoSeed` screenshot
+    /// runs so Pro-only screens (Assistant) capture their real UI, not the gate.
+    static let demo = PurchaseManager(previewIsPro: true)
 #endif
 
     // MARK: - Products

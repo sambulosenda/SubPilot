@@ -33,7 +33,7 @@ enum SampleData {
             Subscription(
                 name: "Netflix",
                 amount: 17.99,
-                currencyCode: "GBP",
+                currencyCode: "USD",
                 billingCycle: .monthly,
                 nextRenewalDate: days(5),
                 category: .streaming,
@@ -45,7 +45,7 @@ enum SampleData {
             Subscription(
                 name: "Spotify Premium",
                 amount: 11.99,
-                currencyCode: "GBP",
+                currencyCode: "USD",
                 billingCycle: .monthly,
                 nextRenewalDate: days(12),
                 category: .music,
@@ -82,7 +82,7 @@ enum SampleData {
             Subscription(
                 name: "Old Gym Membership",
                 amount: 39.99,
-                currencyCode: "GBP",
+                currencyCode: "USD",
                 billingCycle: .monthly,
                 nextRenewalDate: days(-3),
                 category: .fitness,
@@ -92,7 +92,7 @@ enum SampleData {
             Subscription(
                 name: "Disney+ Annual",
                 amount: 109.90,
-                currencyCode: "EUR",
+                currencyCode: "USD",
                 billingCycle: .yearly,
                 nextRenewalDate: days(120),
                 category: .streaming,
