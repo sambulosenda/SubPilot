@@ -44,6 +44,7 @@ struct SubscriptionListView: View {
     @State private var sortOption: SortOption = .nextRenewal
     @State private var searchText = ""
     @State private var showManageProfiles = false
+    @State private var showInsights = false
     @State private var path: [Subscription] = []
 
     /// Subscriptions in the selected profile ("" = All), before search/cancel
@@ -155,6 +156,9 @@ struct SubscriptionListView: View {
         .navigationDestination(for: Subscription.self) { sub in
             SubscriptionDetailView(subscription: sub)
         }
+        .navigationDestination(isPresented: $showInsights) {
+            InsightsView()
+        }
         .searchable(text: $searchText, prompt: "Search subscriptions")
         .tabBarMinimizeBehavior(.onScrollDown)
         .overlay {
@@ -206,6 +210,9 @@ struct SubscriptionListView: View {
     private var toolbarContent: some ToolbarContent {
         if !subscriptions.isEmpty {
             ToolbarItem(placement: .topBarLeading) { profileMenu }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Insights", systemImage: "chart.pie.fill") { showInsights = true }
+            }
         }
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
