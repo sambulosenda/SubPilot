@@ -18,6 +18,9 @@ struct SettingsView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
 
+    /// All subscriptions, for CSV export (a complete backup, every profile).
+    @Query private var subscriptions: [Subscription]
+
     @AppStorage("preferredCurrencyCode") private var preferredCurrency =
         Locale.current.currency?.identifier ?? "GBP"
     @AppStorage("remindersEnabled") private var remindersEnabled = true
@@ -143,6 +146,20 @@ struct SettingsView: View {
                     Text("Find subscriptions")
                 } footer: {
                     Text("Open Apple's subscription list to see what you pay for through the App Store, then add them here. Apple doesn't let apps import this list automatically.")
+                }
+
+                Section {
+                    ShareLink(
+                        item: SubscriptionCSVExport.make(from: subscriptions),
+                        preview: SharePreview("SubPilot Subscriptions", image: Image(systemName: "tablecells"))
+                    ) {
+                        Label("Export to CSV", systemImage: "square.and.arrow.up")
+                    }
+                    .disabled(subscriptions.isEmpty)
+                } header: {
+                    Text("Data")
+                } footer: {
+                    Text("Export every subscription as a CSV spreadsheet you can open, back up, or move to another app. Your data is always yours.")
                 }
 
                 Section {
