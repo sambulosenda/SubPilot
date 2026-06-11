@@ -55,9 +55,10 @@ final class PurchaseManager {
         Task { await refreshEntitlements() }
     }
 
-#if DEBUG
     /// Preview/test manager with a fixed entitlement and no StoreKit observation —
-    /// never touches the App Store, so previews stay self-contained.
+    /// never touches the App Store, so previews stay self-contained. NOT gated to
+    /// DEBUG: `#Preview` bodies compile into Release archives too, so the factory
+    /// they call must exist in every configuration or `xcodebuild archive` fails.
     init(previewIsPro: Bool) {
         isPro = previewIsPro
     }
@@ -66,6 +67,7 @@ final class PurchaseManager {
         PurchaseManager(previewIsPro: isPro)
     }
 
+#if DEBUG
     /// Pro-unlocked, StoreKit-free instance injected by `-DemoSeed` screenshot
     /// runs so Pro-only screens (Assistant) capture their real UI, not the gate.
     static let demo = PurchaseManager(previewIsPro: true)

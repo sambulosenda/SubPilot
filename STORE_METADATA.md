@@ -78,7 +78,15 @@ No account. No sign-up. No ads or tracking. Your subscriptions stay on your
 device and sync only through your own private iCloud — we can't see them.
 
 Take control of your recurring spending with SubPilot.
+
+Privacy Policy: https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 ```
+
+> **Required by 3.1.2(c)** (App Review rejection, Jun 10 2026, submission
+> 03e22645): apps with auto-renewable subscriptions using Apple's standard
+> EULA must link it in the App Description. Keep these two lines in every
+> future description edit.
 
 ## What's New (4000) — for 1.0
 

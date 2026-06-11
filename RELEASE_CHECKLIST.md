@@ -37,6 +37,12 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 - [~] Listing copy **drafted** in `STORE_METADATA.md` (name, subtitle, keywords,
   description, promo, what's-new, category=Finance, age=4+). Still needed:
   pasting it into ASC.
+- [ ] **3.1.2(c) rejection fix (Jun 10 2026):** description must end with the
+  Privacy Policy + standard-EULA links (now in `STORE_METADATA.md`). Paste the
+  updated description into ASC, add a note in App Review Information → Notes
+  ("Standard Apple EULA linked in App Description; in-app paywall shows title,
+  length, price, privacy + terms links"), attach a paywall screen recording to
+  the App Review reply, then resubmit.
 - [~] **Privacy policy drafted** in `PRIVACY_POLICY.md`; **App Privacy = "Data
   Not Collected"** (verified: no analytics/ads/tracking, no external deps; only
   outbound calls are CloudKit, img.logo.dev [brand domain], api.frankfurter.app

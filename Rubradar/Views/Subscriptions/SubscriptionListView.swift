@@ -44,6 +44,7 @@ struct SubscriptionListView: View {
     @State private var sortOption: SortOption = .nextRenewal
     @State private var searchText = ""
     @State private var showManageProfiles = false
+    @State private var path: [Subscription] = []
 
     /// Subscriptions in the selected profile ("" = All), before search/cancel
     /// filtering. Drives the dashboard totals so they scope to the profile.
@@ -82,7 +83,7 @@ struct SubscriptionListView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             Group {
                 if subscriptions.isEmpty {
                     SubscriptionsEmptyState(
@@ -110,6 +111,19 @@ struct SubscriptionListView: View {
                     selectedProfileID = ""
                 }
             }
+            #if DEBUG
+            // `-StartRoute <name>` pushes the named subscription's detail screen
+            // on launch so screenshots of pushed screens need no UI taps (pairs
+            // with `-DemoSeed`/`-StartTab`).
+            .task {
+                let args = ProcessInfo.processInfo.arguments
+                guard let i = args.firstIndex(of: "-StartRoute"), i + 1 < args.count,
+                      let sub = subscriptions.first(where: {
+                          $0.name.localizedCaseInsensitiveContains(args[i + 1])
+                      }) else { return }
+                path = [sub]
+            }
+            #endif
         }
     }
 
