@@ -78,7 +78,8 @@ private struct MonthHeader: View {
             .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(month.title), \(month.formattedTotal)")
+        // Voice the warning triangle's meaning, not the glyph.
+        .accessibilityLabel("\(month.title), \(month.hasUnconvertible ? "approximately " : "")\(month.formattedTotal)")
     }
 }
 

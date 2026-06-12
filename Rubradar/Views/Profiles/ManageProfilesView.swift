@@ -91,6 +91,8 @@ private struct ProfileRow: View {
                 .foregroundStyle(.white)
                 .frame(width: 32, height: 32)
                 .background(profile.displayTint, in: .circle)
+                // Keep the symbol's auto-derived name out of the combined row label.
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(profile.name)
                 Text("\(profile.activeCount) active")
@@ -203,6 +205,8 @@ struct ProfileEditorView: View {
                 .background(selected ? tint : Color.secondary.opacity(0.15), in: .circle)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(Profile.symbolLabel(for: symbol))
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private func colorButton(_ hex: String) -> some View {
@@ -226,6 +230,8 @@ struct ProfileEditorView: View {
                 }
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(Profile.colorLabel(for: hex))
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private func save() {

@@ -129,6 +129,8 @@ struct ImportView: View {
         Section {
             TextEditor(text: $pastedText)
                 .frame(minHeight: 120)
+                // The faux placeholder overlay below is invisible to VoiceOver.
+                .accessibilityLabel("Receipt or confirmation email text")
                 .overlay(alignment: .topLeading) {
                     if pastedText.isEmpty {
                         Text("Paste a receipt or confirmation email…")

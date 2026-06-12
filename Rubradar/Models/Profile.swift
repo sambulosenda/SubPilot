@@ -61,6 +61,27 @@ extension Profile {
         "30B0A6", "0A84FF", "5E5CE6", "BF5AF2", "FF375F",
         "FF453A", "FF9F0A", "32D74B", "8E8E93"
     ]
+
+    /// VoiceOver names for `symbolChoices` — SF Symbol identifiers aren't speakable.
+    static func symbolLabel(for symbol: String) -> String {
+        [
+            "person.crop.circle.fill": "Person", "briefcase.fill": "Briefcase",
+            "house.fill": "House", "person.2.fill": "Two people",
+            "creditcard.fill": "Credit card", "star.fill": "Star",
+            "heart.fill": "Heart", "gamecontroller.fill": "Game controller",
+            "graduationcap.fill": "Graduation cap", "airplane": "Airplane",
+            "cart.fill": "Shopping cart", "building.2.fill": "Buildings"
+        ][symbol] ?? symbol
+    }
+
+    /// VoiceOver names for `colorChoices` — a bare hex value is meaningless spoken.
+    static func colorLabel(for hex: String) -> String {
+        [
+            "30B0A6": "Teal", "0A84FF": "Blue", "5E5CE6": "Indigo",
+            "BF5AF2": "Purple", "FF375F": "Pink", "FF453A": "Red",
+            "FF9F0A": "Orange", "32D74B": "Green", "8E8E93": "Grey"
+        ][hex] ?? "Custom colour"
+    }
 }
 
 extension Subscription {

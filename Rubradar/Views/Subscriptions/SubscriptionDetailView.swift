@@ -77,6 +77,9 @@ struct SubscriptionDetailView: View {
             Spacer()
         }
         .padding(.vertical, Spacing.sm)
+        // One element so VoiceOver reads "Netflix, Streaming, Free trial" as a
+        // unit instead of three fragments.
+        .accessibilityElement(children: .combine)
     }
 
     private var statusActions: some View {
@@ -118,6 +121,10 @@ struct SubscriptionDetailView: View {
             Spacer()
             Text(value).multilineTextAlignment(.trailing)
         }
+        // Read as "Amount, £9.99 a month" rather than two separate stops.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label)
+        .accessibilityValue(value)
     }
 
     private func delete() {

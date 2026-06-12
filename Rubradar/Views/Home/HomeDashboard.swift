@@ -86,7 +86,8 @@ private struct HeroSpendCard: View {
         .padding(Spacing.lg)
         .background(Color.cardBackground, in: .rect(cornerRadius: Radius.card))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Total monthly \(metrics.summary.formattedMonthly), \(metrics.summary.formattedYearly) per year, from \(metrics.activeCount) subscriptions")
+        // "approximately" voices what the warning triangle shows sighted users.
+        .accessibilityLabel("Total monthly \(metrics.summary.hasUnconvertible ? "approximately " : "")\(metrics.summary.formattedMonthly), \(metrics.summary.formattedYearly) per year, from \(metrics.activeCount) subscriptions")
     }
 }
 

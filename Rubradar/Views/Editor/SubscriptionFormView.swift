@@ -80,6 +80,8 @@ struct SubscriptionFormView: View {
                 Section("Details") {
                     TextField("Name", text: $model.name)
                         .textInputAutocapitalization(.words)
+                        // Placeholder stops being announced once filled.
+                        .accessibilityLabel("Name")
                 }
 
                 if profiles.count > 1 {
@@ -105,10 +107,13 @@ struct SubscriptionFormView: View {
                 Section("Cost") {
                     HStack {
                         Text("Amount")
+                            .accessibilityHidden(true)
                         Spacer()
                         TextField("0.00", value: $model.amount, format: .number.precision(.fractionLength(0...2)))
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
+                            // One stop: "Amount, text field" — not label then field.
+                            .accessibilityLabel("Amount")
                     }
                     Picker("Currency", selection: $model.currencyCode) {
                         ForEach(Self.currencyOptions, id: \.self) { code in
@@ -145,6 +150,7 @@ struct SubscriptionFormView: View {
                 Section("Notes") {
                     TextField("Notes", text: $model.notes, axis: .vertical)
                         .lineLimit(3...6)
+                        .accessibilityLabel("Notes")
                 }
             }
             .navigationTitle(mode.isEditing ? "Edit Subscription" : "New Subscription")
