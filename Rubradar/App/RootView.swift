@@ -6,6 +6,7 @@
 import SwiftUI
 import SwiftData
 import CoreData
+import StoreKit
 
 enum AppTab: Hashable {
     case subscriptions, calendar, assistant, settings
@@ -62,8 +63,12 @@ struct RootView: View {
     // currency change repaints the widget immediately (see the .onChange below).
     @AppStorage("selectedProfileID") private var selectedProfileID = ""
     @AppStorage("preferredCurrencyCode") private var preferredCurrencyCode = ""
+    @Environment(\.requestReview) private var requestReview
     @State private var selection: AppTab = .launchSelection
     @State private var presentedSheet: AddSheet?
+    /// Active-subscription count when an add sheet was presented, so dismissal
+    /// can tell "added something" (rating-prompt moment) from "cancelled".
+    @State private var activeCountBeforeAdd: Int?
     /// Singleton bridge from App Intents (Siri/Shortcuts/Spotlight) — observed
     /// here so an intent's navigation request lands whether the app was cold-
     /// launched or already foregrounded.
@@ -101,7 +106,7 @@ struct RootView: View {
                 SettingsView()
             }
         }
-        .sheet(item: $presentedSheet) { sheet in
+        .sheet(item: $presentedSheet, onDismiss: maybeRequestReview) { sheet in
             switch sheet {
             case .manual:
                 SubscriptionFormView(mode: .create(Subscription()))
@@ -128,6 +133,7 @@ struct RootView: View {
         .task {
             // Guarantee a default profile exists and adopt any pre-profile data.
             ProfileSetup.ensureDefault(in: modelContext)
+            ReviewPrompter.noteLaunch()
             await CurrencyService.shared.refreshIfNeeded()
             WidgetSync.refresh(modelContext: modelContext)
             // Notification permission is requested via the onboarding primer
@@ -195,6 +201,27 @@ struct RootView: View {
         }
     }
 
+    private func activeSubscriptionCount() -> Int {
+        (try? modelContext.fetchCount(
+            FetchDescriptor<Subscription>(predicate: #Predicate { !$0.isCancelled })
+        )) ?? 0
+    }
+
+    /// Asks for a rating right after an add flow actually added something —
+    /// the user just invested in the app. `ReviewPrompter` applies the gates
+    /// (3+ subs, 3+ days installed, 120-day spacing); the short delay lets the
+    /// sheet's dismissal settle before the system alert appears.
+    private func maybeRequestReview() {
+        guard let before = activeCountBeforeAdd else { return }
+        activeCountBeforeAdd = nil
+        let count = activeSubscriptionCount()
+        guard count > before else { return }
+        Task {
+            try? await Task.sleep(for: .seconds(1))
+            ReviewPrompter.maybePrompt(activeCount: count) { requestReview() }
+        }
+    }
+
     /// Routes an add request through the Pro gates before presenting. Receipt
     /// scanning and bank import are Pro-only; manual/catalogue add is capped on
     /// the free tier. Every add entry point funnels through this one closure.
@@ -205,16 +232,14 @@ struct RootView: View {
         case .bankImport:
             guard purchases.isPro else { purchases.paywallContext = .bankImport; return }
         case .manual, .catalogue:
-            let activeCount = (try? modelContext.fetchCount(
-                FetchDescriptor<Subscription>(predicate: #Predicate { !$0.isCancelled })
-            )) ?? 0
-            guard PurchaseGate.canAddSubscription(activeCount: activeCount, isPro: purchases.isPro) else {
+            guard PurchaseGate.canAddSubscription(activeCount: activeSubscriptionCount(), isPro: purchases.isPro) else {
                 purchases.paywallContext = .subscriptionLimit
                 return
             }
         case .sharedImport:
             break // Handed in via the iOS share sheet; presented as-is.
         }
+        activeCountBeforeAdd = activeSubscriptionCount()
         presentedSheet = sheet
     }
 
@@ -223,6 +248,7 @@ struct RootView: View {
     private func checkSharedInbox() {
         guard hasCompletedOnboarding, presentedSheet == nil else { return }
         if let source = SharedInbox.consumeNext() {
+            activeCountBeforeAdd = activeSubscriptionCount()
             presentedSheet = .sharedImport(source)
             return
         }
