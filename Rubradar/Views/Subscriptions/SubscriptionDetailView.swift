@@ -11,6 +11,7 @@ struct SubscriptionDetailView: View {
 
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
 
     @State private var showEdit = false
     @State private var showDeleteConfirm = false
@@ -18,8 +19,14 @@ struct SubscriptionDetailView: View {
 
     var body: some View {
         List {
-            Section { header }
-                .listRowBackground(Color.clear)
+            Section {
+                header
+                if let url = subscription.providerURL {
+                    openProviderButton(url)
+                }
+            }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
 
             Section("Cost") {
                 detailRow("Amount", subscription.formattedAmount)
@@ -80,6 +87,25 @@ struct SubscriptionDetailView: View {
         // One element so VoiceOver reads "Netflix, Streaming, Free trial" as a
         // unit instead of three fragments.
         .accessibilityElement(children: .combine)
+    }
+
+    /// Full-width glass CTA to the provider's site; universal links hand off to
+    /// the provider's app when installed. Explicit HStack — a Label inside a
+    /// full-width glass button mis-centers its content.
+    private func openProviderButton(_ url: URL) -> some View {
+        Button {
+            openURL(url)
+        } label: {
+            HStack(spacing: Spacing.sm) {
+                Image(systemName: "arrow.up.forward.app")
+                Text("Open \(subscription.name)")
+            }
+            .font(.subheadline.weight(.semibold))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, Spacing.xs)
+        }
+        .buttonStyle(.glass)
+        .accessibilityHint("Opens \(url.host() ?? "the provider's website") in the app or browser")
     }
 
     private var statusActions: some View {

@@ -37,6 +37,7 @@ struct SubscriptionListView: View {
     @Query(animation: .default) private var subscriptions: [Subscription]
     @Query(sort: \Profile.sortIndex, animation: .default) private var profiles: [Profile]
     @Environment(CurrencyService.self) private var currency
+    @Environment(\.openURL) private var openURL
     @AppStorage("preferredCurrencyCode") private var preferredCurrency =
         Locale.current.currency?.identifier ?? "GBP"
     /// Selected profile's UUID string; empty means "All Profiles".
@@ -146,6 +147,15 @@ struct SubscriptionListView: View {
                     ForEach(visible) { sub in
                         NavigationLink(value: sub) {
                             SubscriptionRow(subscription: sub)
+                        }
+                        .contextMenu {
+                            if let url = sub.providerURL {
+                                Button {
+                                    openURL(url)
+                                } label: {
+                                    Label("Open \(sub.name)", systemImage: "arrow.up.forward.app")
+                                }
+                            }
                         }
                     }
                 } header: {

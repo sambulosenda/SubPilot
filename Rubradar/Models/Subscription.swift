@@ -27,6 +27,10 @@ final class Subscription {
     var categoryRaw: String = SubscriptionCategory.other.rawValue
     var notes: String = ""
 
+    /// Optional user-entered link to the provider (website or app universal link).
+    /// Defaulted optional so existing stores lightweight-migrate (CloudKit-safe).
+    var linkURL: String?
+
     // State
     var isCancelled: Bool = false
     var isFreeTrial: Bool = false
@@ -60,6 +64,7 @@ final class Subscription {
         nextRenewalDate: Date = Date(),
         category: SubscriptionCategory = .other,
         notes: String = "",
+        linkURL: String? = nil,
         isCancelled: Bool = false,
         isFreeTrial: Bool = false,
         trialEndDate: Date? = nil,
@@ -80,6 +85,7 @@ final class Subscription {
         self.nextRenewalDate = nextRenewalDate
         self.categoryRaw = category.rawValue
         self.notes = notes
+        self.linkURL = linkURL
         self.isCancelled = isCancelled
         self.isFreeTrial = isFreeTrial
         self.trialEndDate = trialEndDate
@@ -137,6 +143,20 @@ extension Subscription {
             steps += 1
         }
         return date
+    }
+
+    /// URL to open the provider's site (or app, via universal links): the explicit
+    /// user link first, falling back to the catalogue brand domain. A bare host
+    /// like "netflix.com" is promoted to https so it always opens.
+    var providerURL: URL? {
+        let raw = (linkURL ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if !raw.isEmpty {
+            return URL(string: raw.contains("://") ? raw : "https://\(raw)")
+        }
+        if let domain = brandDomain?.trimmingCharacters(in: .whitespacesAndNewlines), !domain.isEmpty {
+            return URL(string: "https://\(domain)")
+        }
+        return nil
     }
 
     /// Localised price like "£9.99".

@@ -77,11 +77,21 @@ struct SubscriptionFormView: View {
                     }
                 }
 
-                Section("Details") {
+                Section {
                     TextField("Name", text: $model.name)
                         .textInputAutocapitalization(.words)
                         // Placeholder stops being announced once filled.
                         .accessibilityLabel("Name")
+                    TextField("Website (optional)", text: $model.linkURL)
+                        .keyboardType(.URL)
+                        .textContentType(.URL)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .accessibilityLabel("Website")
+                } header: {
+                    Text("Details")
+                } footer: {
+                    Text("Used by “Open website” on the subscription. Known services open their site automatically even without a link.")
                 }
 
                 if profiles.count > 1 {
