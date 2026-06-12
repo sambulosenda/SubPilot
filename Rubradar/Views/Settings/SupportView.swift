@@ -26,6 +26,14 @@ struct SupportView: View {
                     Label("Email support", systemImage: "envelope.fill")
                 }
                 Button {
+                    // Opens the public Featurebase board in the browser — kept
+                    // out of an embedded webview so no third-party code runs in
+                    // the app and the privacy story stays intact.
+                    openURL(SupportContact.featureBoardURL)
+                } label: {
+                    Label("Request a feature", systemImage: "lightbulb.fill")
+                }
+                Button {
                     requestReview()
                 } label: {
                     Label("Rate SubPilot", systemImage: "star.fill")
@@ -33,7 +41,7 @@ struct SupportView: View {
             } header: {
                 Text("Get in touch")
             } footer: {
-                Text("Found a bug, stuck on something, or want a service added to the catalogue? Email us — your app version and device are attached automatically so we can help faster.")
+                Text("Found a bug, stuck on something, or want a service added to the catalogue? Email us — your app version and device are attached automatically so we can help faster. Got an idea? Post it on the feature board and vote on others.")
             }
 
             Section("Frequently asked") {
@@ -70,6 +78,10 @@ struct SupportView: View {
 /// the user types their message at the top and we still receive version/device.
 enum SupportContact {
     static let address = "sambulosendas@gmail.com"
+
+    /// Public feature-request board (Featurebase). Update here if a custom
+    /// domain like feedback.subpilotapp.com is connected later.
+    static let featureBoardURL = URL(string: "https://subpilot.featurebase.app")!
 
     static func mailtoURL() -> URL? {
         let device = UIDevice.current
