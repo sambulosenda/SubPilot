@@ -101,8 +101,31 @@ extension WidgetSnapshot {
     }
 }
 
-/// Deep links the widget hands to the app via `widgetURL`. The widget owns the
-/// containing app, so the system delivers these straight to the app's
+/// All profiles' snapshots, so the widget can switch profile in place without
+/// touching SwiftData. The first slice is always "All Profiles" (id "").
+struct WidgetSnapshotSet: Codable {
+    struct Slice: Codable, Identifiable {
+        /// Profile UUID string, or "" for All Profiles.
+        var id: String
+        /// Display name; nil for All Profiles.
+        var name: String?
+        var snapshot: WidgetSnapshot
+    }
+
+    var slices: [Slice]
+    /// The profile selected in the app — what Siri answers and what the widget
+    /// shows unless the user has cycled it locally.
+    var appSelectedID: String
+
+    /// Slice for `id`, falling back to the app's selection, then the first.
+    func slice(for id: String?) -> Slice? {
+        if let id, let match = slices.first(where: { $0.id == id }) { return match }
+        return slices.first { $0.id == appSelectedID } ?? slices.first
+    }
+}
+
+/// Deep links the widget hands to the app via `widgetURL`/`Link`. The widget
+/// owns the containing app, so the system delivers these straight to the app's
 /// `onOpenURL` — no `CFBundleURLTypes` registration needed.
 enum WidgetDeepLink {
     static let scheme = "subpilot"
@@ -110,4 +133,6 @@ enum WidgetDeepLink {
     static let renewals = URL(string: "\(scheme)://renewals")!
     /// Opens the subscriptions home.
     static let home = URL(string: "\(scheme)://home")!
+    /// Opens the add-subscription flow.
+    static let add = URL(string: "\(scheme)://add")!
 }

@@ -11,6 +11,7 @@
 //  also have this target ticked in their File Inspector.
 //
 
+import AppIntents
 import WidgetKit
 import SwiftUI
 
@@ -19,20 +20,36 @@ import SwiftUI
 struct NextRenewalEntry: TimelineEntry {
     let date: Date
     let snapshot: WidgetSnapshot
+    /// More than one profile snapshot is available, so the medium widget offers
+    /// the in-place profile switch button.
+    var canCycleProfiles: Bool = false
 }
 
 struct NextRenewalProvider: TimelineProvider {
+    /// Snapshot for the widget's own profile choice (falls back to the app's).
+    private func resolved() -> (snapshot: WidgetSnapshot, canCycle: Bool) {
+        guard let set = WidgetSnapshotStore.readSet(),
+              let slice = set.slice(for: WidgetSnapshotStore.widgetProfileID) else {
+            return (.empty, false)
+        }
+        return (slice.snapshot, set.slices.count > 1)
+    }
+
     func placeholder(in context: Context) -> NextRenewalEntry {
         NextRenewalEntry(date: Date(), snapshot: .placeholder)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (NextRenewalEntry) -> Void) {
-        let snapshot = context.isPreview ? .placeholder : (WidgetSnapshotStore.read() ?? .empty)
-        completion(NextRenewalEntry(date: Date(), snapshot: snapshot))
+        if context.isPreview {
+            completion(NextRenewalEntry(date: Date(), snapshot: .placeholder))
+        } else {
+            let (snapshot, canCycle) = resolved()
+            completion(NextRenewalEntry(date: Date(), snapshot: snapshot, canCycleProfiles: canCycle))
+        }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<NextRenewalEntry>) -> Void) {
-        let snapshot = WidgetSnapshotStore.read() ?? .empty
+        let (snapshot, canCycle) = resolved()
         let calendar = Calendar.current
         let startOfToday = calendar.startOfDay(for: Date())
 
@@ -41,7 +58,7 @@ struct NextRenewalProvider: TimelineProvider {
         var entries: [NextRenewalEntry] = []
         for offset in 0..<14 {
             guard let day = calendar.date(byAdding: .day, value: offset, to: startOfToday) else { continue }
-            entries.append(NextRenewalEntry(date: day, snapshot: snapshot))
+            entries.append(NextRenewalEntry(date: day, snapshot: snapshot, canCycleProfiles: canCycle))
         }
         completion(Timeline(entries: entries, policy: .atEnd))
     }
@@ -124,7 +141,9 @@ struct NextRenewalView: View {
 
     private var mediumView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .firstTextBaseline) {
+            // Controls centre against the two-line total block; baseline
+            // alignment would hoist the icons into the corner.
+            HStack(alignment: .center, spacing: 8) {
                 VStack(alignment: .leading, spacing: 1) {
                     sectionLabel("Monthly total")
                     Text(entry.snapshot.formattedMonthlyTotal)
@@ -133,8 +152,26 @@ struct NextRenewalView: View {
                         .lineLimit(1)
                 }
                 .accessibilityElement(children: .combine)
-                Spacer()
-                if let profile = entry.snapshot.profileName {
+                Spacer(minLength: 8)
+                if entry.canCycleProfiles {
+                    // In-place profile switch — runs in the widget process.
+                    Button(intent: CycleWidgetProfileIntent()) {
+                        HStack(spacing: 3) {
+                            Text(entry.snapshot.profileName ?? "All")
+                                .lineLimit(1)
+                            Image(systemName: "arrow.2.squarepath")
+                                .imageScale(.small)
+                                .accessibilityHidden(true)
+                        }
+                        .font(.caption2.weight(.medium))
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(.quaternary, in: Capsule())
+                        .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Profile: \(entry.snapshot.profileName ?? "All Profiles"). Switches profile.")
+                } else if let profile = entry.snapshot.profileName {
                     Text(profile)
                         .font(.caption2.weight(.medium))
                         .padding(.horizontal, 7)
@@ -142,6 +179,13 @@ struct NextRenewalView: View {
                         .background(.quaternary, in: Capsule())
                         .foregroundStyle(.secondary)
                 }
+                Link(destination: WidgetDeepLink.add) {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title2)
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundStyle(.secondary)
+                }
+                .accessibilityLabel("Add subscription")
             }
 
             Divider()
@@ -157,6 +201,8 @@ struct NextRenewalView: View {
         }
     }
 
+    /// Single line per event — a stacked amount/date trailing block makes three
+    /// rows taller than the medium widget and they collide.
     private func row(_ event: WidgetSnapshot.Event) -> some View {
         HStack(spacing: 8) {
             Image(systemName: event.symbolName)
@@ -167,14 +213,16 @@ struct NextRenewalView: View {
             Text(event.name)
                 .font(.subheadline.weight(.medium))
                 .lineLimit(1)
-            Spacer(minLength: 6)
-            VStack(alignment: .trailing, spacing: 0) {
-                Text(event.formattedAmount)
-                    .font(.subheadline.weight(.semibold))
-                Text(timingLabel(event))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
+            Spacer(minLength: 8)
+            Text(timingLabel(event))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .layoutPriority(1)
+            Text(event.formattedAmount)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .layoutPriority(1)
         }
         .accessibilityElement(children: .combine)
     }
@@ -316,4 +364,11 @@ private extension Color {
 } timeline: {
     NextRenewalEntry(date: .now, snapshot: .placeholder)
     NextRenewalEntry(date: .now, snapshot: .empty)
+}
+
+#Preview(as: .systemMedium) {
+    NextRenewalWidget()
+} timeline: {
+    NextRenewalEntry(date: .now, snapshot: .placeholder, canCycleProfiles: true)
+    NextRenewalEntry(date: .now, snapshot: .placeholder)
 }

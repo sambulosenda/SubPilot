@@ -18,29 +18,59 @@ enum WidgetSync {
     /// own (counting down day by day) before the app next writes a snapshot.
     private static let upcomingLimit = 5
 
-    /// Recomputes the snapshot for the currently selected profile and reloads the
-    /// widget timelines. Cheap; safe to call on launch, on background, and on
-    /// CloudKit imports.
+    /// Recomputes one snapshot per profile (plus All Profiles) and reloads the
+    /// widget timelines. The per-profile set is what lets the widget's profile
+    /// button switch scope in place. Cheap; safe to call on launch, on
+    /// background, and on CloudKit imports.
     static func refresh(modelContext: ModelContext) {
         let subscriptions = (try? modelContext.fetch(FetchDescriptor<Subscription>())) ?? []
+        let profiles = (try? modelContext.fetch(
+            FetchDescriptor<Profile>(sortBy: [SortDescriptor(\.sortIndex)])
+        )) ?? []
 
         // Same defaults keys the views read via @AppStorage.
         let selectedProfileID = UserDefaults.standard.string(forKey: "selectedProfileID") ?? ""
         let preferred = UserDefaults.standard.string(forKey: "preferredCurrencyCode")
             ?? Locale.current.currency?.identifier ?? "GBP"
-
-        let scoped = subscriptions.filter { $0.belongsToProfile(id: selectedProfileID) }
         let rates = CurrencyService.shared.rates
+
+        var slices = [WidgetSnapshotSet.Slice(
+            id: "",
+            name: nil,
+            snapshot: snapshot(for: "", from: subscriptions, profileName: nil,
+                               preferred: preferred, rates: rates)
+        )]
+        // A lone profile renders identically to All Profiles — skip the slices
+        // so the widget doesn't offer a no-op cycle button.
+        if profiles.count > 1 {
+            slices += profiles.map { profile in
+                let id = profile.id.uuidString
+                return WidgetSnapshotSet.Slice(
+                    id: id,
+                    name: profile.name,
+                    snapshot: snapshot(for: id, from: subscriptions, profileName: profile.name,
+                                       preferred: preferred, rates: rates)
+                )
+            }
+        }
+
+        WidgetSnapshotStore.write(WidgetSnapshotSet(slices: slices, appSelectedID: selectedProfileID))
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    /// One profile's snapshot, via the exact summary/projection the app renders.
+    private static func snapshot(
+        for profileID: String,
+        from subscriptions: [Subscription],
+        profileName: String?,
+        preferred: String,
+        rates: ExchangeRates
+    ) -> WidgetSnapshot {
+        let scoped = subscriptions.filter { $0.belongsToProfile(id: profileID) }
         let summary = SpendSummary.make(from: scoped, preferred: preferred, rates: rates)
         let events = RenewalProjector.events(for: scoped).prefix(upcomingLimit)
 
-        let profileName: String? = {
-            guard !selectedProfileID.isEmpty else { return nil }
-            let profiles = (try? modelContext.fetch(FetchDescriptor<Profile>())) ?? []
-            return profiles.first { $0.id.uuidString == selectedProfileID }?.name
-        }()
-
-        let snapshot = WidgetSnapshot(
+        return WidgetSnapshot(
             currencyCode: preferred,
             monthlyTotal: summary.monthlyTotal,
             activeCount: scoped.filter { !$0.isCancelled }.count,
@@ -62,8 +92,5 @@ enum WidgetSync {
             },
             generatedAt: Date()
         )
-
-        WidgetSnapshotStore.write(snapshot)
-        WidgetCenter.shared.reloadAllTimelines()
     }
 }

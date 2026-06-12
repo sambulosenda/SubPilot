@@ -14,5 +14,6 @@ import SwiftUI
 struct SubPilotWidgetBundle: WidgetBundle {
     var body: some Widget {
         NextRenewalWidget()
+        AddSubscriptionControl()
     }
 }

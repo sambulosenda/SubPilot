@@ -33,16 +33,51 @@ enum WidgetSnapshotStore {
         return decoder
     }
 
-    /// Persists the snapshot atomically. No-ops if the App Group isn't readable
-    /// (e.g. the capability hasn't been provisioned yet) so callers never crash.
-    static func write(_ snapshot: WidgetSnapshot) {
-        guard let url = fileURL, let data = try? encoder.encode(snapshot) else { return }
+    /// Persists the full per-profile set atomically. No-ops if the App Group
+    /// isn't readable (e.g. capability not provisioned) so callers never crash.
+    static func write(_ set: WidgetSnapshotSet) {
+        guard let url = fileURL, let data = try? encoder.encode(set) else { return }
         try? data.write(to: url, options: .atomic)
     }
 
-    /// Returns the last snapshot the app wrote, or nil if none/unreadable.
-    static func read() -> WidgetSnapshot? {
+    /// Returns the last set the app wrote. Falls back to decoding the pre-1.2
+    /// single-snapshot format (widget may run before the updated app does) by
+    /// wrapping it as a lone "All Profiles" slice.
+    static func readSet() -> WidgetSnapshotSet? {
         guard let url = fileURL, let data = try? Data(contentsOf: url) else { return nil }
-        return try? decoder.decode(WidgetSnapshot.self, from: data)
+        if let set = try? decoder.decode(WidgetSnapshotSet.self, from: data) { return set }
+        guard let legacy = try? decoder.decode(WidgetSnapshot.self, from: data) else { return nil }
+        return WidgetSnapshotSet(
+            slices: [.init(id: "", name: legacy.profileName, snapshot: legacy)],
+            appSelectedID: ""
+        )
+    }
+
+    /// Snapshot for the profile selected in the app — what Siri/Shortcuts answer.
+    static func read() -> WidgetSnapshot? {
+        readSet()?.slice(for: nil)?.snapshot
+    }
+
+    /// Widget-local profile override set by the cycle button. nil = follow the
+    /// app's selection. Lives in App Group defaults, not the snapshot file, so
+    /// the app rewriting snapshots never resets the user's widget choice.
+    static var widgetProfileID: String? {
+        get { UserDefaults(suiteName: appGroupID)?.string(forKey: "widgetProfileID") }
+        set { UserDefaults(suiteName: appGroupID)?.set(newValue, forKey: "widgetProfileID") }
+    }
+
+    /// Raised by the Control Center button (which runs in the widget process and
+    /// can only open the app, not navigate it); the app consumes it on foreground
+    /// and presents the add flow. Same handoff idiom as `SharedInbox`.
+    static func requestAdd() {
+        UserDefaults(suiteName: appGroupID)?.set(true, forKey: "pendingAddRequest")
+    }
+
+    /// Returns whether an add was requested, clearing the flag.
+    static func consumeAddRequest() -> Bool {
+        guard let defaults = UserDefaults(suiteName: appGroupID),
+              defaults.bool(forKey: "pendingAddRequest") else { return false }
+        defaults.removeObject(forKey: "pendingAddRequest")
+        return true
     }
 }

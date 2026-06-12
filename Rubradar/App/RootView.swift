@@ -64,6 +64,10 @@ struct RootView: View {
     @AppStorage("preferredCurrencyCode") private var preferredCurrencyCode = ""
     @State private var selection: AppTab = .launchSelection
     @State private var presentedSheet: AddSheet?
+    /// Singleton bridge from App Intents (Siri/Shortcuts/Spotlight) — observed
+    /// here so an intent's navigation request lands whether the app was cold-
+    /// launched or already foregrounded.
+    private var router = AppRouter.shared
 
     /// Drives the first-run onboarding cover. Finishing/skipping sets the
     /// stored flag, which flips this to `false` and dismisses. The setter also
@@ -146,12 +150,30 @@ struct RootView: View {
             WidgetSync.refresh(modelContext: modelContext)
         }
         .onOpenURL { url in
-            // Deep links from the widget (subpilot://renewals | subpilot://home).
+            // Deep links from the widget (subpilot://renewals | home | add).
             guard url.scheme == WidgetDeepLink.scheme else { return }
             switch url.host {
             case "renewals": selection = .calendar
             case "home": selection = .subscriptions
+            case "add":
+                selection = .subscriptions
+                requestAdd(.manual)
             default: break
+            }
+        }
+        // initial: true catches a cold launch where the intent ran before the
+        // shell's first body evaluation.
+        .onChange(of: router.pendingAction, initial: true) { _, action in
+            guard let action else { return }
+            router.pendingAction = nil
+            // Don't fight the first-run cover; onboarding wins.
+            guard hasCompletedOnboarding else { return }
+            switch action {
+            case .addSubscription:
+                selection = .subscriptions
+                requestAdd(.manual)
+            case .showRenewals:
+                selection = .calendar
             }
         }
         .task {
@@ -202,6 +224,13 @@ struct RootView: View {
         guard hasCompletedOnboarding, presentedSheet == nil else { return }
         if let source = SharedInbox.consumeNext() {
             presentedSheet = .sharedImport(source)
+            return
+        }
+        // Control Center "Add Subscription" — its intent runs in the widget
+        // process and can only raise this App Group flag before opening us.
+        if WidgetSnapshotStore.consumeAddRequest() {
+            selection = .subscriptions
+            requestAdd(.manual)
         }
     }
 }
