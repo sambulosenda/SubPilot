@@ -77,7 +77,7 @@ private struct HeroSpendCard: View {
                 }
             }
 
-            Text("From \(metrics.activeCount) subscription\(metrics.activeCount == 1 ? "" : "s")")
+            Text("From \(metrics.activeCount) subscriptions")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .padding(.top, Spacing.xs)
@@ -97,7 +97,7 @@ private struct HeroSpendCard: View {
 private struct StatCard: View {
     let icon: String
     let value: String
-    let caption: String
+    let caption: LocalizedStringKey
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xs) {

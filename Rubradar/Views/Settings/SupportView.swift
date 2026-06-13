@@ -128,24 +128,24 @@ struct SupportFAQItem: Identifiable {
 enum SupportFAQ {
     static let items: [SupportFAQItem] = [
         SupportFAQItem(
-            question: "How do renewal reminders work?",
-            answer: "SubPilot schedules a local notification at 9 AM, a set number of days before each renewal or free-trial conversion. Set the default timing in Settings → Reminders, or override it per subscription when editing one."
+            question: String(localized: "How do renewal reminders work?"),
+            answer: String(localized: "SubPilot schedules a local notification at 9 AM, a set number of days before each renewal or free-trial conversion. Set the default timing in Settings → Reminders, or override it per subscription when editing one.")
         ),
         SupportFAQItem(
-            question: "Where is my data stored?",
-            answer: "On your device. If you're signed into iCloud it also syncs and backs up privately across your own devices — there's no account and nothing is sent to us."
+            question: String(localized: "Where is my data stored?"),
+            answer: String(localized: "On your device. If you're signed into iCloud it also syncs and backs up privately across your own devices — there's no account and nothing is sent to us.")
         ),
         SupportFAQItem(
-            question: "What's the fastest way to add a subscription?",
-            answer: "Tap + on Home and pick from the catalogue of popular services, or scan a receipt — SubPilot reads it on your device and fills in the details for you."
+            question: String(localized: "What's the fastest way to add a subscription?"),
+            answer: String(localized: "Tap + on Home and pick from the catalogue of popular services, or scan a receipt — SubPilot reads it on your device and fills in the details for you.")
         ),
         SupportFAQItem(
-            question: "Can I track services billed in other currencies?",
-            answer: "Yes. Each subscription keeps its own currency, and your monthly and yearly totals convert to your preferred currency using daily exchange rates. Choose your preferred currency in Settings."
+            question: String(localized: "Can I track services billed in other currencies?"),
+            answer: String(localized: "Yes. Each subscription keeps its own currency, and your monthly and yearly totals convert to your preferred currency using daily exchange rates. Choose your preferred currency in Settings.")
         ),
         SupportFAQItem(
-            question: "My reminder didn't show up — why?",
-            answer: "Check that reminders are enabled in Settings → Reminders, and that notifications are allowed for SubPilot in iOS Settings. Reminders only fire for future renewals."
+            question: String(localized: "My reminder didn't show up — why?"),
+            answer: String(localized: "Check that reminders are enabled in Settings → Reminders, and that notifications are allowed for SubPilot in iOS Settings. Reminders only fire for future renewals.")
         ),
     ]
 }

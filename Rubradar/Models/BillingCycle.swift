@@ -16,20 +16,20 @@ enum BillingCycle: String, CaseIterable, Identifiable, Codable {
 
     var label: String {
         switch self {
-        case .weekly: "Weekly"
-        case .monthly: "Monthly"
-        case .yearly: "Yearly"
-        case .custom: "Custom"
+        case .weekly: String(localized: "Weekly")
+        case .monthly: String(localized: "Monthly")
+        case .yearly: String(localized: "Yearly")
+        case .custom: String(localized: "Custom")
         }
     }
 
     /// Short form for compact price labels, e.g. "£9.99 / mo".
     var shortLabel: String {
         switch self {
-        case .weekly: "wk"
-        case .monthly: "mo"
-        case .yearly: "yr"
-        case .custom: "cycle"
+        case .weekly: String(localized: "wk", comment: "Compact billing cycle: week")
+        case .monthly: String(localized: "mo", comment: "Compact billing cycle: month")
+        case .yearly: String(localized: "yr", comment: "Compact billing cycle: year")
+        case .custom: String(localized: "cycle", comment: "Compact billing cycle: custom")
         }
     }
 

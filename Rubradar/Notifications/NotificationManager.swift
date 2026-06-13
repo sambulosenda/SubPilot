@@ -13,11 +13,11 @@ import UserNotifications
 enum ReminderLead {
     /// `(label, days)` pairs in display order.
     static let options: [(label: String, days: Int)] = [
-        ("On the day", 0),
-        ("1 day before", 1),
-        ("2 days before", 2),
-        ("3 days before", 3),
-        ("1 week before", 7),
+        (String(localized: "On the day"), 0),
+        (String(localized: "1 day before"), 1),
+        (String(localized: "2 days before"), 2),
+        (String(localized: "3 days before"), 3),
+        (String(localized: "1 week before"), 7),
     ]
 
     /// Default lead for a brand-new subscription when the user hasn't set one.

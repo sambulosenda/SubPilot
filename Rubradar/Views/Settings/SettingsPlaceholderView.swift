@@ -247,12 +247,12 @@ struct SettingsView: View {
 
     private var iCloudStatusText: String {
         switch iCloudStatus {
-        case .available: "On"
-        case .noAccount: "Not signed in"
-        case .restricted: "Restricted"
-        case .temporarilyUnavailable: "Unavailable"
-        case .couldNotDetermine: "Checking…"
-        @unknown default: "Unavailable"
+        case .available: String(localized: "On", comment: "iCloud sync status")
+        case .noAccount: String(localized: "Not signed in")
+        case .restricted: String(localized: "Restricted")
+        case .temporarilyUnavailable: String(localized: "Unavailable")
+        case .couldNotDetermine: String(localized: "Checking…")
+        @unknown default: String(localized: "Unavailable")
         }
     }
 

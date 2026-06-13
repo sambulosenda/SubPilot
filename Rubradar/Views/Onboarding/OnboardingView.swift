@@ -65,29 +65,29 @@ struct OnboardingView: View {
             OnboardingPage(
                 symbol: "rectangle.stack.badge.plus",
                 tint: .accentColor,
-                title: "Track every subscription",
-                message: "Keep all your recurring payments in one place and always know what's coming out next."
+                title: String(localized: "Track every subscription"),
+                message: String(localized: "Keep all your recurring payments in one place and always know what's coming out next.")
             )
         case .privacy:
             OnboardingPage(
                 symbol: "lock.shield.fill",
                 tint: .green,
-                title: "Private by default",
-                message: "Your subscriptions stay on your device. No account, no sign-up, and no sharing your bank."
+                title: String(localized: "Private by default"),
+                message: String(localized: "Your subscriptions stay on your device. No account, no sign-up, and no sharing your bank.")
             )
         case .add:
             OnboardingPage(
                 symbol: "doc.viewfinder",
                 tint: .blue,
-                title: "Add in seconds",
-                message: "Pick from the catalogue or scan a receipt — we read it on your device and fill in the details."
+                title: String(localized: "Add in seconds"),
+                message: String(localized: "Pick from the catalogue or scan a receipt — we read it on your device and fill in the details.")
             )
         case .reminders:
             OnboardingPage(
                 symbol: "bell.badge.fill",
                 tint: .orange,
-                title: "Never miss a renewal",
-                message: "Get a reminder before each renewal or free-trial conversion, so you can cancel in time."
+                title: String(localized: "Never miss a renewal"),
+                message: String(localized: "Get a reminder before each renewal or free-trial conversion, so you can cancel in time.")
             )
         }
     }

@@ -138,7 +138,7 @@ struct BankImportView: View {
         }
     }
 
-    private func primaryButton(_ title: String, action: @escaping () -> Void) -> some View {
+    private func primaryButton(_ title: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title).frame(maxWidth: .infinity)
         }

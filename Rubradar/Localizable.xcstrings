@@ -1,0 +1,3062 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ / month": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ / Monat"
+          }
+        }
+      }
+    },
+    "%@ / year": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ / Jahr"
+          }
+        }
+      }
+    },
+    "%@ renews %@ — %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ verlängert sich %@ — %@."
+          }
+        }
+      }
+    },
+    "%@ · pay once": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · einmalig"
+          }
+        }
+      }
+    },
+    "%@'s free trial ends %@ — %@ after that.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Testphase von %@ endet %@ — danach %@."
+          }
+        }
+      }
+    },
+    "%@, %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, %@"
+          }
+        }
+      }
+    },
+    "%@, %@%@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, %@%@"
+          }
+        }
+      }
+    },
+    "%@, %@, %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, %@, %@"
+          }
+        }
+      }
+    },
+    "%@, %@, %@ of spend": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, %@, %@ Ausgaben"
+          }
+        }
+      }
+    },
+    "%@: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: %@"
+          }
+        }
+      }
+    },
+    "%lld active": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld aktiv"
+          }
+        }
+      }
+    },
+    "%lld days": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Tage"
+          }
+        }
+      }
+    },
+    "0.00": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0.00"
+          }
+        }
+      }
+    },
+    "1 day before": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 Tag vorher"
+          }
+        }
+      }
+    },
+    "1 week before": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 Woche vorher"
+          }
+        }
+      }
+    },
+    "2 days before": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 Tage vorher"
+          }
+        }
+      }
+    },
+    "3 days before": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3 Tage vorher"
+          }
+        }
+      }
+    },
+    "7 days free, then %@ / year": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "7 Tage gratis, danach %@ / Jahr"
+          }
+        }
+      }
+    },
+    "A glass card": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eine Glaskarte"
+          }
+        }
+      }
+    },
+    "Active": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiv"
+          }
+        }
+      }
+    },
+    "Add %lld subscriptions": {
+      "localizations": {
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Abo hinzufügen"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Abos hinzufügen"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Add %lld subscription"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Add %lld subscriptions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Add Profile": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profil hinzufügen"
+          }
+        }
+      }
+    },
+    "Add Subscription": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abo hinzufügen"
+          }
+        }
+      }
+    },
+    "Add a Subscription": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abo hinzufügen"
+          }
+        }
+      }
+    },
+    "Add a subscription to see when it renews.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge ein Abo hinzu, um zu sehen, wann es sich verlängert."
+          }
+        }
+      }
+    },
+    "Add an active subscription to see where your money goes each month.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge ein aktives Abo hinzu, um zu sehen, wohin dein Geld jeden Monat fließt."
+          }
+        }
+      }
+    },
+    "Add in seconds": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Sekunden hinzufügen"
+          }
+        }
+      }
+    },
+    "Add manually": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manuell hinzufügen"
+          }
+        }
+      }
+    },
+    "Add subscription": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abo hinzufügen"
+          }
+        }
+      }
+    },
+    "Add subscriptions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abos hinzufügen"
+          }
+        }
+      }
+    },
+    "All Profiles": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Profile"
+          }
+        }
+      }
+    },
+    "Already tracked": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereits erfasst"
+          }
+        }
+      }
+    },
+    "Amount": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Betrag"
+          }
+        }
+      }
+    },
+    "Annual": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jährlich"
+          }
+        }
+      }
+    },
+    "App Store Subscriptions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App-Store-Abos"
+          }
+        }
+      }
+    },
+    "Ask a question…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stell eine Frage …"
+          }
+        }
+      }
+    },
+    "Ask about your spending and renewals — answered privately on your device.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frag nach deinen Ausgaben und Verlängerungen — vertraulich auf deinem Gerät beantwortet."
+          }
+        }
+      }
+    },
+    "Ask about your spending and renewals, answered privately on device, with Pro.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frag mit Pro nach deinen Ausgaben und Verlängerungen — vertraulich auf dem Gerät beantwortet."
+          }
+        }
+      }
+    },
+    "Ask about your subscriptions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frag zu deinen Abos"
+          }
+        }
+      }
+    },
+    "Ask the on-device assistant": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frag den Assistenten auf dem Gerät"
+          }
+        }
+      }
+    },
+    "Assistant": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assistent"
+          }
+        }
+      }
+    },
+    "Assistant is a Pro feature": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Assistent ist eine Pro-Funktion"
+          }
+        }
+      }
+    },
+    "Bank statement": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontoauszug"
+          }
+        }
+      }
+    },
+    "Billing": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrechnung"
+          }
+        }
+      }
+    },
+    "Billing cycle": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrechnungszeitraum"
+          }
+        }
+      }
+    },
+    "Browse catalogue": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Katalog durchsuchen"
+          }
+        }
+      }
+    },
+    "Calendar": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalender"
+          }
+        }
+      }
+    },
+    "Can I track services billed in other currencies?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kann ich Dienste in anderen Währungen erfassen?"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abbrechen"
+          }
+        }
+      }
+    },
+    "Cancel anytime in the App Store.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jederzeit im App Store kündbar."
+          }
+        }
+      }
+    },
+    "Cancelled": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gekündigt"
+          }
+        }
+      }
+    },
+    "Catalogue": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Katalog"
+          }
+        }
+      }
+    },
+    "Category": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kategorie"
+          }
+        }
+      }
+    },
+    "Charges": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abbuchungen"
+          }
+        }
+      }
+    },
+    "Check that reminders are enabled in Settings → Reminders, and that notifications are allowed for SubPilot in iOS Settings. Reminders only fire for future renewals.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prüfe, ob Erinnerungen unter Einstellungen → Erinnerungen aktiviert sind und ob Mitteilungen für SubPilot in den iOS-Einstellungen erlaubt sind. Erinnerungen werden nur für zukünftige Verlängerungen ausgelöst."
+          }
+        }
+      }
+    },
+    "Checking…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird geprüft …"
+          }
+        }
+      }
+    },
+    "Choose CSV file": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CSV-Datei auswählen"
+          }
+        }
+      }
+    },
+    "Choose a PDF": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PDF auswählen"
+          }
+        }
+      }
+    },
+    "Choose a photo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto auswählen"
+          }
+        }
+      }
+    },
+    "Clear": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leeren"
+          }
+        }
+      }
+    },
+    "Close": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schließen"
+          }
+        }
+      }
+    },
+    "Cloud & Storage": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cloud & Speicher"
+          }
+        }
+      }
+    },
+    "Colour": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farbe"
+          }
+        }
+      }
+    },
+    "Continue": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiter"
+          }
+        }
+      }
+    },
+    "Cost": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kosten"
+          }
+        }
+      }
+    },
+    "Couldn't load pricing.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preise konnten nicht geladen werden."
+          }
+        }
+      }
+    },
+    "Currency": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Währung"
+          }
+        }
+      }
+    },
+    "Custom": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benutzerdefiniert"
+          }
+        }
+      }
+    },
+    "Data": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daten"
+          }
+        }
+      }
+    },
+    "Default reminder": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard-Erinnerung"
+          }
+        }
+      }
+    },
+    "Delete": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Löschen"
+          }
+        }
+      }
+    },
+    "Delete this subscription?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Abo löschen?"
+          }
+        }
+      }
+    },
+    "Deleting a profile moves its subscriptions to the first remaining profile.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beim Löschen eines Profils werden seine Abos zum ersten verbleibenden Profil verschoben."
+          }
+        }
+      }
+    },
+    "Details": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Details"
+          }
+        }
+      }
+    },
+    "Due": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fällig"
+          }
+        }
+      }
+    },
+    "Edit": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bearbeiten"
+          }
+        }
+      }
+    },
+    "Edit Profile": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profil bearbeiten"
+          }
+        }
+      }
+    },
+    "Edit Subscription": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abo bearbeiten"
+          }
+        }
+      }
+    },
+    "Education": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildung"
+          }
+        }
+      }
+    },
+    "Email support": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Support per E-Mail"
+          }
+        }
+      }
+    },
+    "Enable reminders": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerungen aktivieren"
+          }
+        }
+      }
+    },
+    "Every %lld days": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle %lld Tage"
+          }
+        }
+      }
+    },
+    "Everything in SubPilot, unlocked.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles in SubPilot, freigeschaltet."
+          }
+        }
+      }
+    },
+    "Exchange rates": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wechselkurse"
+          }
+        }
+      }
+    },
+    "Export a statement as CSV from your bank, then pick it here. We scan it on your device to find recurring charges — your statement is never uploaded or saved.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exportiere einen Kontoauszug als CSV bei deiner Bank und wähle ihn hier aus. Wir durchsuchen ihn auf deinem Gerät nach wiederkehrenden Abbuchungen — dein Auszug wird nie hochgeladen oder gespeichert."
+          }
+        }
+      }
+    },
+    "Export every subscription as a CSV spreadsheet you can open, back up, or move to another app. Your data is always yours.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exportiere jedes Abo als CSV-Tabelle, die du öffnen, sichern oder in eine andere App übertragen kannst. Deine Daten gehören immer dir."
+          }
+        }
+      }
+    },
+    "Export to CSV": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als CSV exportieren"
+          }
+        }
+      }
+    },
+    "Finance": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finanzen"
+          }
+        }
+      }
+    },
+    "Find subscriptions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abos finden"
+          }
+        }
+      }
+    },
+    "Finding subscriptions…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abos werden gesucht …"
+          }
+        }
+      }
+    },
+    "First row is a header": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erste Zeile ist eine Überschrift"
+          }
+        }
+      }
+    },
+    "Fitness": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fitness"
+          }
+        }
+      }
+    },
+    "Food & Drink": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Essen & Trinken"
+          }
+        }
+      }
+    },
+    "Found a bug, stuck on something, or want a service added to the catalogue? Email us — your app version and device are attached automatically so we can help faster. Got an idea? Post it on the feature board and vote on others.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fehler gefunden, irgendwo hängengeblieben oder möchtest du einen Dienst im Katalog ergänzen? Schreib uns — deine App-Version und dein Gerät werden automatisch angehängt, damit wir schneller helfen können. Hast du eine Idee? Poste sie auf dem Feature-Board und stimme über andere ab."
+          }
+        }
+      }
+    },
+    "Free trial": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kostenlose Testphase"
+          }
+        }
+      }
+    },
+    "Frequently asked": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Häufige Fragen"
+          }
+        }
+      }
+    },
+    "From %lld subscriptions": {
+      "localizations": {
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Aus %lld Abo"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Aus %lld Abos"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "From %lld subscription"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "From %lld subscriptions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Gaming": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gaming"
+          }
+        }
+      }
+    },
+    "Get a local notification at 9 AM before each subscription renews. New subscriptions use the default timing above; change it per subscription when editing.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erhalte um 9 Uhr eine lokale Mitteilung, bevor sich ein Abo verlängert. Neue Abos verwenden die Standardzeit oben; ändere sie beim Bearbeiten pro Abo."
+          }
+        }
+      }
+    },
+    "Get a reminder before each renewal or free-trial conversion, so you can cancel in time.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erhalte vor jeder Verlängerung oder Umwandlung einer Testphase eine Erinnerung, damit du rechtzeitig kündigen kannst."
+          }
+        }
+      }
+    },
+    "Get in touch": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontakt aufnehmen"
+          }
+        }
+      }
+    },
+    "Good afternoon": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guten Tag"
+          }
+        }
+      }
+    },
+    "Good evening": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guten Abend"
+          }
+        }
+      }
+    },
+    "Good morning": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guten Morgen"
+          }
+        }
+      }
+    },
+    "Help & Support": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hilfe & Support"
+          }
+        }
+      }
+    },
+    "Home": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start"
+          }
+        }
+      }
+    },
+    "How do renewal reminders work?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wie funktionieren Verlängerungs-Erinnerungen?"
+          }
+        }
+      }
+    },
+    "How much do I spend per year?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wie viel gebe ich pro Jahr aus?"
+          }
+        }
+      }
+    },
+    "Icon": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Symbol"
+          }
+        }
+      }
+    },
+    "Import": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importieren"
+          }
+        }
+      }
+    },
+    "Import bank statement": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontoauszug importieren"
+          }
+        }
+      }
+    },
+    "Import bank statements": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontoauszüge importieren"
+          }
+        }
+      }
+    },
+    "Import failed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import fehlgeschlagen"
+          }
+        }
+      }
+    },
+    "Import statement": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auszug importieren"
+          }
+        }
+      }
+    },
+    "Import your bank statement": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importiere deinen Kontoauszug"
+          }
+        }
+      }
+    },
+    "Insights": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auswertungen"
+          }
+        }
+      }
+    },
+    "Keep all your recurring payments in one place and always know what's coming out next.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Behalte alle wiederkehrenden Zahlungen an einem Ort und weißt immer, was als Nächstes abgebucht wird."
+          }
+        }
+      }
+    },
+    "Keep personal and work subscriptions in separate profiles, with Pro.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trenne private und berufliche Abos mit Pro in separate Profile."
+          }
+        }
+      }
+    },
+    "Lifetime": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lebenslang"
+          }
+        }
+      }
+    },
+    "Manage Profiles…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile verwalten …"
+          }
+        }
+      }
+    },
+    "Mark as active": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als aktiv markieren"
+          }
+        }
+      }
+    },
+    "Mark as cancelled": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als gekündigt markieren"
+          }
+        }
+      }
+    },
+    "Mark as free trial": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als Testphase markieren"
+          }
+        }
+      }
+    },
+    "Match your columns": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spalten zuordnen"
+          }
+        }
+      }
+    },
+    "Month": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monat"
+          }
+        }
+      }
+    },
+    "Monthly": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monatlich"
+          }
+        }
+      }
+    },
+    "Monthly Spend": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monatliche Ausgaben"
+          }
+        }
+      }
+    },
+    "Monthly Subscription Spend": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monatliche Abo-Ausgaben"
+          }
+        }
+      }
+    },
+    "Monthly spend by category": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monatliche Ausgaben nach Kategorie"
+          }
+        }
+      }
+    },
+    "Music": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Musik"
+          }
+        }
+      }
+    },
+    "My reminder didn't show up — why?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meine Erinnerung wurde nicht angezeigt — warum?"
+          }
+        }
+      }
+    },
+    "Name": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      }
+    },
+    "Negative amounts in this column are treated as money going out.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negative Beträge in dieser Spalte werden als Ausgaben gewertet."
+          }
+        }
+      }
+    },
+    "Never miss a renewal": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verpasse keine Verlängerung"
+          }
+        }
+      }
+    },
+    "New Profile": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neues Profil"
+          }
+        }
+      }
+    },
+    "New Subscription": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neues Abo"
+          }
+        }
+      }
+    },
+    "News": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nachrichten"
+          }
+        }
+      }
+    },
+    "Next Renewal": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächste Verlängerung"
+          }
+        }
+      }
+    },
+    "Next charge": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächste Abbuchung"
+          }
+        }
+      }
+    },
+    "Next renewal": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächste Verlängerung"
+          }
+        }
+      }
+    },
+    "No spend to chart yet": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine Ausgaben zum Anzeigen"
+          }
+        }
+      }
+    },
+    "No subscriptions found": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Abos gefunden"
+          }
+        }
+      }
+    },
+    "No subscriptions tracked yet — open SubPilot to add your first one.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine Abos erfasst — öffne SubPilot, um dein erstes hinzuzufügen."
+          }
+        }
+      }
+    },
+    "No subscriptions yet": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine Abos"
+          }
+        }
+      }
+    },
+    "No upcoming renewals": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine anstehenden Verlängerungen"
+          }
+        }
+      }
+    },
+    "No upcoming renewals — you're all clear.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine anstehenden Verlängerungen — alles erledigt."
+          }
+        }
+      }
+    },
+    "Not a free trial": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Testphase"
+          }
+        }
+      }
+    },
+    "Not now": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht jetzt"
+          }
+        }
+      }
+    },
+    "Not signed in": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht angemeldet"
+          }
+        }
+      }
+    },
+    "Notes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notizen"
+          }
+        }
+      }
+    },
+    "Nothing found": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nichts gefunden"
+          }
+        }
+      }
+    },
+    "Notifications are turned off in iOS Settings, so reminders won't appear.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitteilungen sind in den iOS-Einstellungen deaktiviert, daher erscheinen keine Erinnerungen."
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "On": {
+      "comment": "iCloud sync status",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiv"
+          }
+        }
+      }
+    },
+    "On the day": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Am Tag selbst"
+          }
+        }
+      }
+    },
+    "On your device. If you're signed into iCloud it also syncs and backs up privately across your own devices — there's no account and nothing is sent to us.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf deinem Gerät. Wenn du bei iCloud angemeldet bist, werden sie außerdem privat zwischen deinen eigenen Geräten synchronisiert und gesichert — es gibt kein Konto und nichts wird an uns gesendet."
+          }
+        }
+      }
+    },
+    "Open %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ öffnen"
+          }
+        }
+      }
+    },
+    "Open Apple's subscription list to see what you pay for through the App Store, then add them here. Apple doesn't let apps import this list automatically.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne Apples Abo-Liste, um zu sehen, wofür du über den App Store bezahlst, und füge die Abos dann hier hinzu. Apple erlaubt Apps nicht, diese Liste automatisch zu importieren."
+          }
+        }
+      }
+    },
+    "Open Settings": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen öffnen"
+          }
+        }
+      }
+    },
+    "Open SubPilot to set up your subscriptions first.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne zuerst SubPilot, um deine Abos einzurichten."
+          }
+        }
+      }
+    },
+    "Open iCloud Settings": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud-Einstellungen öffnen"
+          }
+        }
+      }
+    },
+    "Opens %@ in the app or browser": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffnet %@ in der App oder im Browser"
+          }
+        }
+      }
+    },
+    "Opens SubPilot ready to add a new subscription.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffnet SubPilot bereit zum Hinzufügen eines neuen Abos."
+          }
+        }
+      }
+    },
+    "Opens the SubPilot renewals calendar.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffnet den SubPilot-Verlängerungskalender."
+          }
+        }
+      }
+    },
+    "Other": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonstiges"
+          }
+        }
+      }
+    },
+    "Parse pasted text": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eingefügten Text auswerten"
+          }
+        }
+      }
+    },
+    "Paste a receipt or confirmation email…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beleg oder Bestätigungs-E-Mail einfügen …"
+          }
+        }
+      }
+    },
+    "Paste text": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text einfügen"
+          }
+        }
+      }
+    },
+    "Per month": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro Monat"
+          }
+        }
+      }
+    },
+    "Per month (approx.)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro Monat (ca.)"
+          }
+        }
+      }
+    },
+    "Pick a known service or scan a receipt to fill the form for you.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle einen bekannten Dienst oder scanne einen Beleg, um das Formular automatisch auszufüllen."
+          }
+        }
+      }
+    },
+    "Pick a screenshot or PDF of a subscription receipt. We read it on your device.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle einen Screenshot oder ein PDF eines Abo-Belegs. Wir lesen ihn auf deinem Gerät."
+          }
+        }
+      }
+    },
+    "Pick from the catalogue or scan a receipt — we read it on your device and fill in the details.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle aus dem Katalog oder scanne einen Beleg — wir lesen ihn auf deinem Gerät und füllen die Details aus."
+          }
+        }
+      }
+    },
+    "Pick the subscriptions you'd like to track.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle die Abos aus, die du verfolgen möchtest."
+          }
+        }
+      }
+    },
+    "Preferred currency": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bevorzugte Währung"
+          }
+        }
+      }
+    },
+    "Preview": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorschau"
+          }
+        }
+      }
+    },
+    "Privacy": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datenschutz"
+          }
+        }
+      }
+    },
+    "Private by default": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standardmäßig privat"
+          }
+        }
+      }
+    },
+    "Profile": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profil"
+          }
+        }
+      }
+    },
+    "Profile: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profil: %@"
+          }
+        }
+      }
+    },
+    "Profiles": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile"
+          }
+        }
+      }
+    },
+    "Projected charges per month": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voraussichtliche Abbuchungen pro Monat"
+          }
+        }
+      }
+    },
+    "Projected total per month, next 6 months": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voraussichtliche Gesamtsumme pro Monat, nächste 6 Monate"
+          }
+        }
+      }
+    },
+    "Quick fill": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schnell ausfüllen"
+          }
+        }
+      }
+    },
+    "Rate SubPilot": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SubPilot bewerten"
+          }
+        }
+      }
+    },
+    "Rates from frankfurter.app, refreshed daily. A bundled set is used offline.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurse von frankfurter.app, täglich aktualisiert. Offline wird ein integrierter Satz verwendet."
+          }
+        }
+      }
+    },
+    "Rates updated": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurse aktualisiert"
+          }
+        }
+      }
+    },
+    "Read subscription details straight from a receipt — on device — with Pro.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lies Abo-Details mit Pro direkt vom Beleg — auf dem Gerät."
+          }
+        }
+      }
+    },
+    "Reading receipt…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beleg wird gelesen …"
+          }
+        }
+      }
+    },
+    "Receipt or confirmation email text": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beleg- oder Bestätigungs-E-Mail-Text"
+          }
+        }
+      }
+    },
+    "Refresh rates now": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurse jetzt aktualisieren"
+          }
+        }
+      }
+    },
+    "Remind me": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnere mich"
+          }
+        }
+      }
+    },
+    "Reminders": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerungen"
+          }
+        }
+      }
+    },
+    "Renewal": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängerung"
+          }
+        }
+      }
+    },
+    "Renewal Calendar": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängerungskalender"
+          }
+        }
+      }
+    },
+    "Renewal reminders": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängerungs-Erinnerungen"
+          }
+        }
+      }
+    },
+    "Renews %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängert sich %@"
+          }
+        }
+      }
+    },
+    "Request a feature": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Funktion vorschlagen"
+          }
+        }
+      }
+    },
+    "Restore": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wiederherstellen"
+          }
+        }
+      }
+    },
+    "Restore Purchases": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Käufe wiederherstellen"
+          }
+        }
+      }
+    },
+    "Restricted": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eingeschränkt"
+          }
+        }
+      }
+    },
+    "Retry": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut versuchen"
+          }
+        }
+      }
+    },
+    "SAVE %lld%%": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SPARE %lld%%"
+          }
+        }
+      }
+    },
+    "Save": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sichern"
+          }
+        }
+      }
+    },
+    "Scan a receipt": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beleg scannen"
+          }
+        }
+      }
+    },
+    "Scan receipt": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beleg scannen"
+          }
+        }
+      }
+    },
+    "Scan receipts on device": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belege auf dem Gerät scannen"
+          }
+        }
+      }
+    },
+    "Scan receipts with Pro": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belege mit Pro scannen"
+          }
+        }
+      }
+    },
+    "Search providers": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anbieter suchen"
+          }
+        }
+      }
+    },
+    "Search subscriptions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abos suchen"
+          }
+        }
+      }
+    },
+    "Send": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senden"
+          }
+        }
+      }
+    },
+    "Separate work & personal": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beruflich & privat trennen"
+          }
+        }
+      }
+    },
+    "Separate work & personal profiles": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Berufliche & private Profile trennen"
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen"
+          }
+        }
+      }
+    },
+    "Sign in to iCloud to sync and back up your subscriptions across your devices.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melde dich bei iCloud an, um deine Abos auf all deinen Geräten zu synchronisieren und zu sichern."
+          }
+        }
+      }
+    },
+    "Skip": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Überspringen"
+          }
+        }
+      }
+    },
+    "Software": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Software"
+          }
+        }
+      }
+    },
+    "Some charges use a currency without a known rate and are excluded.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einige Abbuchungen verwenden eine Währung ohne bekannten Kurs und werden ausgeschlossen."
+          }
+        }
+      }
+    },
+    "Sort": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sortieren"
+          }
+        }
+      }
+    },
+    "Sort by": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sortieren nach"
+          }
+        }
+      }
+    },
+    "Spend": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausgaben"
+          }
+        }
+      }
+    },
+    "Spending, renewals, where to cut back — answered privately on your device.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausgaben, Verlängerungen, wo du sparen kannst — vertraulich auf deinem Gerät beantwortet."
+          }
+        }
+      }
+    },
+    "Spot recurring charges in your bank statement automatically, with Pro.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erkenne wiederkehrende Abbuchungen mit Pro automatisch in deinem Kontoauszug."
+          }
+        }
+      }
+    },
+    "Start Free Trial": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kostenlos testen"
+          }
+        }
+      }
+    },
+    "Step %lld of %lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schritt %lld von %lld"
+          }
+        }
+      }
+    },
+    "Still up?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch wach?"
+          }
+        }
+      }
+    },
+    "Streaming": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streaming"
+          }
+        }
+      }
+    },
+    "SubPilot": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SubPilot"
+          }
+        }
+      }
+    },
+    "SubPilot Pro": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SubPilot Pro"
+          }
+        }
+      }
+    },
+    "SubPilot Subscriptions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SubPilot-Abos"
+          }
+        }
+      }
+    },
+    "SubPilot schedules a local notification at 9 AM, a set number of days before each renewal or free-trial conversion. Set the default timing in Settings → Reminders, or override it per subscription when editing one.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SubPilot plant eine lokale Mitteilung um 9 Uhr, eine festgelegte Anzahl von Tagen vor jeder Verlängerung oder Umwandlung einer Testphase. Lege die Standardzeit unter Einstellungen → Erinnerungen fest oder überschreibe sie beim Bearbeiten pro Abo."
+          }
+        }
+      }
+    },
+    "Subscriptions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abos"
+          }
+        }
+      }
+    },
+    "Subscriptions renew automatically until cancelled. Lifetime is a one-time purchase. Payment is charged to your Apple Account.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abos verlängern sich automatisch, bis sie gekündigt werden. Lifetime ist ein einmaliger Kauf. Die Zahlung wird über deinen Apple-Account abgebucht."
+          }
+        }
+      }
+    },
+    "Support": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Support"
+          }
+        }
+      }
+    },
+    "Tap + on Home and pick from the catalogue of popular services, or scan a receipt — SubPilot reads it on your device and fills in the details for you.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe auf „+“ auf der Startseite und wähle aus dem Katalog beliebter Dienste oder scanne einen Beleg — SubPilot liest ihn auf deinem Gerät und füllt die Details für dich aus."
+          }
+        }
+      }
+    },
+    "Tells you which subscription charges next, when, and how much.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeigt dir, welches Abo als Nächstes abgebucht wird, wann und wie viel."
+          }
+        }
+      }
+    },
+    "Tells you your total monthly subscription spend.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeigt dir deine gesamten monatlichen Abo-Ausgaben."
+          }
+        }
+      }
+    },
+    "Terms": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutzungsbedingungen"
+          }
+        }
+      }
+    },
+    "Thinking": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denkt nach"
+          }
+        }
+      }
+    },
+    "This can't be undone.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das kann nicht rückgängig gemacht werden."
+          }
+        }
+      }
+    },
+    "This is a free trial": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dies ist eine kostenlose Testphase"
+          }
+        }
+      }
+    },
+    "Today": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute"
+          }
+        }
+      }
+    },
+    "Tomorrow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morgen"
+          }
+        }
+      }
+    },
+    "Total monthly": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monatlich gesamt"
+          }
+        }
+      }
+    },
+    "Total monthly %@%@, %@ per year, from %lld subscriptions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monatlich gesamt %@%@, %@ pro Jahr, aus %lld Abos"
+          }
+        }
+      }
+    },
+    "Track every subscription": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erfasse jedes Abo"
+          }
+        }
+      }
+    },
+    "Track everything you pay for in one place. Scan a receipt, pick from the catalogue, or add one yourself.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Behalte alles, wofür du bezahlst, an einem Ort im Blick. Scanne einen Beleg, wähle aus dem Katalog oder füge selbst eines hinzu."
+          }
+        }
+      }
+    },
+    "Track unlimited subscriptions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unbegrenzt Abos erfassen"
+          }
+        }
+      }
+    },
+    "Trial": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Testphase"
+          }
+        }
+      }
+    },
+    "Trial ends": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Testphase endet"
+          }
+        }
+      }
+    },
+    "Turn on reminders": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerungen einschalten"
+          }
+        }
+      }
+    },
+    "Unavailable": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht verfügbar"
+          }
+        }
+      }
+    },
+    "Unlock Pro": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro freischalten"
+          }
+        }
+      }
+    },
+    "Unlock SubPilot Pro": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SubPilot Pro freischalten"
+          }
+        }
+      }
+    },
+    "Unlock the assistant": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schalte den Assistenten frei"
+          }
+        }
+      }
+    },
+    "Until next charge": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bis zur nächsten Abbuchung"
+          }
+        }
+      }
+    },
+    "Up next": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als Nächstes"
+          }
+        }
+      }
+    },
+    "Upcoming charges": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anstehende Abbuchungen"
+          }
+        }
+      }
+    },
+    "Used by “Open website” on the subscription. Known services open their site automatically even without a link.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird von „Website öffnen“ beim Abo verwendet. Bekannte Dienste öffnen ihre Website automatisch, auch ohne Link."
+          }
+        }
+      }
+    },
+    "Utilities": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dienstprogramme"
+          }
+        }
+      }
+    },
+    "Version": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
+    },
+    "View Renewal Calendar": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängerungskalender anzeigen"
+          }
+        }
+      }
+    },
+    "View all": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle anzeigen"
+          }
+        }
+      }
+    },
+    "We couldn't find any subscriptions to add.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wir konnten keine Abos zum Hinzufügen finden."
+          }
+        }
+      }
+    },
+    "We couldn't find subscriptions in that receipt.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wir konnten in diesem Beleg keine Abos finden."
+          }
+        }
+      }
+    },
+    "We couldn't spot recurring charges in this statement. Try a statement covering a longer period, or add subscriptions manually.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wir konnten in diesem Auszug keine wiederkehrenden Abbuchungen erkennen. Versuche einen Auszug über einen längeren Zeitraum oder füge Abos manuell hinzu."
+          }
+        }
+      }
+    },
+    "We found these subscriptions in your receipt. Pick the ones to add.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wir haben diese Abos in deinem Beleg gefunden. Wähle die aus, die du hinzufügen möchtest."
+          }
+        }
+      }
+    },
+    "We look for charges that repeat on a regular schedule. Pick the ones you'd like to track.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wir suchen nach Abbuchungen, die sich regelmäßig wiederholen. Wähle die aus, die du verfolgen möchtest."
+          }
+        }
+      }
+    },
+    "We'll treat this column as money going out.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wir werten diese Spalte als Ausgaben."
+          }
+        }
+      }
+    },
+    "Website": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Website"
+          }
+        }
+      }
+    },
+    "Website (optional)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Website (optional)"
+          }
+        }
+      }
+    },
+    "Weekly": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wöchentlich"
+          }
+        }
+      }
+    },
+    "What renews in the next 7 days?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was verlängert sich in den nächsten 7 Tagen?"
+          }
+        }
+      }
+    },
+    "What's my most expensive subscription?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was ist mein teuerstes Abo?"
+          }
+        }
+      }
+    },
+    "What's the fastest way to add a subscription?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wie füge ich am schnellsten ein Abo hinzu?"
+          }
+        }
+      }
+    },
+    "Where could I cut back?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wo könnte ich sparen?"
+          }
+        }
+      }
+    },
+    "Where is my data stored?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wo werden meine Daten gespeichert?"
+          }
+        }
+      }
+    },
+    "Where your money goes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wohin dein Geld fließt"
+          }
+        }
+      }
+    },
+    "Yearly": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jährlich"
+          }
+        }
+      }
+    },
+    "Yes. Each subscription keeps its own currency, and your monthly and yearly totals convert to your preferred currency using daily exchange rates. Choose your preferred currency in Settings.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ja. Jedes Abo behält seine eigene Währung, und deine monatlichen und jährlichen Summen werden anhand täglicher Wechselkurse in deine bevorzugte Währung umgerechnet. Wähle deine bevorzugte Währung in den Einstellungen."
+          }
+        }
+      }
+    },
+    "You're spending %@ a month across %lld subscriptions.": {
+      "localizations": {
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Du gibst %@ pro Monat für %lld Abo aus."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Du gibst %@ pro Monat für %lld Abos aus."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "You're spending %@ a month across %lld subscription."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "You're spending %@ a month across %lld subscriptions."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "You've reached the free limit of %lld subscriptions. Go unlimited with Pro.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du hast das kostenlose Limit von %lld Abos erreicht. Mit Pro wird es unbegrenzt."
+          }
+        }
+      }
+    },
+    "Your subscriptions": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Abos"
+          }
+        }
+      }
+    },
+    "Your subscriptions stay on your device and sync privately across your own devices via iCloud. Nothing is shared with us unless you email it.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Abos bleiben auf deinem Gerät und werden über iCloud privat zwischen deinen eigenen Geräten synchronisiert. Nichts wird mit uns geteilt, außer du schickst es uns per E-Mail."
+          }
+        }
+      }
+    },
+    "Your subscriptions stay on your device. No account, no sign-up, and no sharing your bank.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Abos bleiben auf deinem Gerät. Kein Konto, keine Anmeldung und keine Weitergabe deiner Bankdaten."
+          }
+        }
+      }
+    },
+    "Your subscriptions sync and back up across your devices via iCloud.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Abos werden über iCloud auf all deinen Geräten synchronisiert und gesichert."
+          }
+        }
+      }
+    },
+    "cycle": {
+      "comment": "Compact billing cycle: custom",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zyklus"
+          }
+        }
+      }
+    },
+    "iCloud": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud"
+          }
+        }
+      }
+    },
+    "iCloud Sync": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud-Sync"
+          }
+        }
+      }
+    },
+    "in %lld days": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "in %lld Tagen"
+          }
+        }
+      }
+    },
+    "mo": {
+      "comment": "Compact billing cycle: month",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mon."
+          }
+        }
+      }
+    },
+    "on %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "am %@"
+          }
+        }
+      }
+    },
+    "today": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "heute"
+          }
+        }
+      }
+    },
+    "tomorrow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "morgen"
+          }
+        }
+      }
+    },
+    "wk": {
+      "comment": "Compact billing cycle: week",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wo."
+          }
+        }
+      }
+    },
+    "yr": {
+      "comment": "Compact billing cycle: year",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "J."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -28,10 +28,10 @@ struct AssistantView: View {
     @State private var availability = AssistantChat.availability
 
     private let suggestions = [
-        "How much do I spend per year?",
-        "What's my most expensive subscription?",
-        "What renews in the next 7 days?",
-        "Where could I cut back?"
+        String(localized: "How much do I spend per year?"),
+        String(localized: "What's my most expensive subscription?"),
+        String(localized: "What renews in the next 7 days?"),
+        String(localized: "Where could I cut back?")
     ]
 
     /// Subscriptions in the selected profile, matching Home's scoping.

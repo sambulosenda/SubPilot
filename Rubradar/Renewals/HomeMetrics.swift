@@ -64,10 +64,10 @@ struct HomeMetrics {
     var nextChargeLabel: String {
         guard let days = daysUntilNextCharge else { return "—" }
         switch days {
-        case ..<0: return "Due"
-        case 0: return "Today"
-        case 1: return "Tomorrow"
-        default: return "\(days) days"
+        case ..<0: return String(localized: "Due")
+        case 0: return String(localized: "Today")
+        case 1: return String(localized: "Tomorrow")
+        default: return String(localized: "\(days) days")
         }
     }
 }

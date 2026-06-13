@@ -65,7 +65,7 @@ struct MonthlySpendIntent: AppIntent {
         let count = snapshot.activeCount
         return .result(
             value: total,
-            dialog: "You're spending \(total) a month across \(count) subscription\(count == 1 ? "" : "s")."
+            dialog: "You're spending \(total) a month across \(count) subscriptions."
         )
     }
 }
@@ -115,10 +115,10 @@ private extension Date {
             to: calendar.startOfDay(for: self)
         ).day ?? 0
         switch days {
-        case 0: return "today"
-        case 1: return "tomorrow"
-        case 2...13: return "in \(days) days"
-        default: return "on \(formatted(date: .abbreviated, time: .omitted))"
+        case 0: return String(localized: "today")
+        case 1: return String(localized: "tomorrow")
+        case 2...13: return String(localized: "in \(days) days")
+        default: return String(localized: "on \(formatted(date: .abbreviated, time: .omitted))")
         }
     }
 }

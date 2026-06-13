@@ -82,7 +82,7 @@ struct SubscriptionListView: View {
     /// Time-of-day greeting used in place of a generic "Home" title — lighter,
     /// and avoids echoing the "Home" tab-bar label sitting right below it. Late
     /// night gets a wink, because that's usually when the subscription guilt hits.
-    private var greeting: String {
+    private var greeting: LocalizedStringKey {
         switch Calendar.current.component(.hour, from: .now) {
         case 5..<12: "Good morning"
         case 12..<17: "Good afternoon"
@@ -92,7 +92,7 @@ struct SubscriptionListView: View {
     }
 
     /// "Up next" only reads true when the default next-renewal order is in effect.
-    private var listSectionTitle: String {
+    private var listSectionTitle: LocalizedStringKey {
         sortOption == .nextRenewal && searchText.isEmpty ? "Up next" : "Your subscriptions"
     }
 

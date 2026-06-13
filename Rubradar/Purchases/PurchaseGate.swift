@@ -42,29 +42,29 @@ enum PaywallContext: String, Identifiable, CaseIterable {
 
     var headline: String {
         switch self {
-        case .subscriptionLimit: "Track every subscription"
-        case .receiptScan:       "Scan receipts with Pro"
-        case .bankImport:        "Import your bank statement"
-        case .assistant:         "Unlock the assistant"
-        case .profiles:          "Separate work & personal"
-        case .generic:           "Unlock SubPilot Pro"
+        case .subscriptionLimit: String(localized: "Track every subscription")
+        case .receiptScan:       String(localized: "Scan receipts with Pro")
+        case .bankImport:        String(localized: "Import your bank statement")
+        case .assistant:         String(localized: "Unlock the assistant")
+        case .profiles:          String(localized: "Separate work & personal")
+        case .generic:           String(localized: "Unlock SubPilot Pro")
         }
     }
 
     var subtitle: String {
         switch self {
         case .subscriptionLimit:
-            "You've reached the free limit of \(PurchaseGate.freeSubscriptionLimit) subscriptions. Go unlimited with Pro."
+            String(localized: "You've reached the free limit of \(PurchaseGate.freeSubscriptionLimit) subscriptions. Go unlimited with Pro.")
         case .receiptScan:
-            "Read subscription details straight from a receipt — on device — with Pro."
+            String(localized: "Read subscription details straight from a receipt — on device — with Pro.")
         case .bankImport:
-            "Spot recurring charges in your bank statement automatically, with Pro."
+            String(localized: "Spot recurring charges in your bank statement automatically, with Pro.")
         case .assistant:
-            "Ask about your spending and renewals, answered privately on device, with Pro."
+            String(localized: "Ask about your spending and renewals, answered privately on device, with Pro.")
         case .profiles:
-            "Keep personal and work subscriptions in separate profiles, with Pro."
+            String(localized: "Keep personal and work subscriptions in separate profiles, with Pro.")
         case .generic:
-            "Everything in SubPilot, unlocked."
+            String(localized: "Everything in SubPilot, unlocked.")
         }
     }
 }

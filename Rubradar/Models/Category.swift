@@ -26,18 +26,18 @@ enum SubscriptionCategory: String, CaseIterable, Identifiable, Codable {
 
     var label: String {
         switch self {
-        case .streaming: "Streaming"
-        case .music: "Music"
-        case .software: "Software"
-        case .gaming: "Gaming"
-        case .news: "News"
-        case .fitness: "Fitness"
-        case .cloud: "Cloud & Storage"
-        case .utilities: "Utilities"
-        case .finance: "Finance"
-        case .education: "Education"
-        case .food: "Food & Drink"
-        case .other: "Other"
+        case .streaming: String(localized: "Streaming")
+        case .music: String(localized: "Music")
+        case .software: String(localized: "Software")
+        case .gaming: String(localized: "Gaming")
+        case .news: String(localized: "News")
+        case .fitness: String(localized: "Fitness")
+        case .cloud: String(localized: "Cloud & Storage")
+        case .utilities: String(localized: "Utilities")
+        case .finance: String(localized: "Finance")
+        case .education: String(localized: "Education")
+        case .food: String(localized: "Food & Drink")
+        case .other: String(localized: "Other")
         }
     }
 

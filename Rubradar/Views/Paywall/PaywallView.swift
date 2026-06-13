@@ -24,11 +24,11 @@ struct PaywallView: View {
     private let privacyURL = URL(string: "https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9")!
 
     private let benefits: [(symbol: String, text: String)] = [
-        ("infinity", "Track unlimited subscriptions"),
-        ("doc.viewfinder", "Scan receipts on device"),
-        ("doc.badge.arrow.up", "Import bank statements"),
-        ("sparkles", "Ask the on-device assistant"),
-        ("person.2.fill", "Separate work & personal profiles")
+        ("infinity", String(localized: "Track unlimited subscriptions")),
+        ("doc.viewfinder", String(localized: "Scan receipts on device")),
+        ("doc.badge.arrow.up", String(localized: "Import bank statements")),
+        ("sparkles", String(localized: "Ask the on-device assistant")),
+        ("person.2.fill", String(localized: "Separate work & personal profiles"))
     ]
 
     var body: some View {
@@ -202,12 +202,12 @@ struct PaywallView: View {
         let fractionSaved = (yearlyAtMonthlyRate - annual.price) / yearlyAtMonthlyRate
         let percent = Int((NSDecimalNumber(decimal: fractionSaved).doubleValue * 100).rounded())
         guard percent > 0 else { return nil }
-        return "SAVE \(percent)%"
+        return String(localized: "SAVE \(percent)%")
     }
 
     private var ctaTitle: String {
-        if let product = selectedProduct, hasFreeTrial(product) { return "Start Free Trial" }
-        return "Unlock Pro"
+        if let product = selectedProduct, hasFreeTrial(product) { return String(localized: "Start Free Trial") }
+        return String(localized: "Unlock Pro")
     }
 
     private func buySelected() {
@@ -217,9 +217,9 @@ struct PaywallView: View {
 
     private func tierName(_ product: Product) -> String {
         switch product.id {
-        case PurchaseManager.ProductID.monthly:  return "Monthly"
-        case PurchaseManager.ProductID.annual:   return "Annual"
-        case PurchaseManager.ProductID.lifetime: return "Lifetime"
+        case PurchaseManager.ProductID.monthly:  return String(localized: "Monthly")
+        case PurchaseManager.ProductID.annual:   return String(localized: "Annual")
+        case PurchaseManager.ProductID.lifetime: return String(localized: "Lifetime")
         default:                                 return product.displayName
         }
     }
@@ -228,14 +228,14 @@ struct PaywallView: View {
     private func detail(for product: Product) -> String {
         switch product.id {
         case PurchaseManager.ProductID.monthly:
-            return "\(product.displayPrice) / month"
+            return String(localized: "\(product.displayPrice) / month")
         case PurchaseManager.ProductID.annual:
             if hasFreeTrial(product) {
-                return "7 days free, then \(product.displayPrice) / year"
+                return String(localized: "7 days free, then \(product.displayPrice) / year")
             }
-            return "\(product.displayPrice) / year"
+            return String(localized: "\(product.displayPrice) / year")
         case PurchaseManager.ProductID.lifetime:
-            return "\(product.displayPrice) · pay once"
+            return String(localized: "\(product.displayPrice) · pay once")
         default:
             return product.displayPrice
         }

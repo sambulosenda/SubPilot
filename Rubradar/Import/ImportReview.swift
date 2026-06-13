@@ -23,9 +23,9 @@ struct ImportCandidate: Identifiable {
 /// caller supplies the navigation title.
 struct ImportReviewView: View {
     let candidates: [ImportCandidate]
-    var footer: String = "Pick the subscriptions you'd like to track."
-    var emptyTitle: String = "Nothing found"
-    var emptyMessage: String = "We couldn't find any subscriptions to add."
+    var footer: LocalizedStringKey = "Pick the subscriptions you'd like to track."
+    var emptyTitle: LocalizedStringKey = "Nothing found"
+    var emptyMessage: LocalizedStringKey = "We couldn't find any subscriptions to add."
     /// Called after a successful add. When nil, the view dismisses itself; supply
     /// this when the review is nested so the whole flow can close.
     var onFinish: (() -> Void)?
@@ -38,9 +38,9 @@ struct ImportReviewView: View {
     @State private var didAdd = false
 
     init(candidates: [ImportCandidate],
-         footer: String = "Pick the subscriptions you'd like to track.",
-         emptyTitle: String = "Nothing found",
-         emptyMessage: String = "We couldn't find any subscriptions to add.",
+         footer: LocalizedStringKey = "Pick the subscriptions you'd like to track.",
+         emptyTitle: LocalizedStringKey = "Nothing found",
+         emptyMessage: LocalizedStringKey = "We couldn't find any subscriptions to add.",
          onFinish: (() -> Void)? = nil) {
         self.candidates = candidates
         self.footer = footer
@@ -75,7 +75,7 @@ struct ImportReviewView: View {
                 Button {
                     addSelected()
                 } label: {
-                    Text("Add \(selected.count) subscription\(selected.count == 1 ? "" : "s")")
+                    Text("Add \(selected.count) subscriptions")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glassProminent)
