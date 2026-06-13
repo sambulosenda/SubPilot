@@ -79,6 +79,18 @@ struct SubscriptionListView: View {
         }
     }
 
+    /// Time-of-day greeting used in place of a generic "Home" title — lighter,
+    /// and avoids echoing the "Home" tab-bar label sitting right below it. Late
+    /// night gets a wink, because that's usually when the subscription guilt hits.
+    private var greeting: String {
+        switch Calendar.current.component(.hour, from: .now) {
+        case 5..<12: "Good morning"
+        case 12..<17: "Good afternoon"
+        case 17..<22: "Good evening"
+        default: "Still up?"
+        }
+    }
+
     /// "Up next" only reads true when the default next-renewal order is in effect.
     private var listSectionTitle: String {
         sortOption == .nextRenewal && searchText.isEmpty ? "Up next" : "Your subscriptions"
@@ -98,9 +110,9 @@ struct SubscriptionListView: View {
                     list
                 }
             }
-            .navigationTitle("Home")
+            .navigationTitle(greeting)
             // Empty: let the empty state be the hero (its own headline owns the
-            // screen) instead of stranding a large "Home" title above a gap.
+            // screen) instead of stranding a large greeting above a gap.
             .navigationBarTitleDisplayMode(subscriptions.isEmpty ? .inline : .automatic)
             .toolbar { toolbarContent }
             .sheet(isPresented: $showManageProfiles) {
@@ -170,6 +182,7 @@ struct SubscriptionListView: View {
             InsightsView()
         }
         .searchable(text: $searchText, prompt: "Search subscriptions")
+        .searchToolbarBehavior(.minimize)
         .tabBarMinimizeBehavior(.onScrollDown)
         .overlay {
             if !searchText.isEmpty && visible.isEmpty {
