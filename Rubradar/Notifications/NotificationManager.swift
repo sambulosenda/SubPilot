@@ -32,6 +32,21 @@ enum ReminderLead {
     }
 }
 
+/// Settings + scheduling constants for the monthly spend recap — a low-frequency
+/// re-engagement nudge summarising what the user is spending.
+enum MonthlyRecap {
+    /// UserDefaults key backing the Settings toggle (default on).
+    static let enabledKey = "monthlyRecapEnabled"
+
+    static var isEnabled: Bool {
+        UserDefaults.standard.object(forKey: enabledKey) as? Bool ?? true
+    }
+
+    /// Pre-schedule this many future months so a user who stops opening the app
+    /// still gets nudged; the figures refresh on every reschedule.
+    static let monthsAhead = 6
+}
+
 /// Schedules local reminders for upcoming renewals and trial conversions.
 /// No push server — everything is local (`UNUserNotificationCenter`).
 @MainActor
@@ -81,6 +96,8 @@ final class NotificationManager: NSObject {
     func rescheduleAll(modelContext: ModelContext) async {
         let subs = (try? modelContext.fetch(FetchDescriptor<Subscription>())) ?? []
         await reschedule(for: subs, enabled: remindersEnabled)
+        // Added after `reschedule` clears all pending requests, so it survives.
+        await scheduleMonthlyRecap(for: subs)
     }
 
     /// Clears all pending reminders and reschedules from the current data.
@@ -112,6 +129,43 @@ final class NotificationManager: NSObject {
                 fireDate: reminderDate(before: nextCharge, leadDays: sub.reminderLeadDays),
                 subscriptionID: sub.id
             )
+        }
+    }
+
+    /// Schedules the monthly spend recap on the 1st of each month at 10 AM. Skips
+    /// when disabled, unauthorized, or there's nothing to report. Pre-schedules
+    /// several months ahead; figures refresh whenever subscriptions change.
+    func scheduleMonthlyRecap(for subscriptions: [Subscription]) async {
+        guard MonthlyRecap.isEnabled else { return }
+
+        let status = await authorizationStatus
+        guard status == .authorized || status == .provisional else { return }
+
+        let active = subscriptions.filter { !$0.isCancelled }
+        let preferred = UserDefaults.standard.string(forKey: "preferredCurrencyCode")
+            ?? Locale.current.currency?.identifier ?? "GBP"
+        let summary = SpendSummary.make(from: subscriptions, preferred: preferred, rates: CurrencyService.shared.rates)
+        guard !active.isEmpty, summary.monthlyTotal > 0 else { return }
+
+        let countWord = active.count == 1 ? "subscription" : "subscriptions"
+        let body = "You're spending about \(summary.formattedMonthly) a month across \(active.count) \(countWord). Tap to see where it goes."
+
+        let cal = Calendar.current
+        guard let firstRecap = cal.nextDate(
+            after: Date(),
+            matching: DateComponents(day: 1, hour: 10, minute: 0),
+            matchingPolicy: .nextTime
+        ) else { return }
+
+        for offset in 0..<MonthlyRecap.monthsAhead {
+            guard let fire = cal.date(byAdding: .month, value: offset, to: firstRecap) else { continue }
+            let content = UNMutableNotificationContent()
+            content.title = "Your subscriptions this month"
+            content.body = body
+            content.sound = .default
+            let comps = cal.dateComponents([.year, .month, .day, .hour, .minute], from: fire)
+            let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+            try? await center.add(UNNotificationRequest(identifier: "recap-\(offset)", content: content, trigger: trigger))
         }
     }
 

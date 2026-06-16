@@ -18,6 +18,7 @@ struct InsightsView: View {
     @AppStorage("selectedProfileID") private var selectedProfileID = ""
 
     @State private var selected: CategorySpend?
+    @State private var showRecap = false
 
     /// Active + cancelled subs in the selected profile ("" = All); the breakdown
     /// itself drops cancelled, so totals match the Home hero.
@@ -57,6 +58,25 @@ struct InsightsView: View {
         .background(Color.appBackground)
         .navigationTitle("Insights")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if !breakdown.isEmpty {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showRecap = true
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .accessibilityLabel("Share monthly recap")
+                }
+            }
+        }
+        .sheet(isPresented: $showRecap) {
+            RecapShareView(data: MonthlyRecapData.make(
+                from: profileSubscriptions,
+                preferred: preferredCurrency,
+                rates: currency.rates
+            ))
+        }
     }
 
     // MARK: - Spend by category

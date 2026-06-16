@@ -23,4 +23,9 @@ enum Radius {
 extension Color {
     static let appBackground = Color(.systemGroupedBackground)
     static let cardBackground = Color(.secondarySystemGroupedBackground)
+
+    /// Brand teal and a deeper shade for gradients (e.g. the shareable recap
+    /// card). Falls back to the asset accent if the hex ever fails to parse.
+    static let brand = Color(hex: "0D9488") ?? .accentColor
+    static let brandDeep = Color(hex: "0B6E66") ?? .accentColor
 }
