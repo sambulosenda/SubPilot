@@ -25,6 +25,8 @@ struct SettingsView: View {
         Locale.current.currency?.identifier ?? "GBP"
     @AppStorage("remindersEnabled") private var remindersEnabled = true
     @AppStorage(ReminderLead.defaultsKey) private var defaultReminderLeadDays = ReminderLead.defaultDays
+    @AppStorage(MonthlyRecap.enabledKey) private var monthlyRecapEnabled = true
+    @AppStorage(Analytics.optInDefaultsKey) private var analyticsOptIn = true
 
     /// System notification authorization, so we can surface a recovery path
     /// when reminders are enabled in-app but blocked at the system level.
@@ -112,10 +114,11 @@ struct SettingsView: View {
                         }
                         reminderRecovery
                     }
+                    Toggle("Monthly spending recap", isOn: $monthlyRecapEnabled)
                 } header: {
                     Text("Reminders")
                 } footer: {
-                    Text("Get a local notification at 9 AM before each subscription renews. New subscriptions use the default timing above; change it per subscription when editing.")
+                    Text("Get a local notification at 9 AM before each subscription renews. New subscriptions use the default timing above; change it per subscription when editing. The monthly recap sums what you're spending on the 1st of each month.")
                 }
 
                 Section {
@@ -163,6 +166,14 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    Toggle("Share anonymous usage data", isOn: $analyticsOptIn)
+                } header: {
+                    Text("Privacy")
+                } footer: {
+                    Text("Helps improve SubPilot with anonymous usage stats — which features get used and how the app performs. Never your subscriptions, amounts, notes, or anything that identifies you. Turn it off anytime.")
+                }
+
+                Section {
                     NavigationLink {
                         SupportView()
                     } label: {
@@ -177,6 +188,12 @@ struct SettingsView: View {
             }
             .onChange(of: remindersEnabled) {
                 Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
+            }
+            .onChange(of: monthlyRecapEnabled) {
+                Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
+            }
+            .onChange(of: analyticsOptIn) { _, optedIn in
+                Analytics.setOptedIn(optedIn)
             }
             .onChange(of: scenePhase) { _, phase in
                 // The user may have flipped a system toggle (notifications or

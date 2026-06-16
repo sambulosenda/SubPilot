@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import StoreKit
 
 /// The Pro upsell. Presented as a single `.sheet(item:)` host in `RootView`,
@@ -13,6 +14,7 @@ struct PaywallView: View {
     let context: PaywallContext
 
     @Environment(PurchaseManager.self) private var purchases
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
 
@@ -56,7 +58,13 @@ struct PaywallView: View {
                 }
             }
         }
-        .task { await purchases.loadProducts() }
+        .task {
+            let activeCount = (try? modelContext.fetchCount(
+                FetchDescriptor<Subscription>(predicate: #Predicate { !$0.isCancelled })
+            )) ?? 0
+            Analytics.paywallShown(context: context, activeCount: activeCount)
+            await purchases.loadProducts()
+        }
         .onChange(of: purchases.isPro) { _, isPro in
             // Dismiss once Pro is unlocked (purchase or restore).
             if isPro { dismiss() }

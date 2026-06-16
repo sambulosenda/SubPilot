@@ -126,6 +126,7 @@ struct RootView: View {
         .fullScreenCover(isPresented: onboardingPresented) {
             OnboardingView {
                 hasCompletedOnboarding = true
+                Analytics.onboardingCompleted()
                 Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
             }
             .interactiveDismissDisabled()

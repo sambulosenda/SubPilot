@@ -91,6 +91,17 @@ final class PurchaseManager {
 
     func product(for id: String) -> Product? { products.first { $0.id == id } }
 
+    /// Stable, non-localized tier key for analytics (the paywall's display labels
+    /// are localized, so they must not be used as event values).
+    private static func tierKey(for productID: String) -> String {
+        switch productID {
+        case ProductID.monthly:  return "monthly"
+        case ProductID.annual:   return "annual"
+        case ProductID.lifetime: return "lifetime"
+        default:                 return "other"
+        }
+    }
+
     // MARK: - Purchase / restore
 
     /// Attempts a purchase. Returns `true` if Pro is unlocked as a result.
@@ -106,6 +117,9 @@ final class PurchaseManager {
                 guard let transaction = verified(verification) else { return false }
                 await transaction.finish()
                 await refreshEntitlements()
+                if isPro {
+                    Analytics.purchaseCompleted(product: Self.tierKey(for: product.id), context: paywallContext)
+                }
                 return isPro
             case .userCancelled, .pending:
                 return false

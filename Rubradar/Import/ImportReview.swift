@@ -26,6 +26,9 @@ struct ImportReviewView: View {
     var footer: LocalizedStringKey = "Pick the subscriptions you'd like to track."
     var emptyTitle: LocalizedStringKey = "Nothing found"
     var emptyMessage: LocalizedStringKey = "We couldn't find any subscriptions to add."
+    /// Which bulk path produced these candidates — recorded per add for the
+    /// activation funnel (`.scan` for receipts, `.bankImport` for statements).
+    var origin: AddMethod = .scan
     /// Called after a successful add. When nil, the view dismisses itself; supply
     /// this when the review is nested so the whole flow can close.
     var onFinish: (() -> Void)?
@@ -41,11 +44,13 @@ struct ImportReviewView: View {
          footer: LocalizedStringKey = "Pick the subscriptions you'd like to track.",
          emptyTitle: LocalizedStringKey = "Nothing found",
          emptyMessage: LocalizedStringKey = "We couldn't find any subscriptions to add.",
+         origin: AddMethod = .scan,
          onFinish: (() -> Void)? = nil) {
         self.candidates = candidates
         self.footer = footer
         self.emptyTitle = emptyTitle
         self.emptyMessage = emptyMessage
+        self.origin = origin
         self.onFinish = onFinish
         _selected = State(initialValue: Set(candidates.filter { $0.isPreselected && !$0.alreadyTracked }.map(\.id)))
     }
@@ -92,12 +97,21 @@ struct ImportReviewView: View {
 
     private func addSelected() {
         let profile = activeProfile
+        var added = 0
         for candidate in candidates where selected.contains(candidate.id) {
             modelContext.insert(candidate.subscription)
             candidate.subscription.profile = profile
+            added += 1
         }
         try? modelContext.save()
         didAdd = true
+        if added > 0 {
+            // One event per added sub so volume is comparable to the manual path.
+            let total = (try? modelContext.fetchCount(
+                FetchDescriptor<Subscription>(predicate: #Predicate { !$0.isCancelled })
+            )) ?? 0
+            for _ in 0..<added { Analytics.subscriptionAdded(method: origin, totalActive: total) }
+        }
         Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
         WidgetSync.refresh(modelContext: modelContext)
         if let onFinish { onFinish() } else { dismiss() }

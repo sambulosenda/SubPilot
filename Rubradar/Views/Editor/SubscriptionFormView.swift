@@ -10,6 +10,9 @@ import SwiftData
 /// commits to SwiftData only on Save.
 struct SubscriptionFormView: View {
     let mode: FormMode
+    /// How this add was initiated — recorded on save for the activation funnel.
+    /// Ignored in edit mode; defaults to `.manual` (the plain add form).
+    let addMethod: AddMethod
     /// Called after a successful save (e.g. so a presenting catalogue can dismiss too).
     var onSaved: (() -> Void)?
 
@@ -31,8 +34,9 @@ struct SubscriptionFormView: View {
     /// Profile this subscription belongs to; resolved on appear, applied on save.
     @State private var formProfileID = ""
 
-    init(mode: FormMode, onSaved: (() -> Void)? = nil) {
+    init(mode: FormMode, addMethod: AddMethod = .manual, onSaved: (() -> Void)? = nil) {
         self.mode = mode
+        self.addMethod = addMethod
         self.onSaved = onSaved
         switch mode {
         case .create(let draft):
@@ -216,25 +220,39 @@ struct SubscriptionFormView: View {
 
     private func save() {
         let target: Subscription
+        let isNew: Bool
         switch mode {
         case .create:
             target = Subscription()
             model.apply(to: target)
             modelContext.insert(target)
+            isNew = true
         case .edit(let existing):
             model.apply(to: existing)
             target = existing
+            isNew = false
         }
         if let profile = profiles.first(where: { $0.id.uuidString == formProfileID }) {
             target.profile = profile
         }
         didSave = true
+        if isNew {
+            Analytics.subscriptionAdded(method: addMethod, totalActive: activeSubscriptionCount())
+        }
         Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
         // Push the change to the Home/Lock Screen widget now; otherwise it shows
         // stale totals + next-renewal until the app is next backgrounded.
         WidgetSync.refresh(modelContext: modelContext)
         dismiss()
         onSaved?()
+    }
+
+    /// Active (non-cancelled) subscription count, read after an insert for the
+    /// activation funnel's "subs after add" measure.
+    private func activeSubscriptionCount() -> Int {
+        (try? modelContext.fetchCount(
+            FetchDescriptor<Subscription>(predicate: #Predicate { !$0.isCancelled })
+        )) ?? 0
     }
 }
 

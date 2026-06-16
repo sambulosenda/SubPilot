@@ -19,6 +19,10 @@ struct ImportView: View {
     /// automatically on appear instead of waiting for the user to pick one.
     var initialSource: ReceiptSource?
 
+    /// Receipts handed in by the Share Extension count as `.share`; receipts the
+    /// user picks inside the app are `.scan`. Drives the activation funnel.
+    private var addMethod: AddMethod { initialSource == nil ? .scan : .share }
+
     @Environment(\.dismiss) private var dismiss
     @Query private var existingSubscriptions: [Subscription]
 
@@ -85,7 +89,7 @@ struct ImportView: View {
                 Text(errorMessage ?? "")
             }
             .sheet(item: $draftSubscription) { draft in
-                SubscriptionFormView(mode: .create(draft), onSaved: { dismiss() })
+                SubscriptionFormView(mode: .create(draft), addMethod: addMethod, onSaved: { dismiss() })
             }
             .sheet(item: $reviewBundle) { bundle in
                 NavigationStack {
@@ -94,6 +98,7 @@ struct ImportView: View {
                         footer: "We found these subscriptions in your receipt. Pick the ones to add.",
                         emptyTitle: "No subscriptions found",
                         emptyMessage: "We couldn't find subscriptions in that receipt.",
+                        origin: addMethod,
                         onFinish: { reviewBundle = nil; dismiss() }
                     )
                     .navigationTitle("Add subscriptions")

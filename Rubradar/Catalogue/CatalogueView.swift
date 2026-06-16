@@ -67,7 +67,7 @@ struct CatalogueView: View {
                 }
             }
             .sheet(item: $draft) { draft in
-                SubscriptionFormView(mode: .create(draft), onSaved: { dismiss() })
+                SubscriptionFormView(mode: .create(draft), addMethod: .catalogue, onSaved: { dismiss() })
             }
         }
         .task {

@@ -10,6 +10,10 @@ import SwiftData
 
 @main
 struct RubradarApp: App {
+    init() {
+        Analytics.start()
+    }
+
     var body: some Scene {
         WindowGroup {
             AppRootView()
