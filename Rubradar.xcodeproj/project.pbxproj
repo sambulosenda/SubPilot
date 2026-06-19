@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4F7E28372FD6FEE800583D34 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F7E28362FD6FEE800583D34 /* StoreKit.framework */; };
+		7E1EDEC400000000000000C3 /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = 7E1EDEC400000000000000B2 /* TelemetryDeck */; };
 		F1D600000000000000000031 /* SubPilotWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F1D6000000000000000000A1 /* SubPilotWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F2D600000000000000000031 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F2D6000000000000000000A1 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -136,6 +137,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F7E28372FD6FEE800583D34 /* StoreKit.framework in Frameworks */,
+				7E1EDEC400000000000000C3 /* TelemetryDeck in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,6 +228,7 @@
 			);
 			name = Rubradar;
 			packageProductDependencies = (
+				7E1EDEC400000000000000B2 /* TelemetryDeck */,
 			);
 			productName = Rubradar;
 			productReference = 4FD3FAC92FD0B47400C8A3E6 /* Rubradar.app */;
@@ -361,6 +364,9 @@
 			mainGroup = 4FD3FAC02FD0B47400C8A3E6;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
+			packageReferences = (
+				7E1EDEC400000000000000A1 /* XCRemoteSwiftPackageReference "SwiftSDK" */,
+			);
 			productRefGroup = 4FD3FACA2FD0B47400C8A3E6 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -927,6 +933,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7E1EDEC400000000000000A1 /* XCRemoteSwiftPackageReference "SwiftSDK" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TelemetryDeck/SwiftSDK";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7E1EDEC400000000000000B2 /* TelemetryDeck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7E1EDEC400000000000000A1 /* XCRemoteSwiftPackageReference "SwiftSDK" */;
+			productName = TelemetryDeck;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4FD3FAC12FD0B47400C8A3E6 /* Project object */;
 }
