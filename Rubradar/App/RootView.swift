@@ -123,7 +123,7 @@ struct RootView: View {
         .sheet(item: $purchases.paywallContext) { context in
             PaywallView(context: context)
         }
-        .fullScreenCover(isPresented: onboardingPresented) {
+        .fullScreenCover(isPresented: onboardingPresented, onDismiss: presentOnboardingUpsell) {
             OnboardingView {
                 hasCompletedOnboarding = true
                 Analytics.onboardingCompleted()
@@ -199,6 +199,24 @@ struct RootView: View {
                     WidgetSync.refresh(modelContext: modelContext)
                 }
             }
+        }
+    }
+
+    /// Surfaces the Pro offer once, the moment first-run onboarding closes —
+    /// the highest-intent point in the session. The cover only ever presents on
+    /// first launch, so this fires exactly once per install. Soft by design:
+    /// non-Pro only, and the paywall's "Maybe later" drops straight into the
+    /// free tier (`PaywallContext.onboarding`).
+    ///
+    /// The upsell is deferred a beat: presenting a sheet synchronously from a
+    /// `fullScreenCover`'s `onDismiss` lands inside the cover's still-settling
+    /// dismissal transaction, and SwiftUI drops the new presentation. Letting
+    /// the dismissal finish first makes the paywall present reliably.
+    private func presentOnboardingUpsell() {
+        guard !purchases.isPro else { return }
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(350))
+            purchases.paywallContext = .onboarding
         }
     }
 

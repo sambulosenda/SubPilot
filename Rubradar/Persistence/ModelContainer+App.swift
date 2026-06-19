@@ -60,6 +60,20 @@ extension ModelContainer {
     }()
     #endif
 
+    #if DEBUG
+    /// Empty, CloudKit-free on-device store for UI tests. The live `.app` store
+    /// mirrors to CloudKit, which traps during first-run mirroring setup on
+    /// simulators with no iCloud account — making cold-launch UI flows
+    /// untestable. Selected via `-UITestLocalStore`; pairs with the real
+    /// (non-Pro) `PurchaseManager.shared` so paywall gates behave like release.
+    static let uiTestLocal: ModelContainer = {
+        try! ModelContainer(
+            for: Subscription.self, Profile.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+        )
+    }()
+    #endif
+
     /// An in-memory container seeded with sample data, for SwiftUI previews.
     /// CloudKit mirroring is disabled so previews/tests never touch the network.
     @MainActor

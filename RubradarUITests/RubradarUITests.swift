@@ -22,15 +22,41 @@ final class RubradarUITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
+    /// First-run onboarding must hand off into the soft Pro upsell: finishing
+    /// (or skipping) onboarding presents the `.onboarding` paywall, which stays
+    /// skippable via "Maybe later". Runs against the CloudKit-free test store so
+    /// it launches on simulators without an iCloud account; launch-argument
+    /// overrides force a first-run, non-Pro state regardless of prior runs.
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testOnboardingPresentsSoftPaywall() throws {
         let app = XCUIApplication()
+        // `-UITestLocalStore` selects a CloudKit-free store (no iCloud account on
+        // CI sims) AND resets onboarding + Pro state via real writes in the app's
+        // init — so this single flag yields a deterministic first-run, non-Pro
+        // launch without argument-domain pins that would block the app's writes.
+        app.launchArguments = ["-UITestLocalStore"]
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // XCUIAutomation Documentation
-        // https://developer.apple.com/documentation/xcuiautomation
+        // Onboarding is up (after splash); skip straight through.
+        let skip = app.buttons["Skip"]
+        XCTAssertTrue(skip.waitForExistence(timeout: 15), "Onboarding 'Skip' did not appear")
+        skip.tap()
+
+        // The soft onboarding paywall should now present.
+        let maybeLater = app.buttons["Maybe later"]
+        XCTAssertTrue(maybeLater.waitForExistence(timeout: 5),
+                      "Soft onboarding paywall did not present after onboarding")
+
+        // Headline is part of a combined accessibility element, so match by substring.
+        let headline = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", "Never pay for a subscription you forget"))
+            .firstMatch
+        XCTAssertTrue(headline.exists, "Onboarding paywall headline missing")
+
+        // "Maybe later" keeps it soft — tapping it drops into the free app.
+        maybeLater.tap()
+        XCTAssertFalse(maybeLater.waitForExistence(timeout: 3),
+                       "Paywall should dismiss into the free tier on 'Maybe later'")
     }
 
     @MainActor

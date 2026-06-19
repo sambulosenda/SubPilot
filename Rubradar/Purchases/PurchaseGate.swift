@@ -36,6 +36,9 @@ enum PaywallContext: String, Identifiable, CaseIterable {
     case bankImport
     case assistant
     case profiles
+    /// Shown once right after first-run onboarding — a soft upsell at peak
+    /// intent. Always skippable into the free tier (see PaywallView).
+    case onboarding
     case generic
 
     var id: String { rawValue }
@@ -47,6 +50,7 @@ enum PaywallContext: String, Identifiable, CaseIterable {
         case .bankImport:        String(localized: "Import your bank statement")
         case .assistant:         String(localized: "Unlock the assistant")
         case .profiles:          String(localized: "Separate work & personal")
+        case .onboarding:        String(localized: "Never pay for a subscription you forget")
         case .generic:           String(localized: "Unlock SubPilot Pro")
         }
     }
@@ -63,6 +67,8 @@ enum PaywallContext: String, Identifiable, CaseIterable {
             String(localized: "Ask about your spending and renewals, answered privately on device, with Pro.")
         case .profiles:
             String(localized: "Keep personal and work subscriptions in separate profiles, with Pro.")
+        case .onboarding:
+            String(localized: "Start with a free trial — and we'll remind you before it ends, including this one.")
         case .generic:
             String(localized: "Everything in SubPilot, unlocked.")
         }

@@ -174,6 +174,15 @@ struct PaywallView: View {
             Text("Cancel anytime in the App Store.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+
+            // First-run upsell stays soft: an explicit, low-friction exit into
+            // the free tier so the paywall never reads as a forced wall.
+            if context == .onboarding {
+                Button("Maybe later") { dismiss() }
+                    .font(.subheadline)
+                    .controlSize(.large)
+                    .padding(.top, 2)
+            }
         }
         .padding(.horizontal, Spacing.lg)
         .padding(.top, Spacing.sm)

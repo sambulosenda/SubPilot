@@ -12,6 +12,17 @@ import SwiftData
 struct RubradarApp: App {
     init() {
         Analytics.start()
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-UITestLocalStore") {
+            // Deterministic first-run, non-Pro state for UI tests, via *real*
+            // writes — not `-key value` launch args, which land in the argument
+            // domain and would pin the value, blocking the app's own writes
+            // (e.g. completing onboarding). Keys mirror RootView's @AppStorage
+            // and PurchaseManager.isProDefaultsKey.
+            UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+            UserDefaults.standard.set(false, forKey: "isProEntitlement")
+        }
+        #endif
     }
 
     var body: some Scene {
@@ -39,8 +50,13 @@ struct RubradarApp: App {
     /// (DEBUG only) so App Store screenshots are deterministic.
     static var container: ModelContainer {
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("-DemoSeed") {
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("-DemoSeed") {
             return .demoSeeded
+        }
+        // CloudKit-free store for UI tests on iCloud-less simulators.
+        if args.contains("-UITestLocalStore") {
+            return .uiTestLocal
         }
         #endif
         return .app
