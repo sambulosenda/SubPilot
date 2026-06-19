@@ -59,6 +59,46 @@ final class RubradarUITests: XCTestCase {
                        "Paywall should dismiss into the free tier on 'Maybe later'")
     }
 
+    /// The onboarding value-moment: on the starter step the user taps popular
+    /// subscriptions, sees a live spend total, and the CTA reflects the count;
+    /// advancing seeds those subscriptions (proven by reaching the next step
+    /// without crashing on persistence). Runs against the CloudKit-free store.
+    @MainActor
+    func testOnboardingStarterStepShowsSpendAndSeeds() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestLocalStore"]
+        app.launch()
+
+        // welcome → privacy → starter step (two Continues).
+        let cont = app.buttons["Continue"]
+        XCTAssertTrue(cont.waitForExistence(timeout: 15), "Onboarding 'Continue' did not appear")
+        cont.tap()
+        XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 5))
+        app.buttons["Continue"].tap()
+
+        // Starter step is up.
+        XCTAssertTrue(app.staticTexts["What are you paying for?"].waitForExistence(timeout: 5),
+                      "Starter step did not appear")
+
+        // Tap a provider chip; the live total should appear.
+        let netflix = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Netflix'")).firstMatch
+        XCTAssertTrue(netflix.waitForExistence(timeout: 5), "Netflix starter chip missing")
+        netflix.tap()
+
+        let total = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", "tracking")).firstMatch
+        XCTAssertTrue(total.waitForExistence(timeout: 5), "Live spend total did not appear after selecting")
+
+        // CTA reflects the selection count, then advances (commits the seed).
+        let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Add 1'")).firstMatch
+        XCTAssertTrue(cta.waitForExistence(timeout: 3), "CTA did not reflect selection count")
+        cta.tap()
+
+        // Reaching the reminders step proves the seed persisted without crashing.
+        XCTAssertTrue(app.buttons["Enable reminders"].waitForExistence(timeout: 5),
+                      "Did not advance past the starter step after seeding")
+    }
+
     @MainActor
     func testLaunchPerformance() throws {
         // This measures how long it takes to launch your application.

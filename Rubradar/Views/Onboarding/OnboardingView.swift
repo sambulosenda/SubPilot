@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 /// First-run onboarding (FR-20). A short, skippable intro that explains what
 /// Rubradar does, reassures on privacy, shows how to add, and — crucially —
@@ -20,17 +21,32 @@ struct OnboardingView: View {
     @State private var page: Page = .welcome
     @State private var isRequesting = false
 
+    @Environment(\.modelContext) private var modelContext
+    @AppStorage("selectedProfileID") private var selectedProfileID = ""
+    @State private var starterItems: [OnboardingStarter] = []
+    @State private var selectedStarters: Set<String> = []
+    @State private var didCommitStarters = false
+    /// Currency for the starter prices + total — the device locale's, matching
+    /// what `CatalogueProvider.makeDraft()` stamps on each new subscription.
+    private let currencyCode = Locale.current.currency?.identifier ?? "GBP"
+
     var body: some View {
         VStack(spacing: 0) {
             skipBar
 
-            Spacer(minLength: 0)
-
-            content
-                .id(page)
-                .transition(.opacity)
-
-            Spacer(minLength: 0)
+            // The starter step scrolls and fills the available height; the
+            // info pages stay vertically centred between flexible spacers.
+            if page == .add {
+                content
+                    .id(page)
+                    .transition(.opacity)
+            } else {
+                Spacer(minLength: 0)
+                content
+                    .id(page)
+                    .transition(.opacity)
+                Spacer(minLength: 0)
+            }
 
             PageDots(count: Page.allCases.count, index: page.rawValue)
                 .padding(.bottom, Spacing.lg)
@@ -41,6 +57,7 @@ struct OnboardingView: View {
         }
         // Declarative haptic on page advance (preferred over UIKit generators).
         .sensoryFeedback(.selection, trigger: page)
+        .task { if starterItems.isEmpty { starterItems = OnboardingStarter.load() } }
     }
 
     // MARK: - Chrome
@@ -76,11 +93,10 @@ struct OnboardingView: View {
                 message: String(localized: "Your subscriptions stay on your device. No account, no sign-up, and no sharing your bank.")
             )
         case .add:
-            OnboardingPage(
-                symbol: "doc.viewfinder",
-                tint: .blue,
-                title: String(localized: "Add in seconds"),
-                message: String(localized: "Pick from the catalogue or scan a receipt — we read it on your device and fill in the details.")
+            OnboardingStarterStep(
+                items: starterItems,
+                selected: $selectedStarters,
+                currencyCode: currencyCode
             )
         case .reminders:
             OnboardingPage(
@@ -114,7 +130,7 @@ struct OnboardingView: View {
                         .disabled(isRequesting)
                 } else {
                     Button(action: advance) {
-                        Text("Continue").frame(maxWidth: .infinity)
+                        Text(continueLabel).frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.glassProminent)
                     .controlSize(.extraLarge)
@@ -125,9 +141,47 @@ struct OnboardingView: View {
 
     // MARK: - Actions
 
+    private var continueLabel: String {
+        if page == .add, !selectedStarters.isEmpty {
+            return String(localized: "Add \(selectedStarters.count) & Continue")
+        }
+        return String(localized: "Continue")
+    }
+
     private func advance() {
+        if page == .add { commitStarters() }
         guard let next = Page(rawValue: page.rawValue + 1) else { onFinish(); return }
         withAnimation(.smooth) { page = next }
+    }
+
+    /// Persists the subscriptions selected on the starter step as real,
+    /// profile-assigned records — seeding the app so the user never hits an empty
+    /// list, and feeding the same add-funnel event as every other add path.
+    private func commitStarters() {
+        guard !didCommitStarters else { return }
+        let chosen = starterItems.filter { selectedStarters.contains($0.id) }
+        guard !chosen.isEmpty else { return }
+        didCommitStarters = true
+
+        ProfileSetup.ensureDefault(in: modelContext)
+        let profiles = (try? modelContext.fetch(FetchDescriptor<Profile>())) ?? []
+        let profile = profiles.first { $0.id.uuidString == selectedProfileID } ?? profiles.first
+
+        for starter in chosen {
+            let sub = starter.provider.makeDraft()
+            sub.amount = starter.monthlyPrice
+            sub.currencyCode = currencyCode
+            sub.profile = profile
+            modelContext.insert(sub)
+        }
+
+        let total = (try? modelContext.fetchCount(
+            FetchDescriptor<Subscription>(predicate: #Predicate { !$0.isCancelled })
+        )) ?? chosen.count
+        for _ in chosen { Analytics.subscriptionAdded(method: .catalogue, totalActive: total) }
+
+        Task { await NotificationManager.shared.rescheduleAll(modelContext: modelContext) }
+        WidgetSync.refresh(modelContext: modelContext)
     }
 
     private func enableReminders() {
