@@ -8,3 +8,6 @@ DerivedData/
 
 # macOS
 .DS_Store
+
+# Landing page deploy artifact (build output, not source)
+landing-deploy.zip
