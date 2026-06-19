@@ -363,10 +363,10 @@
 			);
 			mainGroup = 4FD3FAC02FD0B47400C8A3E6;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			packageReferences = (
 				7E1EDEC400000000000000A1 /* XCRemoteSwiftPackageReference "SwiftSDK" */,
 			);
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 4FD3FACA2FD0B47400C8A3E6 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
