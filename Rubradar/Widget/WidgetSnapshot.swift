@@ -31,6 +31,10 @@ struct WidgetSnapshot: Codable, Hashable {
         var brandColorHex: String?
         /// Raw `SubscriptionCategory` value, used for the fallback tint.
         var categoryRaw: String
+        /// A small (≤96px) PNG of the real brand logo, baked in by the app so the
+        /// widget process can draw it without a network fetch. `nil` falls back to
+        /// the tinted SF-Symbol chip. Optional so old snapshots decode cleanly.
+        var logoPNGData: Data? = nil
 
         /// Localised price like "£9.99".
         var formattedAmount: String {

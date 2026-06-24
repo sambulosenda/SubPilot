@@ -14,6 +14,9 @@
 import AppIntents
 import WidgetKit
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 // MARK: - Timeline
 
@@ -108,29 +111,30 @@ struct NextRenewalView: View {
             sectionLabel("Monthly")
             Text(entry.snapshot.formattedMonthlyTotal)
                 .font(.title2.weight(.bold))
+                .monospacedDigit()
                 .minimumScaleFactor(0.6)
                 .lineLimit(1)
 
             Spacer(minLength: 8)
 
             if let event = next {
-                Label {
+                HStack(spacing: 8) {
+                    brandChip(for: event, size: 26)
                     Text(event.name)
                         .font(.subheadline.weight(.semibold))
                         .lineLimit(1)
-                } icon: {
-                    Image(systemName: event.symbolName)
-                        .foregroundStyle(tint(event))
                 }
-                .labelStyle(.titleAndIcon)
 
                 HStack {
                     Text(timingLabel(event))
+                        .foregroundStyle(timingTint(event))
                     Spacer()
                     Text(event.formattedAmount)
+                        .foregroundStyle(.primary)
+                        .monospacedDigit()
                 }
                 .font(.caption.weight(.medium))
-                .foregroundStyle(.secondary)
+                .padding(.top, 4)
             } else {
                 emptyLine
             }
@@ -148,6 +152,7 @@ struct NextRenewalView: View {
                     sectionLabel("Monthly total")
                     Text(entry.snapshot.formattedMonthlyTotal)
                         .font(.title2.weight(.bold))
+                        .monospacedDigit()
                         .minimumScaleFactor(0.6)
                         .lineLimit(1)
                 }
@@ -156,75 +161,108 @@ struct NextRenewalView: View {
                 if entry.canCycleProfiles {
                     // In-place profile switch — runs in the widget process.
                     Button(intent: CycleWidgetProfileIntent()) {
-                        HStack(spacing: 3) {
-                            Text(entry.snapshot.profileName ?? "All")
-                                .lineLimit(1)
-                            Image(systemName: "arrow.2.squarepath")
-                                .imageScale(.small)
-                                .accessibilityHidden(true)
-                        }
-                        .font(.caption2.weight(.medium))
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(.quaternary, in: Capsule())
-                        .foregroundStyle(.secondary)
+                        profileChip(entry.snapshot.profileName ?? "All", showsSwitch: true)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Profile: \(entry.snapshot.profileName ?? "All Profiles"). Switches profile.")
                 } else if let profile = entry.snapshot.profileName {
-                    Text(profile)
-                        .font(.caption2.weight(.medium))
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(.quaternary, in: Capsule())
-                        .foregroundStyle(.secondary)
+                    profileChip(profile, showsSwitch: false)
                 }
                 Link(destination: WidgetDeepLink.add) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title2)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundStyle(.secondary)
+                    Image(systemName: "plus")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(brand)
+                        .frame(width: 28, height: 28)
+                        .background(brand.opacity(0.14), in: Circle())
                 }
                 .accessibilityLabel("Add subscription")
             }
 
-            Divider()
+            Divider().opacity(0.6)
 
             if upcoming.isEmpty {
                 Spacer(minLength: 0)
                 emptyLine
                 Spacer(minLength: 0)
             } else {
-                ForEach(upcoming) { row($0) }
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(Array(upcoming.enumerated()), id: \.element.id) { index, event in
+                        row(event, isNext: index == 0)
+                    }
+                }
                 Spacer(minLength: 0)
             }
         }
     }
 
     /// Single line per event — a stacked amount/date trailing block makes three
-    /// rows taller than the medium widget and they collide.
-    private func row(_ event: WidgetSnapshot.Event) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: event.symbolName)
-                .font(.callout)
-                .foregroundStyle(tint(event))
-                .frame(width: 20)
-                .accessibilityHidden(true)
+    /// rows taller than the medium widget and they collide. The soonest charge
+    /// (`isNext`) carries the timing accent so the eye lands there first.
+    private func row(_ event: WidgetSnapshot.Event, isNext: Bool) -> some View {
+        HStack(spacing: 10) {
+            brandChip(for: event, size: 24)
             Text(event.name)
                 .font(.subheadline.weight(.medium))
                 .lineLimit(1)
             Spacer(minLength: 8)
-            Text(timingLabel(event))
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Text(timingLabel(event, compact: true))
+                .font(.caption.weight(isNext ? .semibold : .regular))
+                .foregroundStyle(isNext ? timingTint(event) : .secondary)
                 .lineLimit(1)
                 .layoutPriority(1)
             Text(event.formattedAmount)
                 .font(.subheadline.weight(.semibold))
+                .monospacedDigit()
                 .lineLimit(1)
                 .layoutPriority(1)
         }
         .accessibilityElement(children: .combine)
+    }
+
+    /// Brand logo tile — the same chip the app uses, so the widget reads as part
+    /// of the product. Prefers the real brand mark baked into the snapshot; falls
+    /// back to a brand-tinted SF Symbol so every icon carries equal weight
+    /// regardless of how chunky or thin its symbol is.
+    @ViewBuilder
+    private func brandChip(for event: WidgetSnapshot.Event, size: CGFloat) -> some View {
+        let shape = RoundedRectangle(cornerRadius: size * 0.30, style: .continuous)
+        Group {
+            if let data = event.logoPNGData, let uiImage = UIImage(data: data) {
+                // Edge-to-edge real logo, clipped so marks with a baked-in
+                // background round cleanly — mirrors the app's BrandLogoView.
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: size, height: size)
+                    .clipShape(shape)
+            } else {
+                shape
+                    .fill(tint(event).gradient)
+                    .frame(width: size, height: size)
+                    .overlay {
+                        Image(systemName: event.symbolName)
+                            .font(.system(size: size * 0.48, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+            }
+        }
+        .accessibilityHidden(true)
+    }
+
+    private func profileChip(_ name: String, showsSwitch: Bool) -> some View {
+        HStack(spacing: 3) {
+            Text(name).lineLimit(1)
+            if showsSwitch {
+                Image(systemName: "arrow.2.squarepath")
+                    .imageScale(.small)
+                    .accessibilityHidden(true)
+            }
+        }
+        .font(.caption2.weight(.semibold))
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(.quaternary, in: Capsule())
+        .foregroundStyle(.secondary)
     }
 
     // MARK: Lock Screen
@@ -326,20 +364,37 @@ private extension NextRenewalView {
         return "\(total). Next renewal \(event.name), \(when), \(event.formattedAmount)."
     }
 
-    func timingLabel(_ event: WidgetSnapshot.Event) -> String {
+    /// `compact` trims the relative text ("in 12 days" → "12d") so the brand name
+    /// gets the width back on the medium widget's tight rows.
+    func timingLabel(_ event: WidgetSnapshot.Event, compact: Bool = false) -> String {
         let relative: String
         switch daysUntil(event.date) {
         case ..<0: relative = "Due"
         case 0: relative = "Today"
-        case 1: relative = "Tomorrow"
-        case let days: relative = "in \(days) days"
+        case 1: relative = compact ? "1d" : "Tomorrow"
+        case let days: relative = compact ? "\(days)d" : "in \(days) days"
         }
-        return event.isTrialEnd ? "Trial • \(relative)" : relative
+        guard event.isTrialEnd else { return relative }
+        return compact ? "Trial · \(relative)" : "Trial • \(relative)"
     }
 
     func tint(_ event: WidgetSnapshot.Event) -> Color {
         if let hex = event.brandColorHex, let color = Color(hex: hex) { return color }
         return SubscriptionCategory(rawValue: event.categoryRaw)?.tint ?? .accentColor
+    }
+
+    /// SubPilot brand teal — keeps the widget on-brand without importing the app's
+    /// Theme (which isn't a member of the widget target).
+    var brand: Color { Color(hex: "0D9488") ?? .accentColor }
+
+    /// Accent for the timing label: orange when already due, brand teal when
+    /// imminent (today/tomorrow), otherwise it stays secondary.
+    func timingTint(_ event: WidgetSnapshot.Event) -> Color {
+        switch daysUntil(event.date) {
+        case ..<0: return .orange
+        case 0, 1: return brand
+        default: return .secondary
+        }
     }
 }
 
