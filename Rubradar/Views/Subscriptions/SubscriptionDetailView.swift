@@ -18,41 +18,30 @@ struct SubscriptionDetailView: View {
     @State private var stateChanged = false
 
     var body: some View {
-        List {
-            Section {
-                header
-                if let url = subscription.providerURL {
-                    openProviderButton(url)
-                }
+        // A ScrollView (not a List) so the teal hero can be a real scrolling
+        // header that bleeds under the bar and *stretches* on overscroll. A List
+        // clips its rows at the safe area, which is what forced every earlier
+        // workaround (parallax slab / pinned header / overscroll gap). The grouped
+        // info cards below are hand-built to match the system inset-grouped look.
+        ScrollView {
+            VStack(spacing: 0) {
+                hero
+                content
             }
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
-
-            Section("Cost") {
-                detailRow("Amount", subscription.formattedAmount)
-                detailRow("Billing", subscription.billingCycle == .custom
-                          ? "Every \(subscription.customCycleDays ?? 30) days"
-                          : subscription.billingCycle.label)
-                detailRow("Per month (approx.)",
-                          subscription.monthlyEquivalent.formatted(.currency(code: subscription.currencyCode)))
-            }
-
-            Section("Renewal") {
-                detailRow("Next renewal",
-                          subscription.projectedNextRenewal().formatted(.dateTime.day().month().year()))
-                if subscription.isFreeTrial, let end = subscription.trialEndDate {
-                    detailRow("Trial ends", end.formatted(.dateTime.day().month().year()))
-                }
-            }
-
-            if !subscription.notes.isEmpty {
-                Section("Notes") { Text(subscription.notes) }
-            }
-
-            Section { statusActions }
         }
-        .navigationTitle(subscription.name)
+        .background(Color.appBackground.ignoresSafeArea())
+        // Only bounce when content genuinely overflows — short subscriptions that
+        // fit the screen shouldn't rubber-band. When it does bounce, the hero's
+        // upward teal fill keeps the overscroll on-brand (no grey gap).
+        .scrollBounceBehavior(.basedOnSize)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        // Opaque brand-teal bar: the hero tucks cleanly *under the bar* as it
+        // scrolls (standard scroll-under-navbar) instead of overflowing a
+        // transparent bar. Dark scheme keeps back + Edit white on teal.
+        .toolbarBackground(Color.brand, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Edit") { showEdit = true }
@@ -69,24 +58,132 @@ struct SubscriptionDetailView: View {
         .sensoryFeedback(.selection, trigger: stateChanged)
     }
 
-    private var header: some View {
-        HStack(spacing: Spacing.md) {
-            BrandLogoView(subscription: subscription, size: 56)
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                Text(subscription.name).font(.title3.weight(.semibold))
+    // MARK: - Hero
+
+    /// Branded hero banner: full-bleed teal gradient with logo + name + status in
+    /// white. Its background is two layers (see `.background` below) so the teal
+    /// stretches upward on pull-down instead of revealing the grey scroll
+    /// background, and scrolls *with* the hero so there's no parallax.
+    private var hero: some View {
+        VStack(spacing: Spacing.sm) {
+            BrandLogoView(subscription: subscription, size: 76)
+                .shadow(color: .black.opacity(0.18), radius: 10, y: 4)
+            VStack(spacing: Spacing.xs) {
+                Text(subscription.name)
+                    .font(.title2.weight(.bold))
+                    .multilineTextAlignment(.center)
                 HStack(spacing: Spacing.sm) {
-                    Text(subscription.category.label).foregroundStyle(.secondary)
-                    if subscription.isFreeTrial { TrialBadge() }
-                    if subscription.isCancelled { CancelledBadge() }
+                    Text(subscription.category.label)
+                        .foregroundStyle(.white.opacity(0.85))
+                    if subscription.isFreeTrial { heroBadge("Trial", a11y: "Free trial") }
+                    if subscription.isCancelled { heroBadge("Cancelled", a11y: "Cancelled") }
                 }
                 .font(.subheadline)
             }
-            Spacer()
         }
-        .padding(.vertical, Spacing.sm)
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, Spacing.md)
+        .padding(.top, Spacing.lg)
+        .padding(.bottom, Spacing.lg)
+        // Layer 1 (front): the diagonal brand gradient, sized to the hero band.
+        .background(alignment: .bottom) {
+            LinearGradient(colors: [.brand, .brandDeep],
+                           startPoint: .topLeading,
+                           endPoint: .bottomTrailing)
+        }
+        // Layer 2 (back): a tall solid-brand fill anchored to the hero's bottom,
+        // extending far upward. It colours the top overscroll region (and behind
+        // the bar) teal and moves with the hero — so pull-down reveals teal, not
+        // grey, with no fixed slab to parallax against.
+        .background(alignment: .bottom) {
+            Color.brand
+                .frame(height: 1200)
+                .ignoresSafeArea(edges: .top)
+        }
         // One element so VoiceOver reads "Netflix, Streaming, Free trial" as a
         // unit instead of three fragments.
         .accessibilityElement(children: .combine)
+    }
+
+    /// White-on-translucent status pill, legible on the teal hero (the standard
+    /// `TrialBadge`/`CancelledBadge` are tuned for light cards).
+    private func heroBadge(_ text: LocalizedStringKey, a11y: String) -> some View {
+        Text(text)
+            .font(.caption2.weight(.semibold))
+            .padding(.horizontal, Spacing.sm)
+            .padding(.vertical, 2)
+            .background(.white.opacity(0.22), in: .capsule)
+            .foregroundStyle(.white)
+            .accessibilityLabel(a11y)
+            .transition(.scale.combined(with: .opacity))
+    }
+
+    // MARK: - Content
+
+    private var content: some View {
+        VStack(spacing: Spacing.lg) {
+            if let url = subscription.providerURL {
+                openProviderButton(url)
+            }
+
+            card("Cost") {
+                detailRow("Amount", subscription.formattedAmount)
+                rowDivider
+                detailRow("Billing", subscription.billingCycle == .custom
+                          ? "Every \(subscription.customCycleDays ?? 30) days"
+                          : subscription.billingCycle.label)
+                rowDivider
+                detailRow("Per month (approx.)",
+                          subscription.monthlyEquivalent.formatted(.currency(code: subscription.currencyCode)))
+            }
+
+            card("Renewal") {
+                detailRow("Next renewal",
+                          subscription.projectedNextRenewal().formatted(.dateTime.day().month().year()))
+                if subscription.isFreeTrial, let end = subscription.trialEndDate {
+                    rowDivider
+                    detailRow("Trial ends", end.formatted(.dateTime.day().month().year()))
+                }
+            }
+
+            if !subscription.notes.isEmpty {
+                card("Notes") {
+                    Text(subscription.notes)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, Spacing.md)
+                        .padding(.vertical, 14)
+                }
+            }
+
+            card { statusActions }
+        }
+        .padding(.horizontal, Spacing.md)
+        .padding(.top, Spacing.lg)
+        .padding(.bottom, Spacing.xl)
+    }
+
+    /// Grouped card: an optional secondary header above a rounded surface that
+    /// holds the rows — mirrors the system inset-grouped section look.
+    @ViewBuilder
+    private func card(_ header: LocalizedStringKey? = nil,
+                      @ViewBuilder _ content: () -> some View) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            if let header {
+                Text(header)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, Spacing.md)
+            }
+            VStack(spacing: 0) { content() }
+                .frame(maxWidth: .infinity)
+                .background(Color.cardBackground, in: .rect(cornerRadius: Radius.card))
+        }
+    }
+
+    /// Leading-inset hairline between rows, matching grouped-list separators.
+    private var rowDivider: some View {
+        Divider().padding(.leading, Spacing.md)
     }
 
     /// Full-width glass CTA to the provider's site; universal links hand off to
@@ -109,36 +206,51 @@ struct SubscriptionDetailView: View {
     }
 
     private var statusActions: some View {
-        Group {
-            Button {
-                subscription.isCancelled.toggle()
+        VStack(spacing: 0) {
+            actionRow(subscription.isCancelled ? "Mark as active" : "Mark as cancelled",
+                      systemImage: subscription.isCancelled ? "arrow.clockwise.circle" : "xmark.circle") {
+                // Animate so the header badge and this label's icon morph
+                // rather than snap; the model write itself is non-visual.
+                withAnimation(.snappy) { subscription.isCancelled.toggle() }
                 subscription.updatedAt = Date()
                 stateChanged.toggle()
                 reschedule()
-            } label: {
-                Label(subscription.isCancelled ? "Mark as active" : "Mark as cancelled",
-                      systemImage: subscription.isCancelled ? "arrow.clockwise.circle" : "xmark.circle")
             }
-
-            Button {
-                subscription.isFreeTrial.toggle()
-                if subscription.isFreeTrial && subscription.trialEndDate == nil {
-                    subscription.trialEndDate = subscription.nextRenewalDate
+            rowDivider
+            actionRow(subscription.isFreeTrial ? "Not a free trial" : "Mark as free trial",
+                      systemImage: "gift") {
+                withAnimation(.snappy) {
+                    subscription.isFreeTrial.toggle()
+                    if subscription.isFreeTrial && subscription.trialEndDate == nil {
+                        subscription.trialEndDate = subscription.nextRenewalDate
+                    }
                 }
                 subscription.updatedAt = Date()
                 stateChanged.toggle()
                 reschedule()
-            } label: {
-                Label(subscription.isFreeTrial ? "Not a free trial" : "Mark as free trial",
-                      systemImage: "gift")
             }
-
-            Button(role: .destructive) {
+            rowDivider
+            actionRow("Delete", systemImage: "trash", role: .destructive) {
                 showDeleteConfirm = true
-            } label: {
-                Label("Delete", systemImage: "trash")
             }
         }
+    }
+
+    /// A tappable action row inside a card. Teal (accent) by default, red for the
+    /// destructive role — matching how the buttons read inside a grouped List.
+    private func actionRow(_ title: LocalizedStringKey, systemImage: String,
+                           role: ButtonRole? = nil,
+                           action: @escaping () -> Void) -> some View {
+        Button(role: role, action: action) {
+            Label(title, systemImage: systemImage)
+                .contentTransition(.symbolEffect(.replace))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, Spacing.md)
+                .padding(.vertical, 14)
+                .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(role == .destructive ? Color.red : Color.accentColor)
     }
 
     private func detailRow(_ label: LocalizedStringKey, _ value: String) -> some View {
@@ -147,6 +259,8 @@ struct SubscriptionDetailView: View {
             Spacer()
             Text(value).multilineTextAlignment(.trailing)
         }
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, 14)
         // Read as "Amount, £9.99 a month" rather than two separate stops.
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(label)
