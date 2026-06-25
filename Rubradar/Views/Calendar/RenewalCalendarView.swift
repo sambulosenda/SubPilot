@@ -103,6 +103,7 @@ struct RenewalCalendarView: View {
                     month: displayedMonth,
                     selectedDate: selectedDate,
                     eventsByDay: data.eventsByDay,
+                    spendByDay: data.spendByDay,
                     calendar: calendar,
                     pageForward: pageForward,
                     onSelect: select(_:)
@@ -110,9 +111,6 @@ struct RenewalCalendarView: View {
                 .contentShape(.rect)
                 .gesture(pagingGesture)
             }
-            .padding(Spacing.md)
-            .background(Color.cardBackground, in: .rect(cornerRadius: Radius.card))
-            .shadow(color: .black.opacity(0.06), radius: 12, y: 4)
             .padding(.horizontal, Spacing.md)
             .padding(.top, Spacing.sm)
             .padding(.bottom, Spacing.md)
@@ -124,36 +122,66 @@ struct RenewalCalendarView: View {
 
     @ViewBuilder
     private func dayAgenda(for date: Date, in data: CalendarData) -> some View {
-        let dayEvents = data.eventsByDay[calendar.startOfDay(for: date)] ?? []
+        let dayStart = calendar.startOfDay(for: date)
+        let dayEvents = data.eventsByDay[dayStart] ?? []
         List {
-            Section {
-                if dayEvents.isEmpty {
-                    ContentUnavailableView {
-                        Label("Nothing renews this day", systemImage: "checkmark.circle")
-                    } description: {
-                        Text("Pick a day with a marker to see what's due.")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .listRowBackground(Color.clear)
-                } else {
-                    ForEach(dayEvents) { event in
-                        NavigationLink(value: event.subscription) {
-                            RenewalEventRow(event: event, showsDate: false)
+            if dayEvents.isEmpty {
+                // Quiet "nothing due" note instead of a full-screen empty state,
+                // then surface the next renewals so the space stays useful.
+                Section {
+                    EmptyDayNote(date: date)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                }
+                let nextUp = upcomingEvents(after: dayStart, in: data)
+                if !nextUp.isEmpty {
+                    Section("Next up") {
+                        ForEach(nextUp) { event in
+                            NavigationLink(value: event.subscription) {
+                                // These span months, so the badge shows the month
+                                // (not weekday) — otherwise two different "6"s read
+                                // as a duplicate.
+                                RenewalEventRow(event: event,
+                                                preferred: preferredCurrency,
+                                                rates: currency.rates,
+                                                showsMonth: true)
+                            }
                         }
                     }
                 }
-            } header: {
-                AgendaHeader(
-                    date: date,
-                    events: dayEvents,
-                    preferred: preferredCurrency,
-                    rates: currency.rates,
-                    calendar: calendar
-                )
+            } else {
+                Section {
+                    ForEach(dayEvents) { event in
+                        NavigationLink(value: event.subscription) {
+                            RenewalEventRow(event: event,
+                                            preferred: preferredCurrency,
+                                            rates: currency.rates,
+                                            showsDate: false)
+                        }
+                    }
+                } header: {
+                    AgendaHeader(
+                        date: date,
+                        events: dayEvents,
+                        preferred: preferredCurrency,
+                        rates: currency.rates,
+                        calendar: calendar
+                    )
+                }
             }
         }
         .listSectionSpacing(.compact)
         .tabBarMinimizeBehavior(.onScrollDown)
+    }
+
+    /// The soonest renewals strictly after `dayStart`. Events arrive pre-sorted by
+    /// date from the projector, so this is just a forward filter capped at three.
+    private func upcomingEvents(after dayStart: Date, in data: CalendarData) -> [RenewalEvent] {
+        data.months
+            .flatMap(\.events)
+            .filter { calendar.startOfDay(for: $0.date) > dayStart }
+            .prefix(3)
+            .map { $0 }
     }
 
     // MARK: Upcoming (timeline)
@@ -164,7 +192,9 @@ struct RenewalCalendarView: View {
                 Section {
                     ForEach(month.events) { event in
                         NavigationLink(value: event.subscription) {
-                            RenewalEventRow(event: event)
+                            RenewalEventRow(event: event,
+                                            preferred: preferredCurrency,
+                                            rates: currency.rates)
                         }
                     }
                 } header: {
@@ -240,12 +270,24 @@ struct RenewalCalendarView: View {
 /// Pre-grouped renewal data shared by both calendar modes — built once per body.
 private struct CalendarData {
     let eventsByDay: [Date: [RenewalEvent]]
+    /// Converted spend per day in the preferred currency — drives the grid's
+    /// spend-magnitude heatmap. Charges in an unconvertible currency contribute 0.
+    let spendByDay: [Date: Double]
     let months: [RenewalMonth]
 
     var isEmpty: Bool { months.isEmpty }
 
     init(events: [RenewalEvent], preferred: String, rates: ExchangeRates, calendar: Calendar) {
-        eventsByDay = Dictionary(grouping: events) { calendar.startOfDay(for: $0.date) }
+        let byDay = Dictionary(grouping: events) { calendar.startOfDay(for: $0.date) }
+        eventsByDay = byDay
+        spendByDay = byDay.mapValues { dayEvents in
+            dayEvents.reduce(0.0) { sum, event in
+                guard let converted = rates.convert(event.subscription.amount,
+                                                    from: event.subscription.currencyCode,
+                                                    to: preferred) else { return sum }
+                return sum + NSDecimalNumber(decimal: converted).doubleValue
+            }
+        }
         months = RenewalMonth.group(events, preferred: preferred, rates: rates, calendar: calendar)
     }
 }
@@ -276,15 +318,39 @@ private struct MonthHeader: View {
 
 private struct RenewalEventRow: View {
     let event: RenewalEvent
+    /// Preferred display currency + live rates, so the trailing amount matches the
+    /// converted totals in the headers instead of showing a stray native currency.
+    let preferred: String
+    let rates: ExchangeRates
     /// The day agenda already groups by date, so it hides the leading date badge.
     var showsDate = true
+    /// Cross-month lists ("Next up") show the month on the badge instead of the
+    /// weekday, so same-numbered days in different months don't look duplicated.
+    var showsMonth = false
 
     private var sub: Subscription { event.subscription }
+
+    /// The charge converted to the preferred currency — nil when the native currency
+    /// already is the preferred one, or no rate is available.
+    private var converted: Decimal? {
+        guard sub.currencyCode != preferred else { return nil }
+        return rates.convert(sub.amount, from: sub.currencyCode, to: preferred)
+    }
+
+    /// Primary amount: the preferred-currency value when convertible, else native.
+    private var primaryAmount: String {
+        converted?.formatted(.currency(code: preferred)) ?? sub.formattedAmount
+    }
+
+    /// Native charge, shown as a quiet subtitle only when we converted away from it.
+    private var nativeSubtitle: String? {
+        converted == nil ? nil : sub.formattedAmount
+    }
 
     var body: some View {
         HStack(spacing: Spacing.md) {
             if showsDate {
-                DateBadge(date: event.date)
+                DateBadge(date: event.date, showsMonth: showsMonth)
             }
 
             BrandLogoView(subscription: sub, size: 36)
@@ -306,9 +372,19 @@ private struct RenewalEventRow: View {
 
             Spacer(minLength: Spacing.sm)
 
-            Text(sub.formattedAmount)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
+            VStack(alignment: .trailing, spacing: 1) {
+                Text(primaryAmount)
+                    .font(.subheadline.weight(.semibold))
+                    .monospacedDigit()
+                    .lineLimit(1)
+                if let nativeSubtitle {
+                    Text(nativeSubtitle)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                }
+            }
         }
         .padding(.vertical, 2)
         .accessibilityElement(children: .combine)
@@ -318,17 +394,21 @@ private struct RenewalEventRow: View {
     private var accessibilityLabel: String {
         let action = event.isTrialEnd ? "trial ends" : "renews"
         let when = event.date.formatted(.dateTime.weekday(.wide).day().month(.wide))
-        return "\(sub.name), \(action) \(when), \(sub.formattedAmount)"
+        let amount = nativeSubtitle.map { "\(primaryAmount), \($0)" } ?? primaryAmount
+        return "\(sub.name), \(action) \(when), \(amount)"
     }
 }
 
-/// Compact weekday + day-of-month cell, e.g. "MON / 15".
+/// Compact weekday/month + day-of-month cell, e.g. "MON / 15" or "AUG / 6".
 private struct DateBadge: View {
     let date: Date
+    /// Top line shows the month (vs the weekday) for cross-month lists.
+    var showsMonth = false
 
     var body: some View {
         VStack(spacing: 0) {
-            Text(date.formatted(.dateTime.weekday(.abbreviated)))
+            Text(date.formatted(showsMonth ? .dateTime.month(.abbreviated)
+                                           : .dateTime.weekday(.abbreviated)))
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .textCase(.uppercase)
@@ -429,13 +509,10 @@ private struct MonthGridView: View {
     let month: Date
     let selectedDate: Date
     let eventsByDay: [Date: [RenewalEvent]]
+    let spendByDay: [Date: Double]
     let calendar: Calendar
     let pageForward: Bool
     let onSelect: (Date) -> Void
-
-    @ScaledMetric(relativeTo: .body) private var cellSize = 36
-    /// Lets the teal selection disc glide between days of the visible month.
-    @Namespace private var selectionNamespace
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: Spacing.xs), count: 7)
 
@@ -462,16 +539,21 @@ private struct MonthGridView: View {
     }
 
     private var grid: some View {
-        LazyVGrid(columns: columns, spacing: Spacing.sm) {
-            ForEach(MonthLayout.days(in: month, calendar: calendar)) { day in
+        let days = MonthLayout.days(in: month, calendar: calendar)
+        // Self-scale the heatmap to this month's heaviest day, so every month
+        // reads on its own terms rather than against a global maximum.
+        let monthMax = days.filter(\.isInMonth)
+            .compactMap { spendByDay[$0.date] }
+            .max() ?? 0
+        return LazyVGrid(columns: columns, spacing: Spacing.xs) {
+            ForEach(days) { day in
                 DayCell(
                     day: day,
                     isSelected: calendar.isDate(day.date, inSameDayAs: selectedDate),
                     isToday: calendar.isDateInToday(day.date),
                     events: eventsByDay[day.date] ?? [],
-                    cellSize: cellSize,
-                    selectionNamespace: selectionNamespace,
-                    selectionID: month,
+                    spend: spendByDay[day.date] ?? 0,
+                    monthMaxSpend: monthMax,
                     onSelect: { onSelect(day.date) }
                 )
             }
@@ -479,84 +561,111 @@ private struct MonthGridView: View {
     }
 }
 
+/// A flat day cell with a spend-aware marker. Selection and "today" both live on a
+/// filled circle behind the day number — the native iOS Calendar idiom — so the two
+/// never compete with a third shape: today is a brand circle, any other selected day
+/// a neutral one. A renewal day carries a single calm brand-teal wash that deepens
+/// with the day's converted spend (self-scaled to the month's heaviest day), reading
+/// as one quiet heatmap rather than a patchwork of per-brand colours; the colourful
+/// brand-logo chip below the number is what carries each service's identity.
 private struct DayCell: View {
     let day: CalendarDay
     let isSelected: Bool
     let isToday: Bool
     let events: [RenewalEvent]
-    let cellSize: CGFloat
-    /// Shared namespace + per-month id so the selection disc glides between days.
-    let selectionNamespace: Namespace.ID
-    let selectionID: Date
+    let spend: Double
+    let monthMaxSpend: Double
     let onSelect: () -> Void
+
+    /// Tuned so number + chip clear the square cell on the narrowest iPhone.
+    private static let markerSize: CGFloat = 18
+    private static let numberSize: CGFloat = 24
 
     private var dayNumber: String {
         day.date.formatted(.dateTime.day())
     }
 
-    /// Brand chips track the cell size so they stay proportional under Dynamic Type.
-    private var markerSize: CGFloat { cellSize * 0.4 }
+    private var hasEvents: Bool { !events.isEmpty }
+
+    /// This day's spend as a 0…1 weight against the month's heaviest day.
+    private var intensity: Double {
+        guard monthMaxSpend > 0 else { return 0 }
+        return min(1, spend / monthMaxSpend)
+    }
+
+    /// Heat backing: a single brand-teal hue that deepens with the day's spend.
+    /// One hue keeps the month reading as a coherent heatmap; selection no longer
+    /// touches the backing (it lives on the number circle), so empty days stay bare.
+    private var backingOpacity: Double {
+        guard hasEvents else { return 0 }
+        return 0.08 + 0.14 * intensity
+    }
 
     var body: some View {
         Button(action: onSelect) {
-            VStack(spacing: 3) {
-                Text(dayNumber)
-                    .font(.callout.weight(isSelected || isToday ? .bold : .regular))
-                    .monospacedDigit()
-                    .foregroundStyle(numberColor)
-                    .frame(width: cellSize, height: cellSize)
-                    .background(numberBackground)
-                markers
-                    .frame(height: markerSize)
-            }
-            .frame(maxWidth: .infinity)
-            .opacity(day.isInMonth ? 1 : 0.35)
-            .contentShape(.rect)
+            cell
+                .aspectRatio(1, contentMode: .fit)
+                .opacity(day.isInMonth ? 1 : 0.4)
+                .contentShape(.rect(cornerRadius: Radius.chip))
         }
         .buttonStyle(DayButtonStyle())
         .accessibilityLabel(accessibilityLabel)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }
 
-    @ViewBuilder
-    private var numberBackground: some View {
-        if isSelected {
-            Circle()
-                .fill(Color.brand.gradient)
-                .shadow(color: Color.brand.opacity(0.4), radius: 5, y: 2)
-                .matchedGeometryEffect(id: selectionID, in: selectionNamespace)
-        } else if isToday {
-            Circle().strokeBorder(Color.brand, lineWidth: 1.5)
+    private var cell: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
+                .fill(Color.brand.opacity(backingOpacity))
+
+            VStack(spacing: 2) {
+                dateLabel
+                marker
+                Spacer(minLength: 0)
+            }
+            .padding(.top, 3)
         }
     }
 
-    private var numberColor: Color {
-        if isSelected { return .white }
-        if isToday { return .brand }
-        return day.isInMonth ? .primary : .secondary
-    }
-
-    /// Up to two brand chips per day; a third-or-more renewal collapses into a
-    /// "+N" pill so the row never outgrows the cell on compact devices.
-    @ViewBuilder
-    private var markers: some View {
-        if events.isEmpty {
-            Color.clear
-        } else {
-            HStack(spacing: 2) {
-                BrandLogoView(subscription: events[0].subscription, size: markerSize)
-                if events.count == 2 {
-                    BrandLogoView(subscription: events[1].subscription, size: markerSize)
-                } else if events.count > 2 {
-                    Text("+\(events.count - 1)")
-                        .font(.system(size: 9, weight: .bold))
-                        .monospacedDigit()
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 3)
-                        .frame(height: markerSize)
-                        .background(Color(.tertiarySystemFill), in: .capsule)
+    /// The date sits on a filled circle when it's today (brand) or selected
+    /// (neutral) — one shape for both, so the grid never stacks competing tokens.
+    private var dateLabel: some View {
+        Text(dayNumber)
+            .font(.footnote.weight(isToday || isSelected ? .semibold : .regular))
+            .monospacedDigit()
+            .foregroundStyle(numberColor)
+            .frame(width: Self.numberSize, height: Self.numberSize)
+            .background {
+                if isToday {
+                    Circle().fill(Color.brand)
+                } else if isSelected {
+                    Circle().fill(Color.primary)
                 }
             }
+    }
+
+    private var numberColor: Color {
+        if isToday { return .white }
+        if isSelected { return Color(.systemBackground) }
+        return .primary
+    }
+
+    /// A single small brand chip marks a renewal; extra renewals collapse into "+N".
+    /// Empty days reserve the chip's height so day numbers stay aligned across rows.
+    @ViewBuilder
+    private var marker: some View {
+        if let first = events.first {
+            HStack(spacing: 2) {
+                BrandLogoView(subscription: first.subscription, size: Self.markerSize)
+                if events.count > 1 {
+                    Text("+\(events.count - 1)")
+                        .font(.system(size: 10, weight: .bold))
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } else {
+            Color.clear.frame(height: Self.markerSize)
         }
     }
 
@@ -569,11 +678,11 @@ private struct DayCell: View {
     }
 }
 
-/// Plain day cell with a springy press scale for a tactile feel.
+/// Plain day cell with a subtle springy press scale for a tactile feel.
 private struct DayButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.86 : 1)
+            .scaleEffect(configuration.isPressed ? 0.96 : 1)
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
@@ -638,6 +747,27 @@ private struct AgendaHeader: View {
             }
         }
         return (unconvertible ? "~" : "") + total.formatted(.currency(code: preferred))
+    }
+}
+
+// MARK: - Empty day note
+
+/// Compact stand-in for a barren empty-day state: the selected date plus a quiet
+/// "nothing due" line, leaving the room beneath for the "Next up" section.
+private struct EmptyDayNote: View {
+    let date: Date
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(date.formatted(.dateTime.weekday(.wide).day().month(.wide)))
+                .font(.subheadline.weight(.semibold))
+            Text("Nothing renews this day")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 2)
+        .accessibilityElement(children: .combine)
     }
 }
 

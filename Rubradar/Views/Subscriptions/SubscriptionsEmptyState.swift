@@ -15,6 +15,11 @@ struct SubscriptionsEmptyState: View {
     var onImportStatement: () -> Void
     var onAddManually: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// Drives a one-shot fade+rise entrance (and the icon bounce) on first show,
+    /// so a blank screen settles in rather than snapping into place.
+    @State private var appeared = false
+
     var body: some View {
         VStack(spacing: Spacing.xl) {
             header
@@ -22,6 +27,13 @@ struct SubscriptionsEmptyState: View {
         }
         .padding(.horizontal, Spacing.xl)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .opacity(appeared ? 1 : 0)
+        .offset(y: (appeared || reduceMotion) ? 0 : 12)
+        .onAppear {
+            withAnimation(reduceMotion ? .easeIn(duration: 0.3) : .smooth(duration: 0.5)) {
+                appeared = true
+            }
+        }
     }
 
     private var header: some View {
@@ -30,6 +42,7 @@ struct SubscriptionsEmptyState: View {
                 .font(.system(size: 48))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(.tint)
+                .symbolEffect(.bounce, value: appeared)
                 .frame(width: 96, height: 96)
                 .background(.tint.opacity(0.12), in: .circle)
                 .accessibilityHidden(true)

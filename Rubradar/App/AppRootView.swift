@@ -28,6 +28,10 @@ struct AppRootView: View {
                     .transition(.opacity)
             }
         }
+        // App-wide typography: SF Rounded. Set once at the root so every text
+        // style (.headline/.body/.caption…) and presented sheet inherits it,
+        // matching the rounded splash + brand mark.
+        .fontDesign(.rounded)
         .task {
             try? await Task.sleep(for: .seconds(1.6))
             withAnimation(.easeInOut(duration: 0.45)) { phase = .ready }

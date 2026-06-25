@@ -33,6 +33,9 @@ struct TrialBadge: View {
             .background(.orange.opacity(0.2), in: .capsule)
             .foregroundStyle(.orange)
             .accessibilityLabel("Free trial")
+            // Scale+fade in so a status change reads as a change, not a redraw,
+            // when toggled inside an animated transaction.
+            .transition(.scale.combined(with: .opacity))
     }
 }
 
@@ -45,6 +48,7 @@ struct CancelledBadge: View {
             .background(.secondary.opacity(0.2), in: .capsule)
             .foregroundStyle(.secondary)
             .accessibilityLabel("Cancelled")
+            .transition(.scale.combined(with: .opacity))
     }
 }
 

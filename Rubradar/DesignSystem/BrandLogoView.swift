@@ -7,9 +7,10 @@ import SwiftUI
 
 /// A square brand chip. Prefers, in order: a bundled logo asset, a real logo
 /// fetched from logo.dev by domain, then an SF Symbol on a tinted rounded
-/// square. Real logos sit on a white chip so multi-coloured marks read cleanly;
-/// the SF Symbol fallback keeps the brand-tinted gradient. No glass here — glass
-/// can't sample glass cleanly inside lists.
+/// square. Real logos render edge-to-edge (no white chip, no padding), clipped
+/// to the rounded shape so the mark fills the tile; the SF Symbol fallback keeps
+/// the brand-tinted gradient. No glass here — glass can't sample glass cleanly
+/// inside lists.
 struct BrandLogoView: View {
     var symbolName: String?
     var logoAssetName: String?
@@ -36,18 +37,22 @@ struct BrandLogoView: View {
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
-        shape
-            .fill(showsRealLogo ? AnyShapeStyle(.white) : AnyShapeStyle(tint.gradient.opacity(0.9)))
-            .frame(width: size, height: size)
-            .overlay { content }
-            .overlay {
-                // Hairline edge so a white logo chip seats on light backgrounds.
-                if showsRealLogo {
-                    shape.strokeBorder(Color.primary.opacity(0.08), lineWidth: 0.5)
-                }
+        Group {
+            if showsRealLogo {
+                // Edge-to-edge: the mark fills the tile, clipped to the rounded
+                // shape so logos with a solid baked-in background round cleanly.
+                content
+                    .frame(width: size, height: size)
+                    .clipShape(shape)
+            } else {
+                shape
+                    .fill(tint.gradient.opacity(0.9))
+                    .frame(width: size, height: size)
+                    .overlay { content }
             }
-            .task(id: brandDomain) { await loadRemoteLogo() }
-            .accessibilityHidden(true)
+        }
+        .task(id: brandDomain) { await loadRemoteLogo() }
+        .accessibilityHidden(true)
     }
 
     @ViewBuilder
@@ -56,12 +61,10 @@ struct BrandLogoView: View {
             Image(name)
                 .resizable()
                 .scaledToFit()
-                .padding(size * 0.18)
         } else if let remoteLogo {
             remoteLogo
                 .resizable()
                 .scaledToFit()
-                .padding(size * 0.16)
         } else {
             Image(systemName: resolvedSymbol)
                 .font(.system(size: size * 0.42, weight: .semibold))

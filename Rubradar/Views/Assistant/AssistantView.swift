@@ -34,6 +34,17 @@ struct AssistantView: View {
         String(localized: "Where could I cut back?")
     ]
 
+    /// True when launched for App Store screenshot capture (`-DemoAssistant`),
+    /// which seeds a scripted conversation and shows the chat even where the
+    /// on-device model can't run (e.g. the Simulator). DEBUG-only.
+    private var isScreenshotDemo: Bool {
+        #if DEBUG
+        ProcessInfo.processInfo.arguments.contains("-DemoAssistant")
+        #else
+        false
+        #endif
+    }
+
     /// Subscriptions in the selected profile, matching Home's scoping.
     private var profileSubscriptions: [Subscription] {
         subscriptions.filter { $0.belongsToProfile(id: selectedProfileID) }
@@ -67,7 +78,7 @@ struct AssistantView: View {
             Group {
                 if !purchases.isPro {
                     assistantLocked
-                } else if availability == .available {
+                } else if availability == .available || isScreenshotDemo {
                     chatBody
                 } else {
                     AssistantUnavailableView(availability: availability)
@@ -84,6 +95,9 @@ struct AssistantView: View {
         }
         .onAppear {
             availability = AssistantChat.availability
+            #if DEBUG
+            if isScreenshotDemo { chat.seedScreenshotConversation() }
+            #endif
             chat.prewarm(context: context)
         }
         .onChange(of: scenePhase) { _, phase in

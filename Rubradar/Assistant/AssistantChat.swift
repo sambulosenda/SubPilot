@@ -112,6 +112,25 @@ final class AssistantChat {
         #endif
     }
 
+    #if DEBUG
+    /// Seeds a scripted exchange for App Store screenshots, bypassing the
+    /// on-device model (which can't run in the Simulator). Numbers match the
+    /// `-DemoSeed` SampleData so the screenshot set stays consistent. Enabled
+    /// via `-DemoAssistant`.
+    func seedScreenshotConversation() {
+        guard messages.isEmpty else { return }
+        messages = [
+            Message(role: .user, text: "Where could I cut back?"),
+            Message(role: .assistant, text: """
+            You're spending $119.13/mo across 5 subscriptions. Two quick wins:
+
+            • ChatGPT Plus — your free trial ends in 2 days. Cancel before it renews at $20/mo.
+            • Adobe Creative Cloud is your priciest at $59.99/mo — worth a look if you're not using it weekly.
+            """)
+        ]
+    }
+    #endif
+
     #if canImport(FoundationModels)
     /// Creates the session if missing or rebuilds it when the grounding data
     /// changed, so the model always answers against current subscriptions.
