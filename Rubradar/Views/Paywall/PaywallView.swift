@@ -154,13 +154,14 @@ struct PaywallView: View {
                 .padding(.vertical, Spacing.lg)
             }
         } else {
-            VStack(spacing: Spacing.sm) {
+            VStack(spacing: Spacing.md) {
                 ForEach(purchases.products, id: \.id) { product in
                     ProductOptionRow(
-                        product: product,
                         tier: tierName(product),
-                        detail: detail(for: product),
-                        badge: product.id == PurchaseManager.ProductID.annual ? annualSavingsBadge : nil,
+                        caption: planCaption(for: product),
+                        priceAmount: priceAmount(for: product),
+                        pricePeriod: pricePeriod(for: product),
+                        ribbon: product.id == PurchaseManager.ProductID.annual ? annualSavingsBadge : nil,
                         isRecommended: product.id == PurchaseManager.ProductID.annual,
                         isSelected: product.id == selectedID
                     ) {
@@ -291,26 +292,41 @@ struct PaywallView: View {
         }
     }
 
-    /// A short pricing line beneath each tier's name.
-    private func detail(for product: Product) -> String {
+    /// The prominent price figure for a plan row. Annual shows its per-month
+    /// equivalent so it anchors directly against the monthly plan's headline price.
+    private func priceAmount(for product: Product) -> String {
         switch product.id {
-        case PurchaseManager.ProductID.monthly:
-            return String(localized: "\(product.displayPrice) / month")
         case PurchaseManager.ProductID.annual:
-            // Anchor against monthly by leading with the per-month equivalent —
-            // "$1.67 / mo" reads cheaper than the "$3.99 / month" plan at a glance,
-            // with the actual annual charge shown for clarity.
-            let perMonth = (product.price / 12).formatted(product.priceFormatStyle)
-            // Word joiner (U+2060) after each slash keeps "$1.67/mo" and "$19.99/year"
-            // from wrapping mid-unit; SwiftUI otherwise treats "/" as a break point.
-            let base = String(localized: "\(perMonth)/\u{2060}mo, billed \(product.displayPrice)/\u{2060}year")
-            return hasFreeTrial(product)
-                ? String(localized: "7 days free, then \(base)")
-                : base
-        case PurchaseManager.ProductID.lifetime:
-            return String(localized: "\(product.displayPrice) · pay once")
+            return (product.price / 12).formatted(product.priceFormatStyle)
         default:
             return product.displayPrice
+        }
+    }
+
+    /// The small unit beside the price ("/mo"); empty for the one-time Lifetime.
+    private func pricePeriod(for product: Product) -> String {
+        switch product.id {
+        case PurchaseManager.ProductID.monthly, PurchaseManager.ProductID.annual:
+            return String(localized: "/mo")
+        default:
+            return ""
+        }
+    }
+
+    /// The supporting line under the tier name — trial + the actual charge, or terms.
+    /// Word joiner (U+2060) keeps "$19.99/year" from wrapping mid-unit.
+    private func planCaption(for product: Product) -> String? {
+        switch product.id {
+        case PurchaseManager.ProductID.monthly:
+            return nil
+        case PurchaseManager.ProductID.annual:
+            return hasFreeTrial(product)
+                ? String(localized: "7 days free, then \(product.displayPrice)/\u{2060}year")
+                : String(localized: "Billed \(product.displayPrice)/\u{2060}year")
+        case PurchaseManager.ProductID.lifetime:
+            return String(localized: "One-time purchase")
+        default:
+            return nil
         }
     }
 
@@ -322,10 +338,11 @@ struct PaywallView: View {
 // MARK: - Product option row
 
 private struct ProductOptionRow: View {
-    let product: Product
     let tier: String
-    let detail: String
-    let badge: String?
+    let caption: String?
+    let priceAmount: String
+    let pricePeriod: String
+    let ribbon: String?
     var isRecommended: Bool = false
     let isSelected: Bool
     let onSelect: () -> Void
@@ -334,25 +351,44 @@ private struct ProductOptionRow: View {
         Button(action: onSelect) {
             HStack(spacing: Spacing.md) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
+                    .font(.title2)
                     .foregroundStyle(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(.tertiary))
                     .accessibilityHidden(true)
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text(tier)
                         .font(.headline)
                         .foregroundStyle(.primary)
-                    Text(detail)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    if let caption {
+                        Text(caption)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
                 }
+
                 Spacer(minLength: Spacing.sm)
-                if let badge {
-                    Text(badge)
-                        .font(.caption2.weight(.bold))
-                        .padding(.horizontal, Spacing.sm)
-                        .padding(.vertical, 3)
-                        .background(.tint, in: .capsule)
-                        .foregroundStyle(.white)
+
+                // Price hierarchy: the figure is the loud element, the period quiet.
+                // Right-aligned so the eye scans one column of prices down the list.
+                VStack(alignment: .trailing, spacing: 3) {
+                    if let ribbon {
+                        Text(ribbon)
+                            .font(.caption2.weight(.bold))
+                            .padding(.horizontal, Spacing.sm)
+                            .padding(.vertical, 3)
+                            .background(.tint, in: .capsule)
+                            .foregroundStyle(.white)
+                    }
+                    HStack(alignment: .firstTextBaseline, spacing: 1) {
+                        Text(priceAmount)
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(.primary)
+                        if !pricePeriod.isEmpty {
+                            Text(pricePeriod)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
             }
             .padding(Spacing.md)
@@ -370,14 +406,19 @@ private struct ProductOptionRow: View {
                 RoundedRectangle(cornerRadius: Radius.card)
                     .strokeBorder(.tint, lineWidth: isSelected ? 2 : 0)
             }
-            // Elevate the recommended plan so it reads as the hero choice; the
-            // other rows stay flat. Depth, not decoration.
-            .shadow(color: .black.opacity(isRecommended ? 0.12 : 0),
-                    radius: isRecommended ? 10 : 0, y: isRecommended ? 4 : 0)
+            // Soft depth on every card so they lift off the background; the
+            // recommended plan sits highest. Depth, not decoration.
+            .shadow(color: .black.opacity(isRecommended ? 0.14 : 0.05),
+                    radius: isRecommended ? 14 : 6, y: isRecommended ? 6 : 2)
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel(
-            [tier, isRecommended ? String(localized: "Best value") : nil, detail, badge]
+            [tier,
+             isRecommended ? String(localized: "Best value") : nil,
+             caption,
+             pricePeriod.isEmpty ? priceAmount : "\(priceAmount) \(pricePeriod)",
+             ribbon]
                 .compactMap { $0 }.joined(separator: ", ")
         )
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
