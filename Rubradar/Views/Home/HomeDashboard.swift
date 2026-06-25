@@ -9,7 +9,8 @@ import SwiftUI
 /// and the primary "Add a Subscription" call to action.
 struct DashboardHeader: View {
     let metrics: HomeMetrics
-    var presentAdd: (AddSheet) -> Void
+    /// Opens the add-subscription chooser (a bottom sheet owned by the host).
+    var onAdd: () -> Void
 
     /// Amount of the soonest upcoming charge, in its own currency.
     private var nextChargeAmount: String {
@@ -25,12 +26,7 @@ struct DashboardHeader: View {
                 StatCard(icon: "creditcard.fill", value: nextChargeAmount, caption: "Next charge")
             }
 
-            Menu {
-                Button("Add manually", systemImage: "square.and.pencil") { presentAdd(.manual) }
-                Button("Browse catalogue", systemImage: "magnifyingglass") { presentAdd(.catalogue) }
-                Button("Scan a receipt", systemImage: "doc.viewfinder") { presentAdd(.scan) }
-                Button("Import bank statement", systemImage: "doc.badge.arrow.up") { presentAdd(.bankImport) }
-            } label: {
+            Button(action: onAdd) {
                 HStack(spacing: Spacing.xs) {
                     Image(systemName: "plus")
                         .accessibilityHidden(true)
@@ -108,6 +104,10 @@ private struct StatCard: View {
                     .font(.title3.weight(.semibold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
+                    // Rolls digits when subscriptions change, matching the hero
+                    // total. Fires inside the @Query(animation:) update; degrades
+                    // to a crossfade for non-numeric values ("Tomorrow").
+                    .contentTransition(.numericText())
             }
             Text(caption)
                 .font(.caption)
@@ -124,7 +124,7 @@ private struct StatCard: View {
     let subs = SampleData.makeSamples()
     let metrics = HomeMetrics.make(from: subs, preferred: "GBP", rates: .fallback)
     return ScrollView {
-        DashboardHeader(metrics: metrics, presentAdd: { _ in })
+        DashboardHeader(metrics: metrics, onAdd: {})
             .padding(.horizontal, Spacing.md)
     }
 }

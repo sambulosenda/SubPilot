@@ -47,6 +47,11 @@ struct SubscriptionListView: View {
     @State private var showManageProfiles = false
     @State private var showInsights = false
     @State private var path: [Subscription] = []
+    /// Drives the "Add a Subscription" chooser bottom sheet (CTA + toolbar `+`).
+    @State private var showAddChooser = false
+    /// Flow chosen in the chooser, presented once the chooser finishes dismissing
+    /// so we never present a sheet from a sheet mid-dismiss.
+    @State private var pendingAdd: AddSheet?
 
     /// Subscriptions in the selected profile ("" = All), before search/cancel
     /// filtering. Drives the dashboard totals so they scope to the profile.
@@ -79,18 +84,6 @@ struct SubscriptionListView: View {
         }
     }
 
-    /// Time-of-day greeting used in place of a generic "Home" title — lighter,
-    /// and avoids echoing the "Home" tab-bar label sitting right below it. Late
-    /// night gets a wink, because that's usually when the subscription guilt hits.
-    private var greeting: LocalizedStringKey {
-        switch Calendar.current.component(.hour, from: .now) {
-        case 5..<12: "Good morning"
-        case 12..<17: "Good afternoon"
-        case 17..<22: "Good evening"
-        default: "Still up?"
-        }
-    }
-
     /// "Up next" only reads true when the default next-renewal order is in effect.
     private var listSectionTitle: LocalizedStringKey {
         sortOption == .nextRenewal && searchText.isEmpty ? "Up next" : "Your subscriptions"
@@ -110,13 +103,24 @@ struct SubscriptionListView: View {
                     list
                 }
             }
-            .navigationTitle(greeting)
-            // Empty: let the empty state be the hero (its own headline owns the
-            // screen) instead of stranding a large greeting above a gap.
-            .navigationBarTitleDisplayMode(subscriptions.isEmpty ? .inline : .automatic)
+            .navigationTitle("")
+            // No large title: the "Up next" / empty-state headline owns the screen,
+            // so we keep the bar inline rather than stranding a title above the content.
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar { toolbarContent }
             .sheet(isPresented: $showManageProfiles) {
                 NavigationStack { ManageProfilesView() }
+            }
+            .sheet(isPresented: $showAddChooser, onDismiss: {
+                if let pendingAdd {
+                    self.pendingAdd = nil
+                    presentAdd(pendingAdd)
+                }
+            }) {
+                AddOptionsSheet { choice in
+                    pendingAdd = choice
+                    showAddChooser = false
+                }
             }
             .onChange(of: profiles.map(\.id)) {
                 // A deleted selected profile would otherwise filter to nothing.
@@ -147,7 +151,7 @@ struct SubscriptionListView: View {
         return List {
             if searchText.isEmpty {
                 Section {
-                    DashboardHeader(metrics: metrics, presentAdd: presentAdd)
+                    DashboardHeader(metrics: metrics, onAdd: { showAddChooser = true })
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
@@ -231,32 +235,36 @@ struct SubscriptionListView: View {
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
+        // Trailing edge stays a two-pill capsule: a secondary overflow (Insights
+        // + Sort) and the primary Add. Folding Insights and Sort into one ⋯ menu
+        // keeps the top from reading as a dense three-segment glass cluster.
         if !subscriptions.isEmpty {
             ToolbarItem(placement: .topBarLeading) { profileMenu }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Insights", systemImage: "chart.pie.fill") { showInsights = true }
-            }
+            ToolbarItem(placement: .topBarTrailing) { overflowMenu }
         }
-        ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-                Picker("Sort by", selection: $sortOption) {
-                    ForEach(SortOption.allCases) { option in
-                        Label(option.label, systemImage: option.symbol).tag(option)
-                    }
+        ToolbarItem(placement: .topBarTrailing) { addMenu }
+    }
+
+    /// Primary action — one tap opens the add chooser (a bottom sheet).
+    private var addMenu: some View {
+        Button { showAddChooser = true } label: {
+            Label("Add subscription", systemImage: "plus")
+        }
+    }
+
+    /// Secondary, list-only actions: Insights (a push) and Sort (a rarely
+    /// changed preference) live here rather than as standalone toolbar buttons.
+    private var overflowMenu: some View {
+        Menu {
+            Button("Insights", systemImage: "chart.pie.fill") { showInsights = true }
+            Divider()
+            Picker("Sort by", selection: $sortOption) {
+                ForEach(SortOption.allCases) { option in
+                    Label(option.label, systemImage: option.symbol).tag(option)
                 }
-            } label: {
-                Label("Sort", systemImage: "arrow.up.arrow.down")
             }
-        }
-        ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-                Button("Add manually", systemImage: "square.and.pencil") { presentAdd(.manual) }
-                Button("Browse catalogue", systemImage: "magnifyingglass") { presentAdd(.catalogue) }
-                Button("Scan a receipt", systemImage: "doc.viewfinder") { presentAdd(.scan) }
-                Button("Import bank statement", systemImage: "doc.badge.arrow.up") { presentAdd(.bankImport) }
-            } label: {
-                Label("Add subscription", systemImage: "plus")
-            }
+        } label: {
+            Label("More", systemImage: "ellipsis")
         }
     }
 }
