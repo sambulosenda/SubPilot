@@ -63,6 +63,10 @@ struct RootView: View {
     // currency change repaints the widget immediately (see the .onChange below).
     @AppStorage("selectedProfileID") private var selectedProfileID = ""
     @AppStorage("preferredCurrencyCode") private var preferredCurrencyCode = ""
+    /// Set when first-run onboarding closes for a non-Pro user; consumed the
+    /// first time the user actually engages (see `presentDeferredUpsellIfReady`).
+    /// Persisted so a relaunch before the user engaged still honours it once.
+    @AppStorage("pendingOnboardingUpsell") private var pendingOnboardingUpsell = false
     @Environment(\.requestReview) private var requestReview
     @State private var selection: AppTab = .launchSelection
     @State private var presentedSheet: AddSheet?
@@ -123,7 +127,7 @@ struct RootView: View {
         .sheet(item: $purchases.paywallContext) { context in
             PaywallView(context: context)
         }
-        .fullScreenCover(isPresented: onboardingPresented, onDismiss: presentOnboardingUpsell) {
+        .fullScreenCover(isPresented: onboardingPresented, onDismiss: armOnboardingUpsell) {
             OnboardingView {
                 hasCompletedOnboarding = true
                 Analytics.onboardingCompleted()
@@ -141,13 +145,27 @@ struct RootView: View {
             // (FR-21), not cold here. rescheduleAll no-ops until authorized.
             await NotificationManager.shared.rescheduleAll(modelContext: modelContext)
             checkSharedInbox()
+            // Cold relaunch after onboarding (session 2+): onChange(scenePhase)
+            // doesn't fire on first appearance, so consume any pending upsell here.
+            presentDeferredUpsellIfReady()
         }
         .onChange(of: scenePhase) { _, phase in
             // A receipt may have been shared in while the app was backgrounded.
-            if phase == .active { checkSharedInbox() }
+            if phase == .active {
+                checkSharedInbox()
+                // A warm return is a "came back" signal — a good moment to surface
+                // the deferred onboarding upsell to an engaged, retained user.
+                presentDeferredUpsellIfReady()
+            }
             // Capture any edits made this session in the widget snapshot before
             // the user glances at the Home/Lock Screen.
             if phase == .background { WidgetSync.refresh(modelContext: modelContext) }
+        }
+        .onChange(of: selection) {
+            // First tab switch after onboarding = the user has seen their populated
+            // dashboard and is exploring. Surface the deferred upsell now — the ask
+            // lands after the value, not before it.
+            presentDeferredUpsellIfReady()
         }
         .onChange(of: selectedProfileID) {
             // The widget renders the selected profile's totals + renewals.
@@ -202,20 +220,30 @@ struct RootView: View {
         }
     }
 
-    /// Surfaces the Pro offer once, the moment first-run onboarding closes —
-    /// the highest-intent point in the session. The cover only ever presents on
-    /// first launch, so this fires exactly once per install. Soft by design:
-    /// non-Pro only, and the paywall's "Maybe later" drops straight into the
-    /// free tier (`PaywallContext.onboarding`).
-    ///
-    /// The upsell is deferred a beat: presenting a sheet synchronously from a
-    /// `fullScreenCover`'s `onDismiss` lands inside the cover's still-settling
-    /// dismissal transaction, and SwiftUI drops the new presentation. Letting
-    /// the dismissal finish first makes the paywall present reliably.
-    private func presentOnboardingUpsell() {
+    /// Arms the one-time Pro offer instead of firing it immediately. Presenting
+    /// the paywall the instant onboarding closed — before the user had seen their
+    /// populated dashboard or felt any value — read as a wall and converted
+    /// poorly on day one. We now defer it to the first real engagement signal
+    /// (tab switch, warm return, or next launch). Soft + non-Pro only; the
+    /// cover only ever closes on first launch, so this arms exactly once.
+    private func armOnboardingUpsell() {
         guard !purchases.isPro else { return }
+        pendingOnboardingUpsell = true
+    }
+
+    /// Presents the deferred onboarding upsell once the user has engaged. Guarded
+    /// so it fires at most once, never to a Pro user, and never on top of another
+    /// sheet. The brief delay lets the triggering transition (tab change / launch)
+    /// settle before the sheet presents, so SwiftUI doesn't drop it.
+    private func presentDeferredUpsellIfReady() {
+        guard pendingOnboardingUpsell,
+              !purchases.isPro,
+              presentedSheet == nil,
+              purchases.paywallContext == nil else { return }
+        pendingOnboardingUpsell = false
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(350))
+            guard !purchases.isPro else { return }
             purchases.paywallContext = .onboarding
         }
     }

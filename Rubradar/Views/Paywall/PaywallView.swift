@@ -14,9 +14,18 @@ struct PaywallView: View {
     let context: PaywallContext
 
     @Environment(PurchaseManager.self) private var purchases
+    @Environment(CurrencyService.self) private var currency
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+
+    /// Backs the personalised onboarding hero — the user's own spend, the
+    /// strongest argument the paywall has. Scoped to the selected profile +
+    /// preferred currency so it matches the Home dashboard exactly.
+    @Query private var subscriptions: [Subscription]
+    @AppStorage("preferredCurrencyCode") private var preferredCurrency =
+        Locale.current.currency?.identifier ?? "GBP"
+    @AppStorage("selectedProfileID") private var selectedProfileID = ""
 
     /// Selected product id. Defaults to annual (the value option we steer toward).
     @State private var selectedID = PurchaseManager.ProductID.annual
@@ -74,7 +83,8 @@ struct PaywallView: View {
     // MARK: - Hero
 
     private var hero: some View {
-        VStack(spacing: Spacing.md) {
+        let pitch = onboardingPitch   // computed once per render
+        return VStack(spacing: Spacing.md) {
             Image(systemName: "crown.fill")
                 .font(.system(size: 44))
                 .symbolRenderingMode(.hierarchical)
@@ -84,10 +94,10 @@ struct PaywallView: View {
                 .accessibilityHidden(true)
 
             VStack(spacing: Spacing.sm) {
-                Text(context.headline)
+                heroHeadline(pitch)
                     .font(.title.bold())
                     .multilineTextAlignment(.center)
-                Text(context.subtitle)
+                heroSubtitle(pitch)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -205,6 +215,37 @@ struct PaywallView: View {
         .padding(.top, Spacing.sm)
     }
 
+    // MARK: - Personalised onboarding copy
+
+    /// The data behind the personalised onboarding hero, derived in one pass
+    /// (scoped + converted exactly like the Home dashboard). `nil` outside the
+    /// onboarding context or when there's no real total to lead with.
+    private struct OnboardingPitch { let yearly: String; let count: Int }
+
+    private var onboardingPitch: OnboardingPitch? {
+        guard context == .onboarding else { return nil }
+        let scoped = subscriptions.filter { $0.belongsToProfile(id: selectedProfileID) }
+        let count = scoped.filter { !$0.isCancelled }.count
+        let summary = SpendSummary.make(from: scoped, preferred: preferredCurrency, rates: currency.rates)
+        guard count > 0, summary.monthlyTotal > 0 else { return nil }
+        return OnboardingPitch(yearly: summary.formattedYearly, count: count)
+    }
+
+    /// Hero copy returned as `Text` so the personalised onboarding subtitle can
+    /// use automatic grammar agreement (`^[…](inflect: true)`) for correct
+    /// per-locale pluralisation — the markup is only applied through `Text`'s
+    /// `LocalizedStringKey`, not `String(localized:)`. Matches the convention
+    /// used elsewhere in the app. Falls back to the context's generic copy.
+    private func heroHeadline(_ pitch: OnboardingPitch?) -> Text {
+        guard let pitch else { return Text(context.headline) }
+        return Text("You're spending \(pitch.yearly) a year")
+    }
+
+    private func heroSubtitle(_ pitch: OnboardingPitch?) -> Text {
+        guard let pitch else { return Text(context.subtitle) }
+        return Text("Across ^[\(pitch.count) subscription](inflect: true). Start a free trial and we'll remind you before every renewal — including this one.")
+    }
+
     // MARK: - Derived
 
     private var selectedProduct: Product? { purchases.product(for: selectedID) }
@@ -313,6 +354,8 @@ private struct ProductOptionRow: View {
 }
 
 #Preview {
-    PaywallView(context: .subscriptionLimit)
+    PaywallView(context: .onboarding)
+        .modelContainer(.preview)
+        .environment(CurrencyService())
         .environment(PurchaseManager.preview(isPro: false))
 }
