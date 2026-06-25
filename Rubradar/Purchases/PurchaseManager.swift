@@ -24,8 +24,9 @@ final class PurchaseManager {
         static let annual   = "com.sambulosenda.subradar.pro.annual"
         static let lifetime = "com.sambulosenda.subradar.pro.lifetime"
 
-        /// Display order: monthly → annual → lifetime.
-        static let all: [String] = [monthly, annual, lifetime]
+        /// Display order: annual first (the default + best-value option the
+        /// paywall steers toward), then monthly, then lifetime.
+        static let all: [String] = [annual, monthly, lifetime]
     }
 
     private static let isProDefaultsKey = "isProEntitlement"
@@ -82,7 +83,8 @@ final class PurchaseManager {
         defer { isLoadingProducts = false }
         do {
             let loaded = try await Product.products(for: ProductID.all)
-            // Re-order to monthly → annual → lifetime regardless of fetch order.
+            // Re-order to the canonical display order (annual → monthly → lifetime)
+            // regardless of the order StoreKit returns them in.
             products = ProductID.all.compactMap { id in loaded.first { $0.id == id } }
         } catch {
             // Leave products empty; the paywall offers a retry.

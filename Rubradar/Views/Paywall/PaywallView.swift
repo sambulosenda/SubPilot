@@ -288,10 +288,16 @@ struct PaywallView: View {
         case PurchaseManager.ProductID.monthly:
             return String(localized: "\(product.displayPrice) / month")
         case PurchaseManager.ProductID.annual:
-            if hasFreeTrial(product) {
-                return String(localized: "7 days free, then \(product.displayPrice) / year")
-            }
-            return String(localized: "\(product.displayPrice) / year")
+            // Anchor against monthly by leading with the per-month equivalent —
+            // "$1.67 / mo" reads cheaper than the "$3.99 / month" plan at a glance,
+            // with the actual annual charge shown for clarity.
+            let perMonth = (product.price / 12).formatted(product.priceFormatStyle)
+            // Word joiner (U+2060) after each slash keeps "$1.67/mo" and "$19.99/year"
+            // from wrapping mid-unit; SwiftUI otherwise treats "/" as a break point.
+            let base = String(localized: "\(perMonth)/\u{2060}mo, billed \(product.displayPrice)/\u{2060}year")
+            return hasFreeTrial(product)
+                ? String(localized: "7 days free, then \(base)")
+                : base
         case PurchaseManager.ProductID.lifetime:
             return String(localized: "\(product.displayPrice) · pay once")
         default:
