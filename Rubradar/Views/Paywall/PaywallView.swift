@@ -86,11 +86,18 @@ struct PaywallView: View {
         let pitch = onboardingPitch   // computed once per render
         return VStack(spacing: Spacing.md) {
             Image(systemName: "crown.fill")
-                .font(.system(size: 44))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(.tint)
-                .frame(width: 92, height: 92)
-                .background(.tint.opacity(0.12), in: .circle)
+                .font(.system(size: 32, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 76, height: 76)
+                .background(
+                    LinearGradient(
+                        colors: [.brand, .brandDeep],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    in: .circle
+                )
+                .shadow(color: .brand.opacity(0.3), radius: 12, y: 6)
                 .accessibilityHidden(true)
 
             VStack(spacing: Spacing.sm) {
@@ -154,12 +161,14 @@ struct PaywallView: View {
                         tier: tierName(product),
                         detail: detail(for: product),
                         badge: product.id == PurchaseManager.ProductID.annual ? annualSavingsBadge : nil,
+                        isRecommended: product.id == PurchaseManager.ProductID.annual,
                         isSelected: product.id == selectedID
                     ) {
                         selectedID = product.id
                     }
                 }
             }
+            .sensoryFeedback(.selection, trigger: selectedID)
         }
     }
 
@@ -317,6 +326,7 @@ private struct ProductOptionRow: View {
     let tier: String
     let detail: String
     let badge: String?
+    var isRecommended: Bool = false
     let isSelected: Bool
     let onSelect: () -> Void
 
@@ -325,7 +335,7 @@ private struct ProductOptionRow: View {
             HStack(spacing: Spacing.md) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundStyle(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .foregroundStyle(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(.tertiary))
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(tier)
@@ -347,14 +357,29 @@ private struct ProductOptionRow: View {
             }
             .padding(Spacing.md)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.cardBackground, in: .rect(cornerRadius: Radius.card))
+            .background {
+                RoundedRectangle(cornerRadius: Radius.card)
+                    .fill(Color.cardBackground)
+                    // Subtle brand wash on the chosen plan — richer than a bare border.
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Radius.card)
+                            .fill(.tint.opacity(isSelected ? 0.08 : 0))
+                    )
+            }
             .overlay {
                 RoundedRectangle(cornerRadius: Radius.card)
                     .strokeBorder(.tint, lineWidth: isSelected ? 2 : 0)
             }
+            // Elevate the recommended plan so it reads as the hero choice; the
+            // other rows stay flat. Depth, not decoration.
+            .shadow(color: .black.opacity(isRecommended ? 0.12 : 0),
+                    radius: isRecommended ? 10 : 0, y: isRecommended ? 4 : 0)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(badge.map { "\(tier), \(detail), \($0)" } ?? "\(tier), \(detail)")
+        .accessibilityLabel(
+            [tier, isRecommended ? String(localized: "Best value") : nil, detail, badge]
+                .compactMap { $0 }.joined(separator: ", ")
+        )
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 }
