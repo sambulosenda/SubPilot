@@ -13,20 +13,30 @@ Apple rejects).
 > You created the record as "SubPilot". You can update the name in App Store
 > Connect → App Information before submitting. The Home Screen name stays
 > "SubPilot" regardless (that's `CFBundleDisplayName`).
+>
+> **Keep "Tracker," not "Manager"** (Astro top-10 benchmark, Jun 2026): the
+> "subscription manager" field is walled off — its weakest ranking app has ~116
+> ratings and the rest run 1,600–360,000 (Bobby, Kango, NerdWallet, Finelo).
+> The "subscription tracker" field has 0- and 42-rating apps ranking, so it's
+> winnable at 0 ratings. Revisit "Manager" after ~100+ ratings.
 
 ## Subtitle (30)
 
-Recommended: `Renewal reminders & budgeting` (29)
+Recommended: `Manage renewals & reminders` (27)
 
-> Subtitle words ARE indexed. This carries three keywords — renewal, reminder,
-> budget — which are therefore REMOVED from the keyword field below (no point
-> paying for them twice). Earlier draft `Track renewals & spending` wasted reach
-> by repeating `track` (already in the name "Tracker") and `spending`/`renewals`
-> (also in the keyword field).
+> Subtitle words ARE indexed (2nd-highest weight). This puts `manage` in the
+> subtitle to target **manage subscriptions** (pop 14 / diff 42) — a *winnable*
+> term per the Astro top-10 benchmark (its field has 0- and 9-rating apps
+> ranking). `manage` + `Subscription` (name) forms the phrase; `manage` also
+> stems to manager/managing. Carries manage, renewal, reminder — all REMOVED
+> from the keyword field below (no paying twice).
 
-Alternatives (same de-dup rule applies — keep keyword field in sync):
-- `Bill reminders & budgeting` (26) — swaps renewal→bill in the indexed set
-- `Never miss a renewal again` (26) — benefit-first, weaker keyword coverage
+Alternatives:
+- `Renewal reminders & budgeting` (29) — prior version; pure conversion, no
+  winnable keyword (renewal = pop 6, budget terms dead). Safe but lower reach.
+- `Cancel & renewal reminders` (26) — swaps in `cancel` (pop 33, higher) but
+  diff 47, it's Finelo's turf, and risks implying auto-cancel. Honest only as
+  "reminders to cancel."
 
 ## Promotional text (170 — editable any time without a new build)
 
@@ -35,19 +45,28 @@ reminders before each charge so a free trial never turns into a surprise bill.`
 
 ## Keywords (100, comma-separated, no spaces — don't repeat words from the name OR subtitle)
 
-`recurring,bill,trial,manage,spending,money,expense,finance,cancel,due,payment,alert,saver,cost,price`
+`cancel,recurrent,recurring,receipt,scan,trial,forgotten,private,organizer,widget,bill,spending,alert`
 
-> 100/100 chars. Changes from the first draft:
-> - Dropped `track` (dupes "Tracker" in the name), `renewal`/`reminder`/`budget`
->   (now in the subtitle), so none are paid for twice.
-> - Singularised `bills→bill`, `expenses→expense` (Apple indexes both forms;
->   singular saves characters).
-> - Added 5 high-intent terms: `due, payment, alert, saver, cost, price`.
-> - Apple stems, so `subscription` (name) covers subscriptions; don't re-add it.
+> 100/100 chars. Now backed by Astro popularity/difficulty + a top-10
+> winnability benchmark (Jun 2026). Changes from the prior draft:
+> - **Removed** `manage` (now in the subtitle) and `money,finance,cost,price,
+>   saver,due,payment` — generic guesses with no volume signal; `finance` is
+>   also your category (Apple already knows it = wasted).
+> - **Added** `recurrent` (pop 15 / diff 15 — easiest win in the set),
+>   `receipt,scan` (pop-56 "receipt scanner" + a real feature you ship),
+>   `forgotten` (high intent), `private` (your #1 differentiator), `organizer,
+>   widget` (features).
+> - `cancel` + `Subscription` (name) → "subscription cancel" / "cancel
+>   subscription" (the pop-33 cluster).
+> - De-dup: nothing repeats the name (subscription, tracker) or subtitle
+>   (manage, renewal, reminder). Apple stems singular/plural and manage→manager.
 >
-> Caveat: these picks aren't backed by volume/difficulty data yet. Validate with
-> `/keyword-research` before locking. "subscription tracker" (in the name) is
-> hyper-competitive — lean on long-tail terms for early ranking wins.
+> Benchmark verdict: target the **tracker** family (name) + **manage** (subtitle)
+> + `recurrent` — their top-10s contain weak/new apps a 0-rating app can pass.
+> `subscription manager` (noun) and `receipt scanner` are walled off by
+> Bobby/Kango/NerdWallet for now — `receipt`/`scan` are indexed here cheaply so
+> you're positioned when authority grows. Re-check the Astro **Ranking** column
+> ~3–4 weeks after shipping.
 
 ## Description
 
