@@ -47,6 +47,8 @@ struct SubscriptionListView: View {
     @State private var showManageProfiles = false
     @State private var showInsights = false
     @State private var path: [Subscription] = []
+    /// Shared namespace so a tapped row zooms into its detail screen and back.
+    @Namespace private var detailTransition
     /// Drives the "Add a Subscription" chooser bottom sheet (CTA + toolbar `+`).
     @State private var showAddChooser = false
     /// Flow chosen in the chooser, presented once the chooser finishes dismissing
@@ -164,6 +166,7 @@ struct SubscriptionListView: View {
                         NavigationLink(value: sub) {
                             SubscriptionRow(subscription: sub)
                         }
+                        .matchedTransitionSource(id: sub.id, in: detailTransition)
                         .contextMenu {
                             if let url = sub.providerURL {
                                 Button {
@@ -180,7 +183,9 @@ struct SubscriptionListView: View {
             }
         }
         .navigationDestination(for: Subscription.self) { sub in
-            SubscriptionDetailView(subscription: sub)
+            SubscriptionDetailView(subscription: sub,
+                                   transitionID: sub.id,
+                                   transitionNamespace: detailTransition)
         }
         .navigationDestination(isPresented: $showInsights) {
             InsightsView()

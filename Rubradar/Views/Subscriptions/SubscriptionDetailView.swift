@@ -8,6 +8,10 @@ import SwiftData
 
 struct SubscriptionDetailView: View {
     @Bindable var subscription: Subscription
+    /// Matched-source id + namespace for the row→detail zoom transition. Optional
+    /// so the view still builds standalone (previews, deep links) without one.
+    var transitionID: UUID? = nil
+    var transitionNamespace: Namespace.ID? = nil
 
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
@@ -56,6 +60,7 @@ struct SubscriptionDetailView: View {
             Text("This can't be undone.")
         }
         .sensoryFeedback(.selection, trigger: stateChanged)
+        .zoomNavigationTransition(id: transitionID, in: transitionNamespace)
     }
 
     // MARK: - Hero

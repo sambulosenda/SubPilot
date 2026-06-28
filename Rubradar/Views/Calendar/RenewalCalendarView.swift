@@ -64,7 +64,7 @@ struct RenewalCalendarView: View {
                         ForEach(Mode.allCases) { Text($0.label).tag($0) }
                     }
                     .pickerStyle(.segmented)
-                    .frame(maxWidth: 220)
+                    .fixedSize()
                 }
             }
             .navigationDestination(for: Subscription.self) { sub in
@@ -86,92 +86,114 @@ struct RenewalCalendarView: View {
         let monthTotal = data.months.first {
             calendar.isDate($0.id, equalTo: displayedMonth, toGranularity: .month)
         }
-        VStack(spacing: 0) {
-            VStack(spacing: Spacing.md) {
-                MonthNavBar(
-                    title: displayedMonth.formatted(.dateTime.month(.wide).year()),
-                    total: monthTotal,
-                    renewalCount: monthTotal?.events.count ?? 0,
-                    canGoBack: displayedMonth > bounds.earliest,
-                    canGoForward: displayedMonth < bounds.latest,
-                    showsToday: !calendar.isDate(displayedMonth, equalTo: bounds.earliest, toGranularity: .month),
-                    onPrevious: { page(by: -1) },
-                    onNext: { page(by: 1) },
-                    onToday: goToToday
-                )
-                MonthGridView(
-                    month: displayedMonth,
-                    selectedDate: selectedDate,
-                    eventsByDay: data.eventsByDay,
-                    spendByDay: data.spendByDay,
-                    calendar: calendar,
-                    pageForward: pageForward,
-                    onSelect: select(_:)
-                )
-                .contentShape(.rect)
-                .gesture(pagingGesture)
-            }
-            .padding(.horizontal, Spacing.md)
-            .padding(.top, Spacing.sm)
-            .padding(.bottom, Spacing.md)
+        ScrollViewReader { proxy in
+            List {
+                // The calendar (nav + grid) is the first row: full-bleed, no chrome,
+                // so it floats on the grouped background while the agenda below sits
+                // on inset cards — one scroll surface, no fixed-block/list seam.
+                Section {
+                    VStack(spacing: Spacing.md) {
+                        MonthNavBar(
+                            title: displayedMonth.formatted(.dateTime.month(.wide).year()),
+                            total: monthTotal,
+                            renewalCount: monthTotal?.events.count ?? 0,
+                            canGoBack: displayedMonth > bounds.earliest,
+                            canGoForward: displayedMonth < bounds.latest,
+                            showsToday: !calendar.isDate(displayedMonth, equalTo: bounds.earliest, toGranularity: .month),
+                            onPrevious: { page(by: -1) },
+                            onNext: { page(by: 1) },
+                            onToday: goToToday
+                        )
+                        MonthGridView(
+                            month: displayedMonth,
+                            selectedDate: selectedDate,
+                            eventsByDay: data.eventsByDay,
+                            spendByDay: data.spendByDay,
+                            calendar: calendar,
+                            pageForward: pageForward,
+                            onSelect: select(_:)
+                        )
+                        .contentShape(.rect)
+                        .gesture(pagingGesture)
+                    }
+                    .padding(.top, Spacing.sm)
+                    .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    // Stable id (not the month) so paging swaps the grid in place via
+                    // its own transition instead of a List row insert/remove; also the
+                    // scroll-to-top anchor when the month changes.
+                    .id("calendar")
+                }
 
-            dayAgenda(for: selectedDate, in: data)
+                agendaSections(for: selectedDate, in: data)
+            }
+            .listStyle(.insetGrouped)
+            .listSectionSpacing(Spacing.lg)
+            .scrollIndicators(.hidden)
+            .tabBarMinimizeBehavior(.onScrollDown)
+            .background(Color.appBackground)
+            .onChange(of: displayedMonth) {
+                withAnimation(.snappy) { proxy.scrollTo("calendar", anchor: .top) }
+            }
         }
-        .background(Color.appBackground)
     }
 
+    /// Agenda sections folded into the parent month `List`. A day with renewals
+    /// shows its priced agenda; an empty day leads straight with "Next up" so the
+    /// real upcoming charges — not a second "nothing" message — fill the space.
     @ViewBuilder
-    private func dayAgenda(for date: Date, in data: CalendarData) -> some View {
+    private func agendaSections(for date: Date, in data: CalendarData) -> some View {
         let dayStart = calendar.startOfDay(for: date)
         let dayEvents = data.eventsByDay[dayStart] ?? []
-        List {
-            if dayEvents.isEmpty {
-                // Quiet "nothing due" note instead of a full-screen empty state,
-                // then surface the next renewals so the space stays useful.
+        if dayEvents.isEmpty {
+            let nextUp = upcomingEvents(after: dayStart, in: data)
+            if nextUp.isEmpty {
+                // Genuinely nothing ahead (horizon end): one quiet line, nothing else.
                 Section {
                     EmptyDayNote(date: date)
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
                 }
-                let nextUp = upcomingEvents(after: dayStart, in: data)
-                if !nextUp.isEmpty {
-                    Section("Next up") {
-                        ForEach(nextUp) { event in
-                            NavigationLink(value: event.subscription) {
-                                // These span months, so the badge shows the month
-                                // (not weekday) — otherwise two different "6"s read
-                                // as a duplicate.
-                                RenewalEventRow(event: event,
-                                                preferred: preferredCurrency,
-                                                rates: currency.rates,
-                                                showsMonth: true)
-                            }
-                        }
-                    }
-                }
             } else {
                 Section {
-                    ForEach(dayEvents) { event in
+                    ForEach(nextUp) { event in
                         NavigationLink(value: event.subscription) {
+                            // These span months, so the badge shows the month
+                            // (not weekday) — otherwise two different "6"s read
+                            // as a duplicate.
                             RenewalEventRow(event: event,
                                             preferred: preferredCurrency,
                                             rates: currency.rates,
-                                            showsDate: false)
+                                            showsMonth: true)
                         }
                     }
                 } header: {
-                    AgendaHeader(
-                        date: date,
-                        events: dayEvents,
-                        preferred: preferredCurrency,
-                        rates: currency.rates,
-                        calendar: calendar
-                    )
+                    // "Nothing today" demoted to a caption here, so the empty day
+                    // carries one message instead of two stacked grey negatives.
+                    NextUpHeader(date: date)
                 }
             }
+        } else {
+            Section {
+                ForEach(dayEvents) { event in
+                    NavigationLink(value: event.subscription) {
+                        RenewalEventRow(event: event,
+                                        preferred: preferredCurrency,
+                                        rates: currency.rates,
+                                        showsDate: false)
+                    }
+                }
+            } header: {
+                AgendaHeader(
+                    date: date,
+                    events: dayEvents,
+                    preferred: preferredCurrency,
+                    rates: currency.rates,
+                    calendar: calendar
+                )
+            }
         }
-        .listSectionSpacing(.compact)
-        .tabBarMinimizeBehavior(.onScrollDown)
     }
 
     /// The soonest renewals strictly after `dayStart`. Events arrive pre-sorted by
@@ -595,16 +617,25 @@ private struct DayCell: View {
 
     /// Heat backing: a single brand-teal hue that deepens with the day's spend.
     /// One hue keeps the month reading as a coherent heatmap; selection no longer
-    /// touches the backing (it lives on the number circle), so empty days stay bare.
+    /// touches the backing (it lives on the number circle). The floor sits above
+    /// the neutral day tile so any renewal day reads as a distinct teal tile.
     private var backingOpacity: Double {
         guard hasEvents else { return 0 }
-        return 0.08 + 0.14 * intensity
+        return 0.14 + 0.16 * intensity
+    }
+
+    /// Every in-month day sits on a tile so the grid reads as structure, not bare
+    /// numbers: a calm neutral fill normally, the brand-teal heat wash on renewals.
+    private var tileFill: Color {
+        hasEvents ? Color.brand.opacity(backingOpacity) : Color(.tertiarySystemFill)
     }
 
     var body: some View {
         Button(action: onSelect) {
             cell
-                .aspectRatio(1, contentMode: .fit)
+                // Fixed height (not a width-driven square) keeps rows compact and
+                // stops big-screen columns from stretching into tall sparse cells.
+                .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48)
                 .opacity(day.isInMonth ? 1 : 0.4)
                 .contentShape(.rect(cornerRadius: Radius.chip))
         }
@@ -616,14 +647,14 @@ private struct DayCell: View {
     private var cell: some View {
         ZStack {
             RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
-                .fill(Color.brand.opacity(backingOpacity))
+                .fill(tileFill)
 
+            // Centered in the fixed-height cell — the empty marker still reserves
+            // its height, so day numbers stay aligned across rows.
             VStack(spacing: 2) {
                 dateLabel
                 marker
-                Spacer(minLength: 0)
             }
-            .padding(.top, 3)
         }
     }
 
@@ -747,6 +778,28 @@ private struct AgendaHeader: View {
             }
         }
         return (unconvertible ? "~" : "") + total.formatted(.currency(code: preferred))
+    }
+}
+
+// MARK: - Next up header
+
+/// Header for the empty-day "Next up" section: the title plus a quiet caption
+/// confirming nothing renews on the selected day — one message, not two.
+private struct NextUpHeader: View {
+    let date: Date
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("Next up")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
+            Text("Nothing on \(date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .textCase(nil)
+        .padding(.vertical, 2)
+        .accessibilityElement(children: .combine)
     }
 }
 

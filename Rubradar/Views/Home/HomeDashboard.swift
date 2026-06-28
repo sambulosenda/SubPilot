@@ -20,11 +20,13 @@ struct DashboardHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             HeroSpendCard(metrics: metrics)
+                .appearEntrance(0)
 
             HStack(spacing: Spacing.md) {
                 StatCard(icon: "bell.fill", value: metrics.nextChargeLabel, caption: "Until next charge")
                 StatCard(icon: "creditcard.fill", value: nextChargeAmount, caption: "Next charge")
             }
+            .appearEntrance(1)
 
             Button(action: onAdd) {
                 HStack(spacing: Spacing.xs) {
@@ -37,6 +39,7 @@ struct DashboardHeader: View {
             }
             .buttonStyle(.glassProminent)
             .controlSize(.extraLarge)
+            .appearEntrance(2)
         }
         .padding(.top, Spacing.xs)
     }
