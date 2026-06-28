@@ -32,12 +32,16 @@ struct RecurraMarkView: View {
     /// When true (`.plain` only), a soft radar "ping" emanates on a loop after
     /// the mark draws on — a calm "watching for subscriptions" idle.
     var looping: Bool = false
+    /// When true, the formed mark rotates continuously — an indeterminate,
+    /// on-brand loading spinner. Skips the draw-on. See `RecurraLoaderView`.
+    var spinning: Bool = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var ringProgress: CGFloat = 0
     @State private var dotShown = false
     @State private var pinging = false
+    @State private var spin = false
 
     // Tile + on-tile mark colours, matched to AppIcon-1024.
     private let tileMark = Color(hex: "1FC3AE") ?? .teal
@@ -48,6 +52,8 @@ struct RecurraMarkView: View {
     private var corner: CGFloat { size * 0.2237 } // iOS continuous-squircle ratio
     private var unit: CGFloat { size / 512 }      // 512-space → points
     private var settled: Bool { !animated || reduceMotion }
+    /// The ring + dot are shown fully formed when settled or while spinning.
+    private var formed: Bool { settled || spinning }
 
     var body: some View {
         ZStack {
@@ -62,7 +68,7 @@ struct RecurraMarkView: View {
                     )
             }
 
-            if style == .plain && looping && !settled {
+            if style == .plain && looping && !settled && !spinning {
                 // Sonar ping: a faint ring expanding past the mark and fading,
                 // restarting each cycle. Sized to the ring midline.
                 Circle()
@@ -72,17 +78,21 @@ struct RecurraMarkView: View {
                     .opacity(pinging ? 0 : 0.4)
             }
 
-            RecurraRingArc(progress: settled ? 1 : ringProgress)
-                .stroke(markColor, style: StrokeStyle(lineWidth: 47 * unit, lineCap: .round))
-                .frame(width: size, height: size)
+            // Ring + dot, grouped so a spin rotates both about the centre.
+            ZStack {
+                RecurraRingArc(progress: formed ? 1 : ringProgress)
+                    .stroke(markColor, style: StrokeStyle(lineWidth: 47 * unit, lineCap: .round))
 
-            Circle()
-                .fill(markColor)
-                .frame(width: 102 * unit, height: 102 * unit)
-                // Dot centre (348,145) relative to tile centre (256,256).
-                .offset(x: 92 * unit, y: -111 * unit)
-                .scaleEffect(settled || dotShown ? 1 : 0)
-                .opacity(settled || dotShown ? 1 : 0)
+                Circle()
+                    .fill(markColor)
+                    .frame(width: 102 * unit, height: 102 * unit)
+                    // Dot centre (348,145) relative to tile centre (256,256).
+                    .offset(x: 92 * unit, y: -111 * unit)
+                    .scaleEffect(formed || dotShown ? 1 : 0)
+                    .opacity(formed || dotShown ? 1 : 0)
+            }
+            .frame(width: size, height: size)
+            .rotationEffect(.degrees(spinning && !reduceMotion && spin ? 360 : 0))
         }
         .frame(width: size, height: size)
         .clipShape(RoundedRectangle(cornerRadius: style == .tile ? corner : 0, style: .continuous))
@@ -90,6 +100,13 @@ struct RecurraMarkView: View {
     }
 
     private func play() {
+        if spinning {
+            guard !reduceMotion else { return }
+            withAnimation(.linear(duration: 1.1).repeatForever(autoreverses: false)) {
+                spin = true
+            }
+            return
+        }
         guard !settled else { return }
         // Ring draws on with a deep ease-out (no bounce) — the loop completing.
         withAnimation(.timingCurve(0.0, 0.65, 0.51, 0.99, duration: 0.78)) {
@@ -106,6 +123,44 @@ struct RecurraMarkView: View {
                 pinging = true
             }
         }
+    }
+}
+
+/// A branded indeterminate loading spinner: the Recurra ring rotating, with an
+/// optional caption. Falls back to a system `ProgressView` under Reduce Motion.
+struct RecurraLoaderView: View {
+    var label: String?
+    var size: CGFloat = 44
+    var tint: Color = .brand
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    init(_ label: String? = nil, size: CGFloat = 44, tint: Color = .brand) {
+        self.label = label
+        self.size = size
+        self.tint = tint
+    }
+
+    var body: some View {
+        VStack(spacing: Spacing.md) {
+            if reduceMotion {
+                ProgressView()
+                    .controlSize(.large)
+                    .tint(tint)
+            } else {
+                RecurraMarkView(size: size, style: .plain, tint: tint, spinning: true)
+                    .frame(width: size, height: size)
+            }
+
+            if let label {
+                Text(label)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label ?? "Loading")
+        .accessibilityAddTraits(.updatesFrequently)
     }
 }
 
@@ -146,5 +201,10 @@ private struct RecurraRingArc: Shape {
 
 #Preview("Plain — empty state") {
     RecurraMarkView(size: 112, style: .plain, looping: true)
+        .padding(60)
+}
+
+#Preview("Loader") {
+    RecurraLoaderView("Finding subscriptions…")
         .padding(60)
 }

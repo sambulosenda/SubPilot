@@ -50,7 +50,7 @@ struct BankImportView: View {
         switch model.phase {
         case .pickFile: pickFileStep
         case .confirmColumns: confirmColumnsStep
-        case .detecting: ProgressView("Finding subscriptions…").frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .detecting: RecurraLoaderView("Finding subscriptions…").frame(maxWidth: .infinity, maxHeight: .infinity)
         case .review: reviewStep
         }
     }

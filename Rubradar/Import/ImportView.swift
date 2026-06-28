@@ -58,7 +58,7 @@ struct ImportView: View {
             }
             .overlay {
                 if isWorking {
-                    ProgressView("Reading receipt…")
+                    RecurraLoaderView("Reading receipt…")
                         .padding(Spacing.lg)
                         .background(.regularMaterial, in: .rect(cornerRadius: Radius.card))
                 }
