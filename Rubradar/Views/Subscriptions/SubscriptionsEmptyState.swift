@@ -38,13 +38,8 @@ struct SubscriptionsEmptyState: View {
 
     private var header: some View {
         VStack(spacing: Spacing.lg) {
-            Image(systemName: "rectangle.stack.badge.plus")
-                .font(.system(size: 48))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(.tint)
-                .symbolEffect(.bounce, value: appeared)
-                .frame(width: 96, height: 96)
-                .background(.tint.opacity(0.12), in: .circle)
+            RecurraMarkView(size: 112, style: .plain, tint: .brand, looping: true)
+                .frame(width: 112, height: 112)
                 .accessibilityHidden(true)
 
             VStack(spacing: Spacing.sm) {
