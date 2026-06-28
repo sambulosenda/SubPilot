@@ -46,14 +46,15 @@ struct PaywallView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: Spacing.xl) {
-                    hero
-                    benefitList
-                    productSection
-                    legal
+                    hero.appearEntrance(0)
+                    benefitList.appearEntrance(1)
+                    productSection.appearEntrance(2)
+                    legal.appearEntrance(3)
                 }
                 .padding(.horizontal, Spacing.lg)
                 .padding(.vertical, Spacing.lg)
             }
+            .background(alignment: .top) { heroAmbience }
             .background(Color.appBackground)
             .safeAreaInset(edge: .bottom) { purchaseBar }
             .toolbar {
@@ -81,6 +82,27 @@ struct PaywallView: View {
     }
 
     // MARK: - Hero
+
+    /// A quiet brand backdrop behind the hero: a soft teal glow bleeding from the
+    /// top plus a faint oversized app mark. Ambient only — type-free, low-contrast,
+    /// non-interactive — so it lifts the hero without adding any chrome.
+    private var heroAmbience: some View {
+        ZStack(alignment: .top) {
+            RadialGradient(
+                colors: [.brand.opacity(0.18), .brand.opacity(0)],
+                center: .top,
+                startRadius: 0,
+                endRadius: 340
+            )
+            RecurraMarkView(size: 260, style: .plain, tint: .brand, animated: false)
+                .opacity(0.06)
+                .offset(y: 56)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 380, alignment: .top)
+        .allowsHitTesting(false)
+        .ignoresSafeArea(edges: .top)
+    }
 
     private var hero: some View {
         let pitch = onboardingPitch   // computed once per render
@@ -353,6 +375,7 @@ private struct ProductOptionRow: View {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
                     .foregroundStyle(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(.tertiary))
+                    .contentTransition(.symbolEffect(.replace))
                     .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -410,8 +433,11 @@ private struct ProductOptionRow: View {
             // recommended plan sits highest. Depth, not decoration.
             .shadow(color: .black.opacity(isRecommended ? 0.14 : 0.05),
                     radius: isRecommended ? 14 : 6, y: isRecommended ? 6 : 2)
+            // Spring the border + brand wash in when a plan is picked, so the
+            // selection reads as a deliberate change rather than a hard repaint.
+            .animation(AppMotion.select, value: isSelected)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.pressable)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(
             [tier,
