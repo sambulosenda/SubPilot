@@ -91,11 +91,14 @@ struct SubscriptionDetailView: View {
         .padding(.horizontal, Spacing.md)
         .padding(.top, Spacing.lg)
         .padding(.bottom, Spacing.lg)
-        // Layer 1 (front): the diagonal brand gradient, sized to the hero band.
+        // Layer 1 (front): a vertical brand gradient, sized to the hero band.
+        // Top edge stays pure `.brand` so it meets Layer 2's solid fill with no
+        // seam; it just deepens gently downward (a diagonal angle made the top
+        // corners read as two distinct greens).
         .background(alignment: .bottom) {
             LinearGradient(colors: [.brand, .brandDeep],
-                           startPoint: .topLeading,
-                           endPoint: .bottomTrailing)
+                           startPoint: .top,
+                           endPoint: .bottom)
         }
         // Layer 2 (back): a tall solid-brand fill anchored to the hero's bottom,
         // extending far upward. It colours the top overscroll region (and behind
