@@ -73,6 +73,8 @@ struct RootView: View {
     /// Active-subscription count when an add sheet was presented, so dismissal
     /// can tell "added something" (rating-prompt moment) from "cancelled".
     @State private var activeCountBeforeAdd: Int?
+    /// Drives the brief success HUD shown after an add actually adds something.
+    @State private var addedMessage: String?
     /// Singleton bridge from App Intents (Siri/Shortcuts/Spotlight) — observed
     /// here so an intent's navigation request lands whether the app was cold-
     /// launched or already foregrounded.
@@ -135,6 +137,7 @@ struct RootView: View {
             }
             .interactiveDismissDisabled()
         }
+        .successHUD($addedMessage)
         .task {
             // Guarantee a default profile exists and adopt any pre-profile data.
             ProfileSetup.ensureDefault(in: modelContext)
@@ -263,6 +266,10 @@ struct RootView: View {
         activeCountBeforeAdd = nil
         let count = activeSubscriptionCount()
         guard count > before else { return }
+        let added = count - before
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+            addedMessage = added == 1 ? "Subscription added" : "\(added) subscriptions added"
+        }
         Task {
             try? await Task.sleep(for: .seconds(1))
             ReviewPrompter.maybePrompt(activeCount: count) { requestReview() }
