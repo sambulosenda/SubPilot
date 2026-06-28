@@ -1,4 +1,4 @@
-# SubPilot — App Store Featuring Pitch
+# Recurra — App Store Featuring Pitch
 
 Submit at: https://developer.apple.com/contact/app-store/promote/
 Timing: 2–4 weeks before the update with App Intents + interactive widgets ships.
@@ -8,18 +8,18 @@ Re-submit at seasonal moments even if not picked — most featured apps nominate
 
 ## One-line hook
 
-SubPilot is the subscription tracker that never sees your data — Apple Intelligence
+Recurra is the subscription tracker that never sees your data — Apple Intelligence
 reads your receipts on-device, so you get the insight without handing your finances
 to anyone.
 
 ## Nomination form answers
 
 **App name & link**
-SubPilot — https://apps.apple.com/app/id6777939621
+Recurra — https://apps.apple.com/app/id6777939621
 
 **What makes your app special?**
 Every subscription tracker on the App Store asks users to connect their bank
-through a third-party aggregator. SubPilot refuses. Receipts, confirmation
+through a third-party aggregator. Recurra refuses. Receipts, confirmation
 emails and bank statements are parsed entirely on-device using Apple's
 Foundation Models — nothing ever leaves the phone. The built-in assistant
 answers questions like "where can I cut back?" the same way: Apple
@@ -48,12 +48,12 @@ Version 1.2 (date TBC): Siri & Shortcuts support, interactive profile-switching
 widget, Control Center quick-add, and a VoiceOver/accessibility polish pass.
 
 **Our story**
-SubPilot is built by one developer, Sambulo Senda. Like most people I only
+Recurra is built by one developer, Sambulo Senda. Like most people I only
 discovered how much I was bleeding to forgotten subscriptions when I read a
 bank statement line by line. The existing apps wanted my bank login to tell me
 — which felt like solving a leak with a flood. Apple Intelligence made the
 alternative possible: an app smart enough to read a receipt and honest enough
-to do it without an internet connection. I built SubPilot to prove privacy and
+to do it without an internet connection. I built Recurra to prove privacy and
 intelligence aren't a trade-off on iOS.
 
 **Stats** (fill in at submission time)

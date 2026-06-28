@@ -2,7 +2,7 @@
 //  WidgetSnapshotStore.swift
 //  Rubradar
 //
-//  Shared by the app (writer) and the SubPilot widget extension (reader).
+//  Shared by the app (writer) and the Recurra widget extension (reader).
 //
 
 import Foundation

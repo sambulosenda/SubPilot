@@ -14,7 +14,7 @@ import WidgetKit
 
 struct OpenAddSubscriptionIntent: AppIntent {
     static let title: LocalizedStringResource = "Add Subscription"
-    static let description = IntentDescription("Opens SubPilot ready to add a new subscription.")
+    static let description = IntentDescription("Opens Recurra ready to add a new subscription.")
     static let openAppWhenRun = true
 
     func perform() async throws -> some IntentResult {
@@ -31,6 +31,6 @@ struct AddSubscriptionControl: ControlWidget {
             }
         }
         .displayName("Add Subscription")
-        .description("Track a new subscription in SubPilot.")
+        .description("Track a new subscription in Recurra.")
     }
 }

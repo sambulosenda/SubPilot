@@ -36,7 +36,7 @@ struct SupportView: View {
                 Button {
                     requestReview()
                 } label: {
-                    Label("Rate SubPilot", systemImage: "star.fill")
+                    Label("Rate Recurra", systemImage: "star.fill")
                 }
             } header: {
                 Text("Get in touch")
@@ -89,14 +89,14 @@ enum SupportContact {
 
 
         —
-        SubPilot \(AppInfo.versionString)
+        Recurra \(AppInfo.versionString)
         iOS \(device.systemVersion) · \(device.model)
         """
         var components = URLComponents()
         components.scheme = "mailto"
         components.path = address
         components.queryItems = [
-            URLQueryItem(name: "subject", value: "SubPilot support"),
+            URLQueryItem(name: "subject", value: "Recurra support"),
             URLQueryItem(name: "body", value: body),
         ]
         return components.url
@@ -129,7 +129,7 @@ enum SupportFAQ {
     static let items: [SupportFAQItem] = [
         SupportFAQItem(
             question: String(localized: "How do renewal reminders work?"),
-            answer: String(localized: "SubPilot schedules a local notification at 9 AM, a set number of days before each renewal or free-trial conversion. Set the default timing in Settings → Reminders, or override it per subscription when editing one.")
+            answer: String(localized: "Recurra schedules a local notification at 9 AM, a set number of days before each renewal or free-trial conversion. Set the default timing in Settings → Reminders, or override it per subscription when editing one.")
         ),
         SupportFAQItem(
             question: String(localized: "Where is my data stored?"),
@@ -137,7 +137,7 @@ enum SupportFAQ {
         ),
         SupportFAQItem(
             question: String(localized: "What's the fastest way to add a subscription?"),
-            answer: String(localized: "Tap + on Home and pick from the catalogue of popular services, or scan a receipt — SubPilot reads it on your device and fills in the details for you.")
+            answer: String(localized: "Tap + on Home and pick from the catalogue of popular services, or scan a receipt — Recurra reads it on your device and fills in the details for you.")
         ),
         SupportFAQItem(
             question: String(localized: "Can I track services billed in other currencies?"),
@@ -145,7 +145,7 @@ enum SupportFAQ {
         ),
         SupportFAQItem(
             question: String(localized: "My reminder didn't show up — why?"),
-            answer: String(localized: "Check that reminders are enabled in Settings → Reminders, and that notifications are allowed for SubPilot in iOS Settings. Reminders only fire for future renewals.")
+            answer: String(localized: "Check that reminders are enabled in Settings → Reminders, and that notifications are allowed for Recurra in iOS Settings. Reminders only fire for future renewals.")
         ),
     ]
 }

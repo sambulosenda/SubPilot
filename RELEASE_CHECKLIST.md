@@ -1,4 +1,4 @@
-# SubPilot — App Store release checklist
+# Recurra — App Store release checklist
 
 Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 
@@ -9,7 +9,7 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
   `iCloud.com.sambulosenda.subradar`. Re-promote whenever the model changes.
 - [x] **App Group on the distribution App ID** — provisioned automatically; the
   distribution upload (2026-06-08) signed all three App IDs
-  (`com.sambulosenda.subradar`, `.SubPilotWidget`, `.ShareExtension`) with the
+  (`com.sambulosenda.subradar`, `.RecurraWidget`, `.ShareExtension`) with the
   App Group + CloudKit entitlements.
 - [x] **First device/TestFlight build signs cleanly** — 1.0 (1) uploaded
   2026-06-08, built with **Xcode 26.2 GA (17C52)**. NOTE: must archive with the
@@ -18,7 +18,7 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 
 ## Project / build (done in repo)
 
-- [x] Widget extension (`SubPilotWidget`) wired, builds, embeds.
+- [x] Widget extension (`RecurraWidget`) wired, builds, embeds.
 - [x] Share Extension (`ShareExtension`) wired as a real target, builds, embeds.
 - [x] App Groups entitlement on app + both extensions.
 - [x] `ITSAppUsesNonExemptEncryption = NO` set (skips the per-upload export
@@ -27,7 +27,7 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 
 ## App Store Connect
 
-- [x] App record created (name "SubPilot"); bundle id `com.sambulosenda.subradar` registered.
+- [x] App record created (name "Recurra"); bundle id `com.sambulosenda.subradar` registered.
 - [x] Distribution certificate + provisioning (Xcode automatic) — first build uploaded.
 - [x] **In-App Purchase products** created in ASC + IAP capability enabled;
   Pro products attached to the 1.0 version for review.
@@ -56,7 +56,7 @@ Status legend: `[ ]` todo · `[x]` done · `[~]` partial / needs verification.
 - [x] AI assistant tab on an Apple-Intelligence-capable device (FoundationModels
   availability path + the unavailable fallback).
 - [x] Receipt import: PhotosPicker + Share Extension (share a PDF/image into
-  SubPilot → app drains `ShareInbox` → import review).
+  Recurra → app drains `ShareInbox` → import review).
 - [x] Widgets on device: Home (small/medium) + Lock Screen, with real data;
   countdown decrements; updates after adding/editing a subscription.
 - [x] Notifications: permission primer + a scheduled renewal reminder fires.

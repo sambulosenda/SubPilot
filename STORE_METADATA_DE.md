@@ -1,4 +1,4 @@
-# SubPilot — App Store Connect listing (Deutsch / de-DE)
+# Recurra — App Store Connect listing (Deutsch / de-DE)
 
 Paste-ready German copy for the **Germany** storefront. Mirrors the structure of
 `STORE_METADATA.md` (English). Character limits in parentheses; everything is
@@ -15,10 +15,10 @@ within limit. Voice is informal **du**, consistent with the in-app German
 
 ## Name (30)
 
-`SubPilot: Abo-Tracker` (21)
+`Recurra: Abo-Tracker` (21)
 
 > Carries the #1 German term **Abo** (Apple stems → covers *Abos*). "Tracker" is
-> a loanword Germans do search. Home-Screen name stays "SubPilot"
+> a loanword Germans do search. Home-Screen name stays "Recurra"
 > (`CFBundleDisplayName`), unchanged.
 
 ## Subtitle (30)
@@ -59,9 +59,9 @@ Alternatives (keep keyword field in sync if you switch):
 ## Description (≤4000)
 
 ```
-SubPilot behält alle deine Abos an einem Ort – und sorgt dafür, dass aus einer vergessenen Testphase nie eine böse Überraschung wird.
+Recurra behält alle deine Abos an einem Ort – und sorgt dafür, dass aus einer vergessenen Testphase nie eine böse Überraschung wird.
 
-Füge ein Abo in Sekunden aus einem Katalog mit über 200 beliebten Diensten hinzu oder scanne einen Beleg – SubPilot liest die Details direkt auf deinem Gerät aus. Sieh deine echte monatliche Gesamtsumme in deiner eigenen Währung und erhalte vor jeder Verlängerung und vor dem Ende jeder Testphase eine Erinnerung, damit du rechtzeitig kündigen kannst.
+Füge ein Abo in Sekunden aus einem Katalog mit über 200 beliebten Diensten hinzu oder scanne einen Beleg – Recurra liest die Details direkt auf deinem Gerät aus. Sieh deine echte monatliche Gesamtsumme in deiner eigenen Währung und erhalte vor jeder Verlängerung und vor dem Ende jeder Testphase eine Erinnerung, damit du rechtzeitig kündigen kannst.
 
 DAS BEKOMMST DU
 
@@ -77,7 +77,7 @@ STANDARDMÄSSIG PRIVAT
 
 Kein Konto. Keine Anmeldung. Keine Werbung, kein Tracking. Deine Abos bleiben auf deinem Gerät und werden nur über deine eigene private iCloud synchronisiert – wir können sie nicht sehen.
 
-Übernimm mit SubPilot die Kontrolle über deine wiederkehrenden Kosten.
+Übernimm mit Recurra die Kontrolle über deine wiederkehrenden Kosten.
 
 Datenschutzrichtlinie: https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9
 Nutzungsbedingungen (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
@@ -89,7 +89,7 @@ Nutzungsbedingungen (EULA): https://www.apple.com/legal/internet-services/itunes
 ## What's New (≤4000) — template; translate per release
 
 ```
-Willkommen bei SubPilot 1.0.
+Willkommen bei Recurra 1.0.
 
 • Verwalte alle deine Abos an einem Ort
 • Widgets für Home- und Sperrbildschirm mit nächster Verlängerung und Monatssumme
@@ -97,7 +97,7 @@ Willkommen bei SubPilot 1.0.
 • Beleg-Scan auf dem Gerät und ein Apple-Intelligence-Assistent
 • Private iCloud-Synchronisierung zwischen deinen Geräten
 
-Danke, dass du SubPilot ausprobierst – Feedback gerne an sambulosendas@gmail.com.
+Danke, dass du Recurra ausprobierst – Feedback gerne an sambulosendas@gmail.com.
 ```
 
 > The live German listing's What's New must match the *current* version. Update

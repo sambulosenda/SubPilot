@@ -14,7 +14,7 @@ import UniformTypeIdentifiers
 /// carries the export date.
 struct SubscriptionCSVExport: Transferable {
     let csv: String
-    /// Base filename without extension, e.g. "SubPilot Subscriptions 2026-06-11".
+    /// Base filename without extension, e.g. "Recurra Subscriptions 2026-06-11".
     let filename: String
 
     static var transferRepresentation: some TransferRepresentation {
@@ -31,7 +31,7 @@ extension SubscriptionCSVExport {
         let stamp = DateFormatter.exportStamp.string(from: date)
         return SubscriptionCSVExport(
             csv: SubscriptionCSV.export(subscriptions),
-            filename: "SubPilot Subscriptions \(stamp)"
+            filename: "Recurra Subscriptions \(stamp)"
         )
     }
 }

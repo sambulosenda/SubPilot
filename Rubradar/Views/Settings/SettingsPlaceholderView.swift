@@ -49,7 +49,7 @@ struct SettingsView: View {
             Form {
                 Section {
                     if purchases.isPro {
-                        LabeledContent("SubPilot Pro") {
+                        LabeledContent("Recurra Pro") {
                             Label("Active", systemImage: "checkmark.seal.fill")
                                 .labelStyle(.titleAndIcon)
                                 .foregroundStyle(.green)
@@ -58,7 +58,7 @@ struct SettingsView: View {
                         Button {
                             purchases.paywallContext = .generic
                         } label: {
-                            Label("Unlock SubPilot Pro", systemImage: "crown.fill")
+                            Label("Unlock Recurra Pro", systemImage: "crown.fill")
                         }
                     }
                     Button("Restore Purchases") {
@@ -66,7 +66,7 @@ struct SettingsView: View {
                     }
                     .disabled(purchases.purchaseInProgress)
                 } header: {
-                    Text("SubPilot Pro")
+                    Text("Recurra Pro")
                 }
 
                 Section {
@@ -154,7 +154,7 @@ struct SettingsView: View {
                 Section {
                     ShareLink(
                         item: SubscriptionCSVExport.make(from: subscriptions),
-                        preview: SharePreview("SubPilot Subscriptions", image: Image(systemName: "tablecells"))
+                        preview: SharePreview("Recurra Subscriptions", image: Image(systemName: "tablecells"))
                     ) {
                         Label("Export to CSV", systemImage: "square.and.arrow.up")
                     }
@@ -170,7 +170,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Privacy")
                 } footer: {
-                    Text("Helps improve SubPilot with anonymous usage stats — which features get used and how the app performs. Never your subscriptions, amounts, notes, or anything that identifies you. Turn it off anytime.")
+                    Text("Helps improve Recurra with anonymous usage stats — which features get used and how the app performs. Never your subscriptions, amounts, notes, or anything that identifies you. Turn it off anytime.")
                 }
 
                 Section {

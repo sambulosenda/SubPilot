@@ -1,6 +1,6 @@
 # Design
 
-Visual system of the SubPilot marketing site (`landing/`), captured from the shipped code.
+Visual system of the Recurra marketing site (`landing/`), captured from the shipped code.
 
 ## Theme
 

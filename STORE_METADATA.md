@@ -1,4 +1,4 @@
-# SubPilot — App Store Connect listing copy
+# Recurra — App Store Connect listing copy
 
 Paste-ready text for the App Store Connect listing. Character limits noted in
 parentheses; everything here is within limit and avoids keyword-stuffing (which
@@ -8,11 +8,11 @@ Apple rejects).
 
 ## Name (30)
 
-`SubPilot: Subscription Tracker`
+`Recurra: Subscription Tracker`
 
-> You created the record as "SubPilot". You can update the name in App Store
+> You created the record as "Recurra". You can update the name in App Store
 > Connect → App Information before submitting. The Home Screen name stays
-> "SubPilot" regardless (that's `CFBundleDisplayName`).
+> "Recurra" regardless (that's `CFBundleDisplayName`).
 >
 > **Keep "Tracker," not "Manager"** (Astro top-10 benchmark, Jun 2026): the
 > "subscription manager" field is walled off — its weakest ranking app has ~116
@@ -71,11 +71,11 @@ reminders before each charge so a free trial never turns into a surprise bill.`
 ## Description
 
 ```
-SubPilot keeps every subscription in one place — and makes sure a forgotten
+Recurra keeps every subscription in one place — and makes sure a forgotten
 free trial never becomes a surprise charge.
 
 Add a subscription in seconds from a catalogue of 200+ popular services, or scan
-a receipt and let SubPilot read the details on your device. See your real
+a receipt and let Recurra read the details on your device. See your real
 monthly total in your own currency, and get a reminder before every renewal and
 free-trial conversion so you can cancel in time.
 
@@ -96,7 +96,7 @@ PRIVATE BY DEFAULT
 No account. No sign-up. No ads or tracking. Your subscriptions stay on your
 device and sync only through your own private iCloud — we can't see them.
 
-Take control of your recurring spending with SubPilot.
+Take control of your recurring spending with Recurra.
 
 Privacy Policy: https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9
 Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
@@ -110,7 +110,7 @@ Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/st
 ## What's New (4000) — for 1.0
 
 ```
-Welcome to SubPilot 1.0.
+Welcome to Recurra 1.0.
 
 • Track all your subscriptions in one place
 • Home Screen & Lock Screen widgets for your next renewal and monthly total
@@ -118,7 +118,7 @@ Welcome to SubPilot 1.0.
 • On-device receipt scanning and an Apple Intelligence assistant
 • Private iCloud sync across your devices
 
-Thanks for trying SubPilot — feedback is welcome at sambulosendas@gmail.com.
+Thanks for trying Recurra — feedback is welcome at sambulosendas@gmail.com.
 ```
 
 ## Other listing fields

@@ -12,7 +12,7 @@ import Foundation
 
 struct CycleWidgetProfileIntent: AppIntent {
     static let title: LocalizedStringResource = "Switch Widget Profile"
-    static let description = IntentDescription("Shows the next profile in the SubPilot widget.")
+    static let description = IntentDescription("Shows the next profile in the Recurra widget.")
     /// Pure widget-state change; never opens the app.
     static let isDiscoverable = false
 
