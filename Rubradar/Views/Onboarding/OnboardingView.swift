@@ -80,14 +80,14 @@ struct OnboardingView: View {
         switch page {
         case .welcome:
             OnboardingPage(
-                symbol: "rectangle.stack.badge.plus",
+                hero: .brandMark,
                 tint: .accentColor,
                 title: String(localized: "Track every subscription"),
                 message: String(localized: "Keep all your recurring payments in one place and always know what's coming out next.")
             )
         case .privacy:
             OnboardingPage(
-                symbol: "lock.shield.fill",
+                hero: .symbol("lock.shield.fill"),
                 tint: .green,
                 title: String(localized: "Private by default"),
                 message: String(localized: "Your subscriptions stay on your device. No account, no sign-up, and no sharing your bank.")
@@ -100,7 +100,7 @@ struct OnboardingView: View {
             )
         case .reminders:
             OnboardingPage(
-                symbol: "bell.badge.fill",
+                hero: .symbol("bell.badge.fill"),
                 tint: .orange,
                 title: String(localized: "Never miss a renewal"),
                 message: String(localized: "Get a reminder before each renewal or free-trial conversion, so you can cancel in time.")
@@ -198,18 +198,23 @@ struct OnboardingView: View {
 // MARK: - Page layout
 
 private struct OnboardingPage: View {
-    let symbol: String
+    /// The page's leading visual: either an SF Symbol or the animated brand mark.
+    enum Hero {
+        case symbol(String)
+        case brandMark
+    }
+
+    let hero: Hero
     let tint: Color
     let title: String
     let message: String
 
+    @State private var symbolPlayed = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         VStack(spacing: Spacing.lg) {
-            Image(systemName: symbol)
-                .font(.system(size: 72))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(tint)
-                .accessibilityHidden(true)
+            heroView
 
             VStack(spacing: Spacing.sm) {
                 Text(title)
@@ -222,6 +227,30 @@ private struct OnboardingPage: View {
         }
         .padding(.horizontal, Spacing.xl)
         .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private var heroView: some View {
+        switch hero {
+        case .brandMark:
+            // Reuse the shipped app mark (ring draws on, dot pops, soft sonar
+            // idle) so the very first screen is unmistakably Recurra.
+            RecurraMarkView(size: 120, style: .plain, tint: tint, looping: true)
+                .accessibilityHidden(true)
+        case .symbol(let name):
+            Image(systemName: name)
+                .font(.system(size: 72))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(tint)
+                // Bounce once as the page settles in — native, no dependency.
+                .symbolEffect(.bounce, options: .nonRepeating, value: symbolPlayed)
+                .accessibilityHidden(true)
+                .task {
+                    guard !reduceMotion else { return }
+                    try? await Task.sleep(for: .milliseconds(280))
+                    symbolPlayed = true
+                }
+        }
     }
 }
 
