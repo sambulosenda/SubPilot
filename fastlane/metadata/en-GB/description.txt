@@ -1,0 +1,29 @@
+Recurra keeps every subscription in one place — and makes sure a forgotten
+free trial never becomes a surprise charge.
+
+Add a subscription in seconds from a catalogue of 200+ popular services, or scan
+a receipt and let Recurra read the details on your device. See your real
+monthly total in your own currency, and get a reminder before every renewal and
+free-trial conversion so you can cancel in time.
+
+WHAT YOU GET
+
+• Next-renewal at a glance — Home Screen and Lock Screen widgets show what's
+  charging next and your monthly total.
+• Smart reminders — a heads-up before each renewal or trial ends.
+• Receipt scanning — read on-device; nothing is uploaded.
+• Profiles — keep personal and work subscriptions separate.
+• Multi-currency — see everything converted into one total.
+• On-device AI assistant — ask about your subscriptions, powered by Apple
+  Intelligence (on supported devices).
+• iCloud sync — your data syncs privately across your devices.
+
+PRIVATE BY DEFAULT
+
+No account. No sign-up. No ads or tracking. Your subscriptions stay on your
+device and sync only through your own private iCloud — we can't see them.
+
+Take control of your recurring spending with Recurra.
+
+Privacy Policy: https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

@@ -1,0 +1,8 @@
+Questa versione si rifà il look:
+
+• Nuova schermata di benvenuto animata all'avvio
+• Calendario dei rinnovi ridisegnato – scorrimento fluido e continuo
+• Animazioni e transizioni più curate in tutta l'app
+• Schermate vuote e caricamenti rinnovati
+
+Grazie per usare Recurra – facci sapere cosa ne pensi!

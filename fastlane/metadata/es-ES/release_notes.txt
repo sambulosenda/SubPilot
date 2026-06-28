@@ -1,0 +1,8 @@
+Esta versión estrena un nuevo diseño:
+
+• Nueva pantalla de bienvenida animada al iniciar
+• Calendario de renovaciones rediseñado: desplazamiento fluido y continuo
+• Animaciones y transiciones más cuidadas en toda la app
+• Pantallas vacías y de carga renovadas
+
+¡Gracias por usar Recurra! Cuéntanos qué te parece.

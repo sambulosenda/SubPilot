@@ -1,0 +1,8 @@
+Diese Version bringt ein frisches Design:
+
+• Neuer animierter Willkommens-Bildschirm beim Start
+• Überarbeiteter Verlängerungskalender – jetzt mit flüssigem, durchgängigem Scrollen
+• Feinere Animationen und Übergänge in der gesamten App
+• Modernisierte leere Ansichten und Ladeanimationen
+
+Danke, dass du Recurra nutzt – wir freuen uns über dein Feedback!

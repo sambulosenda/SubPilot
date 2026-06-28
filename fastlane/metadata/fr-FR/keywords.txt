@@ -1,0 +1,1 @@
+gestion,annuler,renouvellement,rappel,paiement,récurrent,dépense,échéance,streaming,essai,reçu

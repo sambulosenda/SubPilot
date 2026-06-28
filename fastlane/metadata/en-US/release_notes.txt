@@ -1,0 +1,8 @@
+This release brings a fresh look:
+
+• New animated welcome screen on launch
+• Redesigned renewal calendar with smooth, continuous scrolling
+• Refined animations and transitions throughout the app
+• Modernized empty and loading states
+
+Thanks for using Recurra — we'd love your feedback!

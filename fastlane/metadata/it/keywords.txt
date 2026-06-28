@@ -1,0 +1,1 @@
+monitoraggio,disdetta,rinnovo,scadenza,ricorrente,pagamento,bolletta,budget,mensile,streaming,prova

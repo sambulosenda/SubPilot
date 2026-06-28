@@ -1,0 +1,67 @@
+default_platform(:ios)
+
+APP_ID = "com.sambulosenda.subradar"
+
+# Build an App Store Connect API key from env vars (set in fastlane/.env).
+# Returns nil if they're absent — deliver then falls back to Apple ID login.
+def asc_api_key
+  return nil unless ENV["ASC_KEY_ID"] && ENV["ASC_ISSUER_ID"] && ENV["ASC_KEY_PATH"]
+  app_store_connect_api_key(
+    key_id: ENV["ASC_KEY_ID"],
+    issuer_id: ENV["ASC_ISSUER_ID"],
+    key_filepath: ENV["ASC_KEY_PATH"]
+  )
+end
+
+platform :ios do
+  # Read-only auth check: confirms the API key works, finds the app, and
+  # reports whether an editable (Prepare for Submission) version exists.
+  #   bundle exec fastlane verify
+  desc "Verify ASC API auth + editable version (read-only)"
+  lane :verify do
+    asc_api_key # sets the Spaceship token as a side effect
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    UI.user_error!("Auth worked but app #{APP_ID} not found for this key") unless app
+    UI.success("✅ Auth OK — #{app.name} (id #{app.id})")
+    edit = app.get_edit_app_store_version
+    if edit
+      UI.success("✅ Editable version: #{edit.version_string} (#{edit.app_store_state}) — ready for `fastlane metadata`")
+    else
+      UI.important("⚠️  No editable version. Create the next version in App Store Connect before `fastlane metadata`.")
+    end
+  end
+
+  # Preview the metadata that WOULD be pushed — opens an HTML preview and
+  # stops for confirmation. Nothing is uploaded. Run this first.
+  #   bundle exec fastlane preview
+  desc "Preview metadata (authenticates, no upload)"
+  lane :preview do
+    deliver(
+      api_key: asc_api_key,
+      app_identifier: APP_ID,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      run_precheck_before_submit: false,
+      force: false # show preview + require confirmation; answer 'n' to abort
+    )
+  end
+
+  # Push App Store listing metadata for ALL localizations.
+  # Metadata only — no binary, no screenshots. Updates the current editable
+  # App Store version (e.g. the 1.1 "Prepare for Submission" page). Does NOT
+  # submit for review. Changes go live when that version is approved.
+  #   bundle exec fastlane metadata
+  desc "Push App Store metadata for all localizations (no binary, no screenshots)"
+  lane :metadata do
+    deliver(
+      api_key: asc_api_key,
+      app_identifier: APP_ID,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      overwrite_screenshots: false,
+      run_precheck_before_submit: false,
+      force: true, # skip the HTML preview confirmation prompt
+      submit_for_review: false
+    )
+  end
+end

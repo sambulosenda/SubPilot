@@ -11,3 +11,13 @@ DerivedData/
 
 # Landing page deploy artifact (build output, not source)
 landing-deploy.zip
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+*.p8
+
+# fastlane secrets (dotenv) — never commit
+fastlane/.env
