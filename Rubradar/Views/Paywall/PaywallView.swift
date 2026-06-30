@@ -314,37 +314,39 @@ struct PaywallView: View {
         }
     }
 
-    /// The prominent price figure for a plan row. Annual shows its per-month
-    /// equivalent so it anchors directly against the monthly plan's headline price.
+    /// The prominent price figure for a plan row: always the *actual billed
+    /// amount* (App Store Guideline 3.1.2(c) — the charged price must be the most
+    /// clear and conspicuous pricing element). The calculated per-month figure is
+    /// demoted to the subordinate caption.
     private func priceAmount(for product: Product) -> String {
-        switch product.id {
-        case PurchaseManager.ProductID.annual:
-            return (product.price / 12).formatted(product.priceFormatStyle)
-        default:
-            return product.displayPrice
-        }
+        product.displayPrice
     }
 
-    /// The small unit beside the price ("/mo"); empty for the one-time Lifetime.
+    /// The small unit beside the billed amount — matched to the billing period.
+    /// Empty for the one-time Lifetime.
     private func pricePeriod(for product: Product) -> String {
         switch product.id {
-        case PurchaseManager.ProductID.monthly, PurchaseManager.ProductID.annual:
+        case PurchaseManager.ProductID.monthly:
             return String(localized: "/mo")
+        case PurchaseManager.ProductID.annual:
+            return String(localized: "/year")
         default:
             return ""
         }
     }
 
-    /// The supporting line under the tier name — trial + the actual charge, or terms.
-    /// Word joiner (U+2060) keeps "$19.99/year" from wrapping mid-unit.
+    /// The supporting line under the tier name — trial and/or the calculated
+    /// per-month equivalent, kept subordinate in size and colour to the billed
+    /// amount above. Word joiner (U+2060) keeps "$1.67/mo" from wrapping mid-unit.
     private func planCaption(for product: Product) -> String? {
         switch product.id {
         case PurchaseManager.ProductID.monthly:
             return nil
         case PurchaseManager.ProductID.annual:
+            let perMonth = (product.price / 12).formatted(product.priceFormatStyle)
             return hasFreeTrial(product)
-                ? String(localized: "7 days free, then \(product.displayPrice)/\u{2060}year")
-                : String(localized: "Billed \(product.displayPrice)/\u{2060}year")
+                ? String(localized: "7 days free, then \(perMonth)/\u{2060}mo")
+                : String(localized: "Just \(perMonth)/\u{2060}mo")
         case PurchaseManager.ProductID.lifetime:
             return String(localized: "One-time purchase")
         default:
