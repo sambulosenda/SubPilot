@@ -1,6 +1,6 @@
-Recurra reúne todas tus suscripciones en un solo lugar – y evita que una prueba gratuita olvidada se convierta en un cargo sorpresa.
+SubHelm reúne todas tus suscripciones en un solo lugar – y evita que una prueba gratuita olvidada se convierta en un cargo sorpresa.
 
-Añade una suscripción en segundos desde un catálogo de más de 200 servicios populares, o escanea un recibo: Recurra lee los detalles directamente en tu dispositivo. Consulta tu verdadero total mensual en tu propia moneda y recibe un recordatorio antes de cada renovación y antes de que termine cada prueba gratuita, para cancelar a tiempo.
+Añade una suscripción en segundos desde un catálogo de más de 200 servicios populares, o escanea un recibo: SubHelm lee los detalles directamente en tu dispositivo. Consulta tu verdadero total mensual en tu propia moneda y recibe un recordatorio antes de cada renovación y antes de que termine cada prueba gratuita, para cancelar a tiempo.
 
 LO QUE OBTIENES
 
@@ -16,7 +16,7 @@ PRIVADO POR DEFECTO
 
 Sin cuenta. Sin registro. Sin anuncios ni seguimiento. Tus suscripciones permanecen en tu dispositivo y solo se sincronizan a través de tu propia iCloud privada – no podemos verlas.
 
-Toma el control de tus gastos recurrentes con Recurra.
+Toma el control de tus gastos recurrentes con SubHelm.
 
 Política de privacidad: https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9
 Términos de uso (CLUF/EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

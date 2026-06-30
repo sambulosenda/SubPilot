@@ -5,4 +5,4 @@ This release brings a fresh look:
 • Refined animations and transitions throughout the app
 • Modernized empty and loading states
 
-Thanks for using Recurra — we'd love your feedback!
+Thanks for using SubHelm — we'd love your feedback!

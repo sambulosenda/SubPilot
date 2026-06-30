@@ -280,7 +280,7 @@ struct NextRenewalView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             } else {
-                Text("Recurra").font(.headline)
+                Text("SubHelm").font(.headline)
                 Text("No upcoming renewals").font(.caption)
             }
         }
@@ -383,7 +383,7 @@ private extension NextRenewalView {
         return SubscriptionCategory(rawValue: event.categoryRaw)?.tint ?? .accentColor
     }
 
-    /// Recurra brand teal — keeps the widget on-brand without importing the app's
+    /// SubHelm brand teal — keeps the widget on-brand without importing the app's
     /// Theme (which isn't a member of the widget target).
     var brand: Color { Color(hex: "0D9488") ?? .accentColor }
 

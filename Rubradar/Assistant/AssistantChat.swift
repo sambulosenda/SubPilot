@@ -142,7 +142,7 @@ final class AssistantChat {
 
     private static func instructions(context: String) -> String {
         """
-        You are the Recurra Assistant, a concise, friendly helper inside a \
+        You are the SubHelm Assistant, a concise, friendly helper inside a \
         subscription-tracking app. You answer the user's questions about their own \
         subscriptions and spending, using ONLY the DATA section below.
 

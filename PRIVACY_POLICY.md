@@ -1,8 +1,8 @@
-# Recurra — Privacy Policy
+# SubHelm — Privacy Policy
 
 _Last updated: 8 June 2026_
 
-Recurra is built privacy-first. There is no account, no sign-up, and no
+SubHelm is built privacy-first. There is no account, no sign-up, and no
 advertising or tracking. This policy explains exactly what happens to your data.
 
 ## The short version
@@ -15,7 +15,7 @@ advertising or tracking. This policy explains exactly what happens to your data.
 
 ## What we collect
 
-Nothing for ourselves. Recurra has no developer-operated servers and no
+Nothing for ourselves. SubHelm has no developer-operated servers and no
 account system, so your subscription data, spending totals, and profiles never
 reach us.
 
@@ -30,7 +30,7 @@ reach us.
 
 ## Network requests
 
-Recurra makes a small number of network requests. **None of them include
+SubHelm makes a small number of network requests. **None of them include
 personal data or any identifier that could be linked to you.**
 
 1. **Brand logos** — to show a logo next to a subscription, the app sends the
@@ -61,12 +61,12 @@ are not sent through any external service.
 ## Your choices
 
 - **Delete data:** remove any subscription or profile in the app at any time.
-- **Stop iCloud sync:** sign out of iCloud, or disable iCloud for Recurra in
+- **Stop iCloud sync:** sign out of iCloud, or disable iCloud for SubHelm in
   the iOS Settings app.
 
 ## Children
 
-Recurra is not directed at children and does not knowingly collect any data
+SubHelm is not directed at children and does not knowingly collect any data
 from anyone. It is rated 4+.
 
 ## Changes to this policy

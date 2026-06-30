@@ -35,7 +35,7 @@ Each has: `name`, `subtitle`, `keywords`, `promotional_text`, `description`,
   Astro-data-driven (see `memory/aso-de-fr-keyword-allocation.md`).
 - **EULA + privacy links are mandatory in every description** (App Review
   3.1.2(c)). Already present in each `description.txt` — keep them on any edit.
-- **Names change per locale** (e.g. `Recurra: Abonnement Tracker`). Name edits
+- **Names change per locale** (e.g. `SubHelm: Abonnement Tracker`). Name edits
   ride with the version submit.
 - **Screenshots are not managed here.** French set is in `screenshots/french/`;
   upload/localize in ASC separately.

@@ -67,7 +67,7 @@ struct MonthlyRecapCard: View {
         HStack(spacing: Spacing.sm) {
             Image(systemName: "chart.pie.fill")
                 .font(.title3.weight(.bold))
-            Text("Recurra")
+            Text("SubHelm")
                 .font(.title3.weight(.bold))
             Spacer()
             Text(data.monthTitle.uppercased())
@@ -119,7 +119,7 @@ struct MonthlyRecapCard: View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
             Text("≈ \(data.formattedYearly) a year")
                 .font(.headline)
-            Text("Tracked privately with Recurra")
+            Text("Tracked privately with SubHelm")
                 .font(.caption)
                 .opacity(0.8)
         }
@@ -164,7 +164,7 @@ struct RecapShareView: View {
                 ShareLink(
                     item: shareURL,
                     preview: SharePreview(
-                        "My Recurra month",
+                        "My SubHelm month",
                         image: previewImage ?? Image(systemName: "chart.pie.fill")
                     )
                 ) {
@@ -190,7 +190,7 @@ struct RecapShareView: View {
         renderer.scale = 3
         guard let uiImage = renderer.uiImage, let png = uiImage.pngData() else { return }
         previewImage = Image(uiImage: uiImage)
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("recurra-recap.png")
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("subhelm-recap.png")
         try? png.write(to: url)
         shareURL = url
     }

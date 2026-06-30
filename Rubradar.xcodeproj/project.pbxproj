@@ -618,7 +618,7 @@
 				DEVELOPMENT_TEAM = Y53KNKBDS8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Recurra;
+				INFOPLIST_KEY_CFBundleDisplayName = SubHelm;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -653,7 +653,7 @@
 				DEVELOPMENT_TEAM = Y53KNKBDS8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Recurra;
+				INFOPLIST_KEY_CFBundleDisplayName = SubHelm;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -770,7 +770,7 @@
 				DEVELOPMENT_TEAM = Y53KNKBDS8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SubPilotWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Recurra;
+				INFOPLIST_KEY_CFBundleDisplayName = SubHelm;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -799,7 +799,7 @@
 				DEVELOPMENT_TEAM = Y53KNKBDS8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SubPilotWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Recurra;
+				INFOPLIST_KEY_CFBundleDisplayName = SubHelm;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -829,7 +829,7 @@
 				DEVELOPMENT_TEAM = Y53KNKBDS8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Recurra;
+				INFOPLIST_KEY_CFBundleDisplayName = SubHelm;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -859,7 +859,7 @@
 				DEVELOPMENT_TEAM = Y53KNKBDS8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Recurra;
+				INFOPLIST_KEY_CFBundleDisplayName = SubHelm;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (

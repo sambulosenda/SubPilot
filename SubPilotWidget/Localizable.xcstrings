@@ -943,48 +943,48 @@
         }
       }
     },
-    "Opens Recurra ready to add a new subscription.": {
+    "Opens SubHelm ready to add a new subscription.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Öffnet Recurra bereit zum Hinzufügen eines neuen Abos."
+            "value": "Öffnet SubHelm bereit zum Hinzufügen eines neuen Abos."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvre Recurra prêt à ajouter un nouvel abonnement."
+            "value": "Ouvre SubHelm prêt à ajouter un nouvel abonnement."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abre Recurra listo para añadir una nueva suscripción."
+            "value": "Abre SubHelm listo para añadir una nueva suscripción."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurraを開いて新しいサブスクを追加できる状態にします。"
+            "value": "SubHelmを開いて新しいサブスクを追加できる状態にします。"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apre Recurra pronto per aggiungere un nuovo abbonamento."
+            "value": "Apre SubHelm pronto per aggiungere un nuovo abbonamento."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abre o Recurra pronto para adicionar uma nova assinatura."
+            "value": "Abre o SubHelm pronto para adicionar uma nova assinatura."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "새 구독을 추가할 수 있도록 Recurra를 엽니다."
+            "value": "새 구독을 추가할 수 있도록 SubHelm를 엽니다."
           }
         }
       }
@@ -1083,48 +1083,48 @@
         }
       }
     },
-    "Shows the next profile in the Recurra widget.": {
+    "Shows the next profile in the SubHelm widget.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zeigt das nächste Profil im Recurra-Widget."
+            "value": "Zeigt das nächste Profil im SubHelm-Widget."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Affiche le profil suivant dans le widget Recurra."
+            "value": "Affiche le profil suivant dans le widget SubHelm."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Muestra el siguiente perfil en el widget de Recurra."
+            "value": "Muestra el siguiente perfil en el widget de SubHelm."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurraウィジェットで次のプロフィールを表示します。"
+            "value": "SubHelmウィジェットで次のプロフィールを表示します。"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mostra il profilo successivo nel widget di Recurra."
+            "value": "Mostra il profilo successivo nel widget di SubHelm."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mostra o próximo perfil no widget do Recurra."
+            "value": "Mostra o próximo perfil no widget do SubHelm."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurra 위젯에서 다음 프로필을 표시합니다."
+            "value": "SubHelm 위젯에서 다음 프로필을 표시합니다."
           }
         }
       }
@@ -1225,48 +1225,48 @@
         }
       }
     },
-    "Recurra": {
+    "SubHelm": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurra"
+            "value": "SubHelm"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurra"
+            "value": "SubHelm"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurra"
+            "value": "SubHelm"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurra"
+            "value": "SubHelm"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurra"
+            "value": "SubHelm"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurra"
+            "value": "SubHelm"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurra"
+            "value": "SubHelm"
           }
         }
       }
@@ -1317,48 +1317,48 @@
         }
       }
     },
-    "Track a new subscription in Recurra.": {
+    "Track a new subscription in SubHelm.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Verfolge ein neues Abo in Recurra."
+            "value": "Verfolge ein neues Abo in SubHelm."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Suivez un nouvel abonnement dans Recurra."
+            "value": "Suivez un nouvel abonnement dans SubHelm."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Controla una nueva suscripción en Recurra."
+            "value": "Controla una nueva suscripción en SubHelm."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurraで新しいサブスクを管理します。"
+            "value": "SubHelmで新しいサブスクを管理します。"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Monitora un nuovo abbonamento in Recurra."
+            "value": "Monitora un nuovo abbonamento in SubHelm."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Monitore uma nova assinatura no Recurra."
+            "value": "Monitore uma nova assinatura no SubHelm."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recurra에서 새 구독을 추적합니다."
+            "value": "SubHelm에서 새 구독을 추적합니다."
           }
         }
       }

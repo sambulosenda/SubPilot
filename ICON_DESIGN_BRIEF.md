@@ -1,7 +1,7 @@
-# Recurra — App Icon Design Brief
+# SubHelm — App Icon Design Brief
 
 ## App
-**Recurra: Subscription Tracker** (iOS, Finance category). Keeps every
+**SubHelm: Subscription Tracker** (iOS, Finance category). Keeps every
 subscription in one place — renewal reminders, real monthly total, receipt
 scan — so a forgotten free trial never becomes a surprise charge.
 

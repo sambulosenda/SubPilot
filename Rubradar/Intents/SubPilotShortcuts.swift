@@ -4,7 +4,7 @@
 //
 //  Surfaces the App Intents in Siri, Spotlight and the Shortcuts gallery with
 //  ready-made phrases. Every phrase must contain `\(.applicationName)` —
-//  "Recurra" — for Siri to route it.
+//  "SubHelm" — for Siri to route it.
 //
 
 import AppIntents

@@ -234,7 +234,7 @@ private struct OnboardingPage: View {
         switch hero {
         case .brandMark:
             // Reuse the shipped app mark (ring draws on, dot pops, soft sonar
-            // idle) so the very first screen is unmistakably Recurra.
+            // idle) so the very first screen is unmistakably SubHelm.
             RecurraMarkView(size: 120, style: .plain, tint: tint, looping: true)
                 .accessibilityHidden(true)
         case .symbol(let name):

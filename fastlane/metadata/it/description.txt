@@ -1,6 +1,6 @@
-Recurra raccoglie tutti i tuoi abbonamenti in un unico posto – ed evita che una prova gratuita dimenticata si trasformi in un addebito a sorpresa.
+SubHelm raccoglie tutti i tuoi abbonamenti in un unico posto – ed evita che una prova gratuita dimenticata si trasformi in un addebito a sorpresa.
 
-Aggiungi un abbonamento in pochi secondi da un catalogo di oltre 200 servizi popolari, oppure scansiona una ricevuta: Recurra ne legge i dettagli direttamente sul tuo dispositivo. Vedi il tuo vero totale mensile nella tua valuta e ricevi un promemoria prima di ogni rinnovo e prima della fine di ogni prova gratuita, così puoi disdire in tempo.
+Aggiungi un abbonamento in pochi secondi da un catalogo di oltre 200 servizi popolari, oppure scansiona una ricevuta: SubHelm ne legge i dettagli direttamente sul tuo dispositivo. Vedi il tuo vero totale mensile nella tua valuta e ricevi un promemoria prima di ogni rinnovo e prima della fine di ogni prova gratuita, così puoi disdire in tempo.
 
 COSA OTTIENI
 
@@ -16,7 +16,7 @@ PRIVATO PER IMPOSTAZIONE PREDEFINITA
 
 Nessun account. Nessuna registrazione. Nessuna pubblicità né tracciamento. I tuoi abbonamenti restano sul tuo dispositivo e si sincronizzano solo tramite la tua iCloud privata – noi non possiamo vederli.
 
-Prendi il controllo delle tue spese ricorrenti con Recurra.
+Prendi il controllo delle tue spese ricorrenti con SubHelm.
 
 Informativa sulla privacy: https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9
 Termini d'uso (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

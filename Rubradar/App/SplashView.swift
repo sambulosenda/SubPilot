@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// Brief branded launch screen shown over a cold start while the app warms up.
-/// Presents the Recurra app-icon mark — so the splash matches the icon the user
+/// Presents the SubHelm app-icon mark — so the splash matches the icon the user
 /// just tapped — drawn natively (`RecurraMarkView`): the tile scales/fades in
 /// while the ring draws itself closed and the dot lands, then hands off to the
 /// main UI via a cross-fade owned by `AppRootView`.
@@ -33,7 +33,7 @@ struct SplashView: View {
                     .scaleEffect(appeared || reduceMotion ? 1 : 0.86)
                     .opacity(appeared ? 1 : 0)
 
-                Text("Recurra")
+                Text("SubHelm")
                     .font(.system(.largeTitle, design: .rounded).weight(.bold))
                     .foregroundStyle(.primary)
                     .opacity(appeared ? 1 : 0)
@@ -43,7 +43,7 @@ struct SplashView: View {
         // Transient, decorative chrome — collapse to a single label so VoiceOver
         // simply announces the app name during launch.
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Recurra")
+        .accessibilityLabel("SubHelm")
         .accessibilityAddTraits(.isImage)
         .onAppear {
             withAnimation(reduceMotion ? .easeIn(duration: 0.3) : .smooth(duration: 0.55)) {

@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-/// The Recurra app mark, drawn natively and animated: a near-closed teal ring
+/// The SubHelm app mark, drawn natively and animated: a near-closed teal ring
 /// (the recurring loop) draws itself on, then the dot pops into the opening.
 /// Settles to the exact app-icon mark. Geometry is taken 1:1 from the shipped
 /// `AppIcon` (measured in 512-space): ring midline radius 135, stroke 47, dot at
@@ -126,7 +126,7 @@ struct RecurraMarkView: View {
     }
 }
 
-/// A branded indeterminate loading spinner: the Recurra ring rotating, with an
+/// A branded indeterminate loading spinner: the SubHelm ring rotating, with an
 /// optional caption. Falls back to a system `ProgressView` under Reduce Motion.
 struct RecurraLoaderView: View {
     var label: String?

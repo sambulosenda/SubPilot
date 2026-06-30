@@ -24,7 +24,7 @@ struct NextRenewalIntent: AppIntent {
         guard let snapshot = WidgetSnapshotStore.read() else {
             return .result(
                 value: "",
-                dialog: "Open Recurra to set up your subscriptions first."
+                dialog: "Open SubHelm to set up your subscriptions first."
             )
         }
 
@@ -57,7 +57,7 @@ struct MonthlySpendIntent: AppIntent {
         guard let snapshot = WidgetSnapshotStore.read(), snapshot.activeCount > 0 else {
             return .result(
                 value: "",
-                dialog: "No subscriptions tracked yet — open Recurra to add your first one."
+                dialog: "No subscriptions tracked yet — open SubHelm to add your first one."
             )
         }
 
@@ -75,7 +75,7 @@ struct MonthlySpendIntent: AppIntent {
 struct AddSubscriptionIntent: AppIntent {
     static let title: LocalizedStringResource = "Add Subscription"
     static let description = IntentDescription(
-        "Opens Recurra ready to add a new subscription.",
+        "Opens SubHelm ready to add a new subscription.",
         categoryName: "Subscriptions"
     )
     static let openAppWhenRun = true
@@ -92,7 +92,7 @@ struct AddSubscriptionIntent: AppIntent {
 struct OpenRenewalsIntent: AppIntent {
     static let title: LocalizedStringResource = "View Renewal Calendar"
     static let description = IntentDescription(
-        "Opens the Recurra renewals calendar.",
+        "Opens the SubHelm renewals calendar.",
         categoryName: "Subscriptions"
     )
     static let openAppWhenRun = true

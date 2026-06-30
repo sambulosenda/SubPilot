@@ -1,8 +1,8 @@
-Recurra keeps every subscription in one place — and makes sure a forgotten
+SubHelm keeps every subscription in one place — and makes sure a forgotten
 free trial never becomes a surprise charge.
 
 Add a subscription in seconds from a catalogue of 200+ popular services, or scan
-a receipt and let Recurra read the details on your device. See your real
+a receipt and let SubHelm read the details on your device. See your real
 monthly total in your own currency, and get a reminder before every renewal and
 free-trial conversion so you can cancel in time.
 
@@ -23,7 +23,7 @@ PRIVATE BY DEFAULT
 No account. No sign-up. No ads or tracking. Your subscriptions stay on your
 device and sync only through your own private iCloud — we can't see them.
 
-Take control of your recurring spending with Recurra.
+Take control of your recurring spending with SubHelm.
 
 Privacy Policy: https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9
 Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

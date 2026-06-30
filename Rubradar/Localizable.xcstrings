@@ -3496,48 +3496,48 @@
         }
       }
     },
-    "Check that reminders are enabled in Settings → Reminders, and that notifications are allowed for Recurra in iOS Settings. Reminders only fire for future renewals." : {
+    "Check that reminders are enabled in Settings → Reminders, and that notifications are allowed for SubHelm in iOS Settings. Reminders only fire for future renewals." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prüfe, ob Erinnerungen unter Einstellungen → Erinnerungen aktiviert sind und ob Mitteilungen für Recurra in den iOS-Einstellungen erlaubt sind. Erinnerungen werden nur für zukünftige Verlängerungen ausgelöst."
+            "value" : "Prüfe, ob Erinnerungen unter Einstellungen → Erinnerungen aktiviert sind und ob Mitteilungen für SubHelm in den iOS-Einstellungen erlaubt sind. Erinnerungen werden nur für zukünftige Verlängerungen ausgelöst."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Comprueba que los recordatorios estén activados en Ajustes → Recordatorios y que las notificaciones estén permitidas para Recurra en los Ajustes de iOS. Los recordatorios solo se activan para renovaciones futuras."
+            "value" : "Comprueba que los recordatorios estén activados en Ajustes → Recordatorios y que las notificaciones estén permitidas para SubHelm en los Ajustes de iOS. Los recordatorios solo se activan para renovaciones futuras."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vérifiez que les rappels sont activés dans Réglages → Rappels, et que les notifications sont autorisées pour Recurra dans les réglages iOS. Les rappels ne se déclenchent que pour les renouvellements à venir."
+            "value" : "Vérifiez que les rappels sont activés dans Réglages → Rappels, et que les notifications sont autorisées pour SubHelm dans les réglages iOS. Les rappels ne se déclenchent que pour les renouvellements à venir."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Controlla che i promemoria siano attivi in Impostazioni → Promemoria e che le notifiche siano consentite per Recurra nelle Impostazioni di iOS. I promemoria scattano solo per i rinnovi futuri."
+            "value" : "Controlla che i promemoria siano attivi in Impostazioni → Promemoria e che le notifiche siano consentite per SubHelm nelle Impostazioni di iOS. I promemoria scattano solo per i rinnovi futuri."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "設定→リマインダーでリマインダーが有効になっているか、iOSの設定でRecurraの通知が許可されているかを確認してください。リマインダーは今後の更新に対してのみ通知されます。"
+            "value" : "設定→リマインダーでリマインダーが有効になっているか、iOSの設定でSubHelmの通知が許可されているかを確認してください。リマインダーは今後の更新に対してのみ通知されます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "설정 → 알림에서 알림이 켜져 있는지, iOS 설정에서 Recurra의 알림이 허용되어 있는지 확인하세요. 알림은 앞으로의 갱신에 대해서만 울립니다."
+            "value" : "설정 → 알림에서 알림이 켜져 있는지, iOS 설정에서 SubHelm의 알림이 허용되어 있는지 확인하세요. 알림은 앞으로의 갱신에 대해서만 울립니다."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verifique se os lembretes estão ativados em Ajustes → Lembretes e se as notificações estão permitidas para o Recurra nos Ajustes do iOS. Os lembretes só são disparados para renovações futuras."
+            "value" : "Verifique se os lembretes estão ativados em Ajustes → Lembretes e se as notificações estão permitidas para o SubHelm nos Ajustes do iOS. Os lembretes só são disparados para renovações futuras."
           }
         }
       }
@@ -4925,48 +4925,48 @@
         }
       }
     },
-    "Everything in Recurra, unlocked." : {
+    "Everything in SubHelm, unlocked." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alles in Recurra, freigeschaltet."
+            "value" : "Alles in SubHelm, freigeschaltet."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Todo en Recurra, desbloqueado."
+            "value" : "Todo en SubHelm, desbloqueado."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tout Recurra, débloqué."
+            "value" : "Tout SubHelm, débloqué."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tutto Recurra, sbloccato."
+            "value" : "Tutto SubHelm, sbloccato."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurraのすべての機能が使えます。"
+            "value" : "SubHelmのすべての機能が使えます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra의 모든 기능을 잠금 해제하세요."
+            "value" : "SubHelm의 모든 기능을 잠금 해제하세요."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tudo do Recurra, desbloqueado."
+            "value" : "Tudo do SubHelm, desbloqueado."
           }
         }
       }
@@ -6182,48 +6182,48 @@
         }
       }
     },
-    "Helps improve Recurra with anonymous usage stats — which features get used and how the app performs. Never your subscriptions, amounts, notes, or anything that identifies you. Turn it off anytime." : {
+    "Helps improve SubHelm with anonymous usage stats — which features get used and how the app performs. Never your subscriptions, amounts, notes, or anything that identifies you. Turn it off anytime." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hilft, Recurra mit anonymen Nutzungsstatistiken zu verbessern — welche Funktionen genutzt werden und wie die App läuft. Niemals deine Abos, Beträge, Notizen oder etwas, das dich identifiziert. Jederzeit deaktivierbar."
+            "value" : "Hilft, SubHelm mit anonymen Nutzungsstatistiken zu verbessern — welche Funktionen genutzt werden und wie die App läuft. Niemals deine Abos, Beträge, Notizen oder etwas, das dich identifiziert. Jederzeit deaktivierbar."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ayuda a mejorar Recurra con estadísticas de uso anónimas — qué funciones se usan y cómo rinde la app. Nunca tus suscripciones, importes, notas ni nada que te identifique. Desactívalo cuando quieras."
+            "value" : "Ayuda a mejorar SubHelm con estadísticas de uso anónimas — qué funciones se usan y cómo rinde la app. Nunca tus suscripciones, importes, notas ni nada que te identifique. Desactívalo cuando quieras."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aide à améliorer Recurra grâce à des statistiques d'utilisation anonymes — quelles fonctionnalités sont utilisées et comment l'app se comporte. Jamais vos abonnements, montants, notes ou quoi que ce soit qui vous identifie. Désactivable à tout moment."
+            "value" : "Aide à améliorer SubHelm grâce à des statistiques d'utilisation anonymes — quelles fonctionnalités sont utilisées et comment l'app se comporte. Jamais vos abonnements, montants, notes ou quoi que ce soit qui vous identifie. Désactivable à tout moment."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aiuta a migliorare Recurra con statistiche d'uso anonime — quali funzioni vengono usate e come si comporta l'app. Mai i tuoi abbonamenti, importi, note o qualsiasi cosa che ti identifichi. Disattivalo quando vuoi."
+            "value" : "Aiuta a migliorare SubHelm con statistiche d'uso anonime — quali funzioni vengono usate e come si comporta l'app. Mai i tuoi abbonamenti, importi, note o qualsiasi cosa che ti identifichi. Disattivalo quando vuoi."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "匿名の利用統計でRecurraの改善に役立ちます。どの機能が使われているか、アプリの動作状況などが対象です。サブスク、金額、メモ、あなたを特定できる情報は一切含まれません。いつでもオフにできます。"
+            "value" : "匿名の利用統計でSubHelmの改善に役立ちます。どの機能が使われているか、アプリの動作状況などが対象です。サブスク、金額、メモ、あなたを特定できる情報は一切含まれません。いつでもオフにできます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "익명 사용 통계로 Recurra를 개선하는 데 도움이 됩니다 — 어떤 기능이 사용되는지, 앱이 어떻게 작동하는지에 대한 정보예요. 구독, 금액, 메모나 사용자를 식별할 수 있는 정보는 절대 포함되지 않습니다. 언제든 끌 수 있어요."
+            "value" : "익명 사용 통계로 SubHelm를 개선하는 데 도움이 됩니다 — 어떤 기능이 사용되는지, 앱이 어떻게 작동하는지에 대한 정보예요. 구독, 금액, 메모나 사용자를 식별할 수 있는 정보는 절대 포함되지 않습니다. 언제든 끌 수 있어요."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajuda a melhorar o Recurra com estatísticas de uso anônimas — quais recursos são usados e como o app se comporta. Nunca suas assinaturas, valores, notas ou qualquer coisa que te identifique. Desative quando quiser."
+            "value" : "Ajuda a melhorar o SubHelm com estatísticas de uso anônimas — quais recursos são usados e como o app se comporta. Nunca suas assinaturas, valores, notas ou qualquer coisa que te identifique. Desative quando quiser."
           }
         }
       }
@@ -7803,50 +7803,50 @@
         }
       }
     },
-    "My Recurra month" : {
+    "My SubHelm month" : {
       "comment" : "The title that appears in the preview of the share sheet.",
       "isCommentAutoGenerated" : true,
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mein Recurra-Monat"
+            "value" : "Mein SubHelm-Monat"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mi mes en Recurra"
+            "value" : "Mi mes en SubHelm"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mon mois Recurra"
+            "value" : "Mon mois SubHelm"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il mio mese su Recurra"
+            "value" : "Il mio mese su SubHelm"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "私のRecurraの1か月"
+            "value" : "私のSubHelmの1か月"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "나의 Recurra 한 달"
+            "value" : "나의 SubHelm 한 달"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Meu mês no Recurra"
+            "value" : "Meu mês no SubHelm"
           }
         }
       }
@@ -8591,48 +8591,48 @@
         }
       }
     },
-    "No subscriptions tracked yet — open Recurra to add your first one." : {
+    "No subscriptions tracked yet — open SubHelm to add your first one." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Noch keine Abos erfasst — öffne Recurra, um dein erstes hinzuzufügen."
+            "value" : "Noch keine Abos erfasst — öffne SubHelm, um dein erstes hinzuzufügen."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay suscripciones registradas — abre Recurra para añadir la primera."
+            "value" : "Aún no hay suscripciones registradas — abre SubHelm para añadir la primera."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun abonnement suivi pour l'instant — ouvrez Recurra pour ajouter le premier."
+            "value" : "Aucun abonnement suivi pour l'instant — ouvrez SubHelm pour ajouter le premier."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nessun abbonamento monitorato ancora — apri Recurra per aggiungere il primo."
+            "value" : "Nessun abbonamento monitorato ancora — apri SubHelm per aggiungere il primo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "まだサブスクが登録されていません。Recurraを開いて最初の1件を追加しましょう。"
+            "value" : "まだサブスクが登録されていません。SubHelmを開いて最初の1件を追加しましょう。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "아직 추적 중인 구독이 없어요 — Recurra를 열어 첫 구독을 추가하세요."
+            "value" : "아직 추적 중인 구독이 없어요 — SubHelm를 열어 첫 구독을 추가하세요."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nenhuma assinatura monitorada ainda — abra o Recurra para adicionar a primeira."
+            "value" : "Nenhuma assinatura monitorada ainda — abra o SubHelm para adicionar a primeira."
           }
         }
       }
@@ -9562,48 +9562,48 @@
         }
       }
     },
-    "Open Recurra to set up your subscriptions first." : {
+    "Open SubHelm to set up your subscriptions first." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öffne zuerst Recurra, um deine Abos einzurichten."
+            "value" : "Öffne zuerst SubHelm, um deine Abos einzurichten."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre Recurra primero para configurar tus suscripciones."
+            "value" : "Abre SubHelm primero para configurar tus suscripciones."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrez d'abord Recurra pour configurer vos abonnements."
+            "value" : "Ouvrez d'abord SubHelm pour configurer vos abonnements."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apri prima Recurra per configurare i tuoi abbonamenti."
+            "value" : "Apri prima SubHelm per configurare i tuoi abbonamenti."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "まずRecurraを開いてサブスクを設定してください。"
+            "value" : "まずSubHelmを開いてサブスクを設定してください。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "먼저 Recurra를 열어 구독을 설정하세요."
+            "value" : "먼저 SubHelm를 열어 구독을 설정하세요."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abra o Recurra para configurar suas assinaturas primeiro."
+            "value" : "Abra o SubHelm para configurar suas assinaturas primeiro."
           }
         }
       }
@@ -9700,94 +9700,94 @@
         }
       }
     },
-    "Opens Recurra ready to add a new subscription." : {
+    "Opens SubHelm ready to add a new subscription." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öffnet Recurra bereit zum Hinzufügen eines neuen Abos."
+            "value" : "Öffnet SubHelm bereit zum Hinzufügen eines neuen Abos."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre Recurra listo para añadir una nueva suscripción."
+            "value" : "Abre SubHelm listo para añadir una nueva suscripción."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvre Recurra prêt à ajouter un nouvel abonnement."
+            "value" : "Ouvre SubHelm prêt à ajouter un nouvel abonnement."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apre Recurra pronto per aggiungere un nuovo abbonamento."
+            "value" : "Apre SubHelm pronto per aggiungere un nuovo abbonamento."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurraを開いて新しいサブスクを追加できる状態にします。"
+            "value" : "SubHelmを開いて新しいサブスクを追加できる状態にします。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "새 구독을 추가할 수 있도록 Recurra를 엽니다."
+            "value" : "새 구독을 추가할 수 있도록 SubHelm를 엽니다."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre o Recurra pronto para adicionar uma nova assinatura."
+            "value" : "Abre o SubHelm pronto para adicionar uma nova assinatura."
           }
         }
       }
     },
-    "Opens the Recurra renewals calendar." : {
+    "Opens the SubHelm renewals calendar." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öffnet den Recurra-Verlängerungskalender."
+            "value" : "Öffnet den SubHelm-Verlängerungskalender."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre el calendario de renovaciones de Recurra."
+            "value" : "Abre el calendario de renovaciones de SubHelm."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvre le calendrier des renouvellements de Recurra."
+            "value" : "Ouvre le calendrier des renouvellements de SubHelm."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apre il calendario dei rinnovi di Recurra."
+            "value" : "Apre il calendario dei rinnovi di SubHelm."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurraの更新カレンダーを開きます。"
+            "value" : "SubHelmの更新カレンダーを開きます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra 갱신 캘린더를 엽니다."
+            "value" : "SubHelm 갱신 캘린더를 엽니다."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre o calendário de renovações do Recurra."
+            "value" : "Abre o calendário de renovações do SubHelm."
           }
         }
       }
@@ -10809,48 +10809,48 @@
         }
       }
     },
-    "Rate Recurra" : {
+    "Rate SubHelm" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra bewerten"
+            "value" : "SubHelm bewerten"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Valorar Recurra"
+            "value" : "Valorar SubHelm"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Noter Recurra"
+            "value" : "Noter SubHelm"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Valuta Recurra"
+            "value" : "Valuta SubHelm"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurraを評価する"
+            "value" : "SubHelmを評価する"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra 평가하기"
+            "value" : "SubHelm 평가하기"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avaliar o Recurra"
+            "value" : "Avaliar o SubHelm"
           }
         }
       }
@@ -11086,186 +11086,186 @@
         }
       }
     },
-    "Recurra" : {
+    "SubHelm" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra"
+            "value" : "SubHelm"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra"
+            "value" : "SubHelm"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra"
+            "value" : "SubHelm"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra"
+            "value" : "SubHelm"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra"
+            "value" : "SubHelm"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra"
+            "value" : "SubHelm"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra"
+            "value" : "SubHelm"
           }
         }
       }
     },
-    "Recurra Pro" : {
+    "SubHelm Pro" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra Pro"
+            "value" : "SubHelm Pro"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra Pro"
+            "value" : "SubHelm Pro"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra Pro"
+            "value" : "SubHelm Pro"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra Pro"
+            "value" : "SubHelm Pro"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra Pro"
+            "value" : "SubHelm Pro"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra Pro"
+            "value" : "SubHelm Pro"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra Pro"
+            "value" : "SubHelm Pro"
           }
         }
       }
     },
-    "Recurra schedules a local notification at 9 AM, a set number of days before each renewal or free-trial conversion. Set the default timing in Settings → Reminders, or override it per subscription when editing one." : {
+    "SubHelm schedules a local notification at 9 AM, a set number of days before each renewal or free-trial conversion. Set the default timing in Settings → Reminders, or override it per subscription when editing one." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra plant eine lokale Mitteilung um 9 Uhr, eine festgelegte Anzahl von Tagen vor jeder Verlängerung oder Umwandlung einer Testphase. Lege die Standardzeit unter Einstellungen → Erinnerungen fest oder überschreibe sie beim Bearbeiten pro Abo."
+            "value" : "SubHelm plant eine lokale Mitteilung um 9 Uhr, eine festgelegte Anzahl von Tagen vor jeder Verlängerung oder Umwandlung einer Testphase. Lege die Standardzeit unter Einstellungen → Erinnerungen fest oder überschreibe sie beim Bearbeiten pro Abo."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra programa una notificación local a las 9:00, un número determinado de días antes de cada renovación o conversión de prueba gratis. Define el tiempo predeterminado en Ajustes → Recordatorios, o cámbialo por suscripción al editarla."
+            "value" : "SubHelm programa una notificación local a las 9:00, un número determinado de días antes de cada renovación o conversión de prueba gratis. Define el tiempo predeterminado en Ajustes → Recordatorios, o cámbialo por suscripción al editarla."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra programme une notification locale à 9 h, un certain nombre de jours avant chaque renouvellement ou conversion d'essai gratuit. Définissez le délai par défaut dans Réglages → Rappels, ou modifiez-le par abonnement lors de la modification."
+            "value" : "SubHelm programme une notification locale à 9 h, un certain nombre de jours avant chaque renouvellement ou conversion d'essai gratuit. Définissez le délai par défaut dans Réglages → Rappels, ou modifiez-le par abonnement lors de la modification."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra programma una notifica locale alle 9:00, un determinato numero di giorni prima di ogni rinnovo o conversione della prova gratuita. Imposta l'orario predefinito in Impostazioni → Promemoria, oppure modificalo per singolo abbonamento durante la modifica."
+            "value" : "SubHelm programma una notifica locale alle 9:00, un determinato numero di giorni prima di ogni rinnovo o conversione della prova gratuita. Imposta l'orario predefinito in Impostazioni → Promemoria, oppure modificalo per singolo abbonamento durante la modifica."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurraは各更新や無料トライアルの自動移行の指定日数前、午前9時に端末内通知を予約します。デフォルトのタイミングは設定→リマインダーで設定するか、サブスクの編集時に個別に上書きできます。"
+            "value" : "SubHelmは各更新や無料トライアルの自動移行の指定日数前、午前9時に端末内通知を予約します。デフォルトのタイミングは設定→リマインダーで設定するか、サブスクの編集時に個別に上書きできます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra는 각 갱신이나 무료 체험 전환에 앞서 지정한 일수 전, 오전 9시에 로컬 알림을 예약합니다. 기본 시점은 설정 → 알림에서 설정하거나, 구독을 편집할 때 구독별로 변경할 수 있어요."
+            "value" : "SubHelm는 각 갱신이나 무료 체험 전환에 앞서 지정한 일수 전, 오전 9시에 로컬 알림을 예약합니다. 기본 시점은 설정 → 알림에서 설정하거나, 구독을 편집할 때 구독별로 변경할 수 있어요."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O Recurra agenda uma notificação local às 9h, um número definido de dias antes de cada renovação ou conversão de teste grátis. Defina o tempo padrão em Ajustes → Lembretes ou substitua-o por assinatura ao editar uma."
+            "value" : "O SubHelm agenda uma notificação local às 9h, um número definido de dias antes de cada renovação ou conversão de teste grátis. Defina o tempo padrão em Ajustes → Lembretes ou substitua-o por assinatura ao editar uma."
           }
         }
       }
     },
-    "Recurra Subscriptions" : {
+    "SubHelm Subscriptions" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra-Abos"
+            "value" : "SubHelm-Abos"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suscripciones de Recurra"
+            "value" : "Suscripciones de SubHelm"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abonnements Recurra"
+            "value" : "Abonnements SubHelm"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abbonamenti Recurra"
+            "value" : "Abbonamenti SubHelm"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurraのサブスク"
+            "value" : "SubHelmのサブスク"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra 구독"
+            "value" : "SubHelm 구독"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Assinaturas do Recurra"
+            "value" : "Assinaturas do SubHelm"
           }
         }
       }
@@ -13350,48 +13350,48 @@
         }
       }
     },
-    "Tap + on Home and pick from the catalogue of popular services, or scan a receipt — Recurra reads it on your device and fills in the details for you." : {
+    "Tap + on Home and pick from the catalogue of popular services, or scan a receipt — SubHelm reads it on your device and fills in the details for you." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tippe auf „+“ auf der Startseite und wähle aus dem Katalog beliebter Dienste oder scanne einen Beleg — Recurra liest ihn auf deinem Gerät und füllt die Details für dich aus."
+            "value" : "Tippe auf „+“ auf der Startseite und wähle aus dem Katalog beliebter Dienste oder scanne einen Beleg — SubHelm liest ihn auf deinem Gerät und füllt die Details für dich aus."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toca + en Inicio y elige del catálogo de servicios populares, o escanea un recibo — Recurra lo lee en tu dispositivo y rellena los detalles por ti."
+            "value" : "Toca + en Inicio y elige del catálogo de servicios populares, o escanea un recibo — SubHelm lo lee en tu dispositivo y rellena los detalles por ti."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Touchez + sur l'Accueil et choisissez dans le catalogue de services populaires, ou scannez un reçu — Recurra le lit sur votre appareil et remplit les détails pour vous."
+            "value" : "Touchez + sur l'Accueil et choisissez dans le catalogue de services populaires, ou scannez un reçu — SubHelm le lit sur votre appareil et remplit les détails pour vous."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tocca + nella Home e scegli dal catalogo dei servizi più popolari, oppure scansiona una ricevuta — Recurra la legge sul tuo dispositivo e compila i dettagli per te."
+            "value" : "Tocca + nella Home e scegli dal catalogo dei servizi più popolari, oppure scansiona una ricevuta — SubHelm la legge sul tuo dispositivo e compila i dettagli per te."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ホームの「+」をタップして人気のサービスのカタログから選ぶか、レシートをスキャンしてください。Recurraが端末内で読み取り、詳細を入力します。"
+            "value" : "ホームの「+」をタップして人気のサービスのカタログから選ぶか、レシートをスキャンしてください。SubHelmが端末内で読み取り、詳細を入力します。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "홈에서 +를 누르고 인기 서비스 카탈로그에서 고르거나 영수증을 스캔하세요 — Recurra가 기기 안에서 읽어 세부 정보를 채워드려요."
+            "value" : "홈에서 +를 누르고 인기 서비스 카탈로그에서 고르거나 영수증을 스캔하세요 — SubHelm가 기기 안에서 읽어 세부 정보를 채워드려요."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toque em + no Início e escolha no catálogo de serviços populares, ou escaneie um recibo — o Recurra lê no seu dispositivo e preenche os detalhes para você."
+            "value" : "Toque em + no Início e escolha no catálogo de serviços populares, ou escaneie um recibo — o SubHelm lê no seu dispositivo e preenche os detalhes para você."
           }
         }
       }
@@ -14178,48 +14178,48 @@
         }
       }
     },
-    "Tracked privately with Recurra" : {
+    "Tracked privately with SubHelm" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vertraulich erfasst mit Recurra"
+            "value" : "Vertraulich erfasst mit SubHelm"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Controlado de forma privada con Recurra"
+            "value" : "Controlado de forma privada con SubHelm"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suivi en toute confidentialité avec Recurra"
+            "value" : "Suivi en toute confidentialité avec SubHelm"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monitorato in privato con Recurra"
+            "value" : "Monitorato in privato con SubHelm"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurraでプライベートに管理"
+            "value" : "SubHelmでプライベートに管理"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra로 비공개 추적"
+            "value" : "SubHelm로 비공개 추적"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monitorado em particular com o Recurra"
+            "value" : "Monitorado em particular com o SubHelm"
           }
         }
       }
@@ -14454,48 +14454,48 @@
         }
       }
     },
-    "Unlock Recurra Pro" : {
+    "Unlock SubHelm Pro" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra Pro freischalten"
+            "value" : "SubHelm Pro freischalten"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desbloquear Recurra Pro"
+            "value" : "Desbloquear SubHelm Pro"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Débloquer Recurra Pro"
+            "value" : "Débloquer SubHelm Pro"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sblocca Recurra Pro"
+            "value" : "Sblocca SubHelm Pro"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra Proのロックを解除"
+            "value" : "SubHelm Proのロックを解除"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recurra Pro 잠금 해제"
+            "value" : "SubHelm Pro 잠금 해제"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desbloquear Recurra Pro"
+            "value" : "Desbloquear SubHelm Pro"
           }
         }
       }

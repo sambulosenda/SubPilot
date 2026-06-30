@@ -5,4 +5,4 @@ Cette version fait peau neuve :
 • Animations et transitions affinées dans toute l'application
 • Écrans vides et chargements modernisés
 
-Merci d'utiliser Recurra – n'hésitez pas à nous envoyer vos retours !
+Merci d'utiliser SubHelm – n'hésitez pas à nous envoyer vos retours !

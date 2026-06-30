@@ -12,7 +12,7 @@ iPhone users arriving from Product Hunt, App Store search, or social, already ir
 
 ## Product Purpose
 
-Recurra is a subscription tracker for iPhone that never sees your data. Receipts and statements are parsed on-device with Apple Intelligence; sync is private iCloud; there is no account because there is no server. Free with a Pro tier (StoreKit 2). Success for the landing page = App Store tap-through; secondary: feature-board visits and press/editorial credibility.
+SubHelm is a subscription tracker for iPhone that never sees your data. Receipts and statements are parsed on-device with Apple Intelligence; sync is private iCloud; there is no account because there is no server. Free with a Pro tier (StoreKit 2). Success for the landing page = App Store tap-through; secondary: feature-board visits and press/editorial credibility.
 
 ## Brand Personality
 

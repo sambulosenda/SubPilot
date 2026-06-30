@@ -51,7 +51,7 @@ enum PaywallContext: String, Identifiable, CaseIterable {
         case .assistant:         String(localized: "Unlock the assistant")
         case .profiles:          String(localized: "Separate work & personal")
         case .onboarding:        String(localized: "Never pay for a subscription you forget")
-        case .generic:           String(localized: "Unlock Recurra Pro")
+        case .generic:           String(localized: "Unlock SubHelm Pro")
         }
     }
 
@@ -70,7 +70,7 @@ enum PaywallContext: String, Identifiable, CaseIterable {
         case .onboarding:
             String(localized: "Start with a free trial — and we'll remind you before it ends, including this one.")
         case .generic:
-            String(localized: "Everything in Recurra, unlocked.")
+            String(localized: "Everything in SubHelm, unlocked.")
         }
     }
 }

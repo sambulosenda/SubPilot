@@ -5,4 +5,4 @@ Esta versión estrena un nuevo diseño:
 • Animaciones y transiciones más cuidadas en toda la app
 • Pantallas vacías y de carga renovadas
 
-¡Gracias por usar Recurra! Cuéntanos qué te parece.
+¡Gracias por usar SubHelm! Cuéntanos qué te parece.

@@ -2,7 +2,7 @@
 //  WidgetSnapshot.swift
 //  Rubradar
 //
-//  Shared by the app (writer) and the Recurra widget extension (reader).
+//  Shared by the app (writer) and the SubHelm widget extension (reader).
 //  Keep this file free of SwiftData / UIKit so it compiles cleanly in the
 //  widget target — it should only ever depend on Foundation.
 //
