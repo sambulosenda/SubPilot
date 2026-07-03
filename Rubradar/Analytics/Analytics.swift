@@ -110,6 +110,12 @@ enum Analytics {
         send("priceChangeRecorded", parameters: ["source": source.rawValue])
     }
 
+    /// The guided-cancel sheet was opened. `direct` = we had a curated
+    /// cancellation URL for the provider (vs a generic domain fallback).
+    static func cancelHelperOpened(direct: Bool) {
+        send("cancelHelperOpened", parameters: ["direct": direct ? "true" : "false"])
+    }
+
     // MARK: - Plumbing
 
     private static func send(_ name: String,

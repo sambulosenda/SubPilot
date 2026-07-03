@@ -16,6 +16,10 @@ struct CatalogueProvider: Identifiable, Codable, Hashable {
     let brandColorHex: String?
     /// Registrable domain used to fetch a real logo (e.g. "netflix.com").
     let domain: String?
+    /// Direct link to the provider's account/cancel page for the cancel helper.
+    /// Conservative account-page URLs (they outlive deep cancel links); nil
+    /// falls back to the provider domain. Optional so entries without it decode.
+    let cancelURL: String?
 
     /// Builds a draft subscription pre-filled from this provider for the add form.
     func makeDraft(referenceDate: Date = Date()) -> Subscription {

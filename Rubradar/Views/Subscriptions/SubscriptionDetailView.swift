@@ -19,6 +19,7 @@ struct SubscriptionDetailView: View {
 
     @State private var showEdit = false
     @State private var showDeleteConfirm = false
+    @State private var showCancelHelper = false
     @State private var stateChanged = false
 
     var body: some View {
@@ -53,6 +54,15 @@ struct SubscriptionDetailView: View {
         }
         .sheet(isPresented: $showEdit) {
             SubscriptionFormView(mode: .edit(subscription))
+        }
+        .sheet(isPresented: $showCancelHelper) {
+            CancelHelperView(subscription: subscription) {
+                withAnimation(.snappy) { subscription.isCancelled = true }
+                subscription.updatedAt = Date()
+                stateChanged.toggle()
+                reschedule()
+                WidgetSync.refresh(modelContext: modelContext)
+            }
         }
         .confirmationDialog("Delete this subscription?", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
             Button("Delete", role: .destructive) { delete() }
@@ -225,14 +235,22 @@ struct SubscriptionDetailView: View {
 
     private var statusActions: some View {
         VStack(spacing: 0) {
-            actionRow(subscription.isCancelled ? "Mark as active" : "Mark as cancelled",
-                      systemImage: subscription.isCancelled ? "arrow.clockwise.circle" : "xmark.circle") {
-                // Animate so the header badge and this label's icon morph
-                // rather than snap; the model write itself is non-visual.
-                withAnimation(.snappy) { subscription.isCancelled.toggle() }
-                subscription.updatedAt = Date()
-                stateChanged.toggle()
-                reschedule()
+            if subscription.isCancelled {
+                actionRow("Mark as active", systemImage: "arrow.clockwise.circle") {
+                    // Animate so the header badge and this label's icon morph
+                    // rather than snap; the model write itself is non-visual.
+                    withAnimation(.snappy) { subscription.isCancelled = false }
+                    subscription.updatedAt = Date()
+                    stateChanged.toggle()
+                    reschedule()
+                }
+            } else {
+                // Guided flow instead of a bare state flip: the sheet links to
+                // the provider's cancel page (or Apple's subscription manager)
+                // and marks the sub cancelled once the user is done.
+                actionRow("Cancel subscription…", systemImage: "xmark.circle") {
+                    showCancelHelper = true
+                }
             }
             rowDivider
             actionRow(subscription.isFreeTrial ? "Not a free trial" : "Mark as free trial",
