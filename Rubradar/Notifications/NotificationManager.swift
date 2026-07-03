@@ -66,7 +66,7 @@ final class NotificationManager: NSObject {
     private func registerCategories() {
         let cancel = UNNotificationAction(
             identifier: Self.cancelAction,
-            title: "Mark as cancelled",
+            title: String(localized: "Mark as cancelled"),
             options: [.destructive]
         )
         let category = UNNotificationCategory(
@@ -100,6 +100,12 @@ final class NotificationManager: NSObject {
         await scheduleMonthlyRecap(for: subs)
     }
 
+    /// How many upcoming renewal occurrences to pre-schedule per subscription,
+    /// so a user who doesn't reopen the app still gets the next few reminders
+    /// (nothing reschedules after a notification fires except an app launch).
+    /// Kept small — iOS caps pending local notifications at 64 per app.
+    private static let occurrencesPerSubscription = 2
+
     /// Clears all pending reminders and reschedules from the current data.
     func reschedule(for subscriptions: [Subscription], enabled: Bool) async {
         center.removeAllPendingNotificationRequests()
@@ -108,27 +114,70 @@ final class NotificationManager: NSObject {
         let status = await authorizationStatus
         guard status == .authorized || status == .provisional else { return }
 
+        let now = Date()
+        let calendar = Calendar.current
         for sub in subscriptions where !sub.isCancelled {
+            var trialEndScheduled: Date?
             if sub.isFreeTrial, let trialEnd = sub.trialEndDate {
+                // Missing a trial end costs real money, so it escalates: the
+                // user's chosen lead reminder, then day-before, then day-of.
+                // The extra two are skipped when the lead already lands on
+                // that day (leadDays 0/1) so no day gets two banners.
                 schedule(
                     id: "trial-\(sub.id.uuidString)",
-                    title: "\(sub.name) trial ending",
-                    body: "Your free trial converts to \(sub.formattedAmount) soon.",
-                    fireDate: reminderDate(before: trialEnd, leadDays: sub.reminderLeadDays),
+                    title: String(localized: "\(sub.name) trial ending"),
+                    body: String(localized: "Your free trial converts to \(sub.formattedAmount) soon."),
+                    fireDate: Self.reminderFireDate(before: trialEnd, leadDays: sub.reminderLeadDays,
+                                                    now: now, calendar: calendar),
+                    subscriptionID: sub.id
+                )
+                if sub.reminderLeadDays != 1 {
+                    schedule(
+                        id: "trial-eve-\(sub.id.uuidString)",
+                        title: String(localized: "\(sub.name) trial ends tomorrow"),
+                        body: String(localized: "You'll be charged \(sub.formattedAmount) tomorrow unless you cancel."),
+                        fireDate: Self.reminderFireDate(before: trialEnd, leadDays: 1,
+                                                        now: now, calendar: calendar),
+                        subscriptionID: sub.id
+                    )
+                }
+                if sub.reminderLeadDays != 0 {
+                    schedule(
+                        id: "trial-day-\(sub.id.uuidString)",
+                        title: String(localized: "\(sub.name) trial ends today"),
+                        body: String(localized: "You'll be charged \(sub.formattedAmount) today unless you cancel."),
+                        fireDate: Self.reminderFireDate(before: trialEnd, leadDays: 0,
+                                                        now: now, calendar: calendar),
+                        subscriptionID: sub.id
+                    )
+                }
+                trialEndScheduled = trialEnd
+            }
+            // Project the stored anchor forward — it is never advanced once a
+            // charge passes, so reading it raw would schedule in the past.
+            // Occurrences are computed from the anchor by index (see
+            // BillingCycle) so month-end renewals don't drift.
+            let anchor = (sub.isFreeTrial && sub.trialEndDate != nil) ? sub.trialEndDate! : sub.nextRenewalDate
+            let (firstIndex, _) = sub.billingCycle.firstOccurrence(
+                onOrAfter: calendar.startOfDay(for: now), anchor: anchor,
+                customDays: sub.customCycleDays, calendar: calendar
+            )
+            for slot in 0..<Self.occurrencesPerSubscription {
+                let charge = sub.billingCycle.date(byAddingCycles: firstIndex + slot, to: anchor,
+                                                   customDays: sub.customCycleDays, calendar: calendar)
+                // An active trial's first "charge" IS the trial end — the trial
+                // reminder above covers it; a second banner at the same minute
+                // would be noise.
+                if charge == trialEndScheduled { continue }
+                schedule(
+                    id: "renewal-\(sub.id.uuidString)-\(slot)",
+                    title: String(localized: "\(sub.name) renews soon"),
+                    body: String(localized: "\(sub.formattedAmount) will be charged on \(charge.formatted(.dateTime.day().month()))."),
+                    fireDate: Self.reminderFireDate(before: charge, leadDays: sub.reminderLeadDays,
+                                                    now: now, calendar: calendar),
                     subscriptionID: sub.id
                 )
             }
-            // Project the stored anchor to the next *future* charge; the anchor is
-            // never advanced once a renewal passes, so reading it raw would schedule
-            // in the past (skipped) and reminders would stop after the first cycle.
-            let nextCharge = sub.projectedNextRenewal()
-            schedule(
-                id: "renewal-\(sub.id.uuidString)",
-                title: "\(sub.name) renews soon",
-                body: "\(sub.formattedAmount) will be charged on \(nextCharge.formatted(.dateTime.day().month())).",
-                fireDate: reminderDate(before: nextCharge, leadDays: sub.reminderLeadDays),
-                subscriptionID: sub.id
-            )
         }
     }
 
@@ -147,8 +196,7 @@ final class NotificationManager: NSObject {
         let summary = SpendSummary.make(from: subscriptions, preferred: preferred, rates: CurrencyService.shared.rates)
         guard !active.isEmpty, summary.monthlyTotal > 0 else { return }
 
-        let countWord = active.count == 1 ? "subscription" : "subscriptions"
-        let body = "You're spending about \(summary.formattedMonthly) a month across \(active.count) \(countWord). Tap to see where it goes."
+        let body = String(localized: "You're spending about \(summary.formattedMonthly) a month across \(active.count) subscriptions. Tap to see where it goes.")
 
         let cal = Calendar.current
         guard let firstRecap = cal.nextDate(
@@ -157,11 +205,24 @@ final class NotificationManager: NSObject {
             matchingPolicy: .nextTime
         ) else { return }
 
+        // Price rises that will still be recent when the *next* recap fires.
+        // Only that first notification gets the extra sentence — later months'
+        // figures refresh on every reschedule anyway, so a stale rise count
+        // months out would be wrong more often than right.
+        let risesAtFirstFire = MonthlyRecapData
+            .recentPriceChanges(in: subscriptions, now: firstRecap)
+            .filter(\.isRise).count
+
         for offset in 0..<MonthlyRecap.monthsAhead {
             guard let fire = cal.date(byAdding: .month, value: offset, to: firstRecap) else { continue }
             let content = UNMutableNotificationContent()
-            content.title = "Your subscriptions this month"
-            content.body = body
+            content.title = String(localized: "Your subscriptions this month")
+            // Inflection markup isn't processed by plain String(localized:), so
+            // the plural is spelled out (the catalog can vary it per locale).
+            let riseSentence = risesAtFirstFire == 1
+                ? String(localized: "1 subscription price went up recently.")
+                : String(localized: "\(risesAtFirstFire) subscription prices went up recently.")
+            content.body = (offset == 0 && risesAtFirstFire > 0) ? body + " " + riseSentence : body
             content.sound = .default
             let comps = cal.dateComponents([.year, .month, .day, .hour, .minute], from: fire)
             let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
@@ -169,15 +230,27 @@ final class NotificationManager: NSObject {
         }
     }
 
-    private func reminderDate(before date: Date, leadDays: Int) -> Date {
-        let cal = Calendar.current
-        let lead = cal.date(byAdding: .day, value: -max(0, leadDays), to: date) ?? date
-        // Fire at 9am local time on the reminder day.
-        return cal.date(bySettingHour: 9, minute: 0, second: 0, of: lead) ?? lead
+    /// When a reminder for a charge on `renewal` should fire: 9am local on the
+    /// lead day. If that moment already passed but the charge is today or later
+    /// (a subscription added inside its own lead window — the charge the user
+    /// most needs to hear about), it clamps to a couple of minutes from `now`
+    /// instead of silently never firing. Charges before today return nil.
+    /// Pure and injectable for tests.
+    nonisolated static func reminderFireDate(
+        before renewal: Date,
+        leadDays: Int,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> Date? {
+        let lead = calendar.date(byAdding: .day, value: -max(0, leadDays), to: renewal) ?? renewal
+        let preferred = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: lead) ?? lead
+        if preferred > now { return preferred }
+        guard calendar.startOfDay(for: renewal) >= calendar.startOfDay(for: now) else { return nil }
+        return now.addingTimeInterval(2 * 60)
     }
 
-    private func schedule(id: String, title: String, body: String, fireDate: Date, subscriptionID: UUID) {
-        guard fireDate > Date() else { return }   // don't schedule in the past
+    private func schedule(id: String, title: String, body: String, fireDate: Date?, subscriptionID: UUID) {
+        guard let fireDate, fireDate > Date() else { return }   // don't schedule in the past
 
         let content = UNMutableNotificationContent()
         content.title = title
@@ -218,6 +291,10 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
             sub.isCancelled = true
             sub.updatedAt = Date()
             try? context.save()
+            // Drop the cancelled sub's other pending reminders and get the
+            // widget off the stale data — the app may not open for days.
+            await rescheduleAll(modelContext: context)
+            WidgetSync.refresh(modelContext: context)
         }
     }
 }

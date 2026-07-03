@@ -11,17 +11,17 @@ enum SortOption: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .nextRenewal: "Next renewal"
-        case .name: "Name"
-        case .amount: "Amount"
-        case .category: "Category"
+        case .nextRenewal: String(localized: "Next renewal")
+        case .name: String(localized: "Name")
+        case .amount: String(localized: "Amount")
+        case .category: String(localized: "Category")
         }
     }
     var symbol: String {
         switch self {
         case .nextRenewal: "calendar"
         case .name: "textformat"
-        case .amount: "sterlingsign"
+        case .amount: "banknote"   // currency-neutral, unlike sterlingsign
         case .category: "square.grid.2x2"
         }
     }
@@ -42,7 +42,9 @@ struct SubscriptionListView: View {
         Locale.current.currency?.identifier ?? "GBP"
     /// Selected profile's UUID string; empty means "All Profiles".
     @AppStorage("selectedProfileID") private var selectedProfileID = ""
-    @State private var sortOption: SortOption = .nextRenewal
+    /// Persisted — resetting to "next renewal" every launch reads as a bug to
+    /// users who sort by amount.
+    @AppStorage("subscriptionSortOption") private var sortOption: SortOption = .nextRenewal
     @State private var searchText = ""
     @State private var showManageProfiles = false
     @State private var showInsights = false
@@ -74,15 +76,24 @@ struct SubscriptionListView: View {
             return sub.name.localizedCaseInsensitiveContains(searchText)
                 || sub.category.label.localizedCaseInsensitiveContains(searchText)
         }
-        return filtered.sorted(by: sortComparator)
+        return sorted(filtered)
     }
 
-    private func sortComparator(_ a: Subscription, _ b: Subscription) -> Bool {
+    private func sorted(_ subs: [Subscription]) -> [Subscription] {
         switch sortOption {
-        case .nextRenewal: a.projectedNextRenewal() < b.projectedNextRenewal()
-        case .name: a.name.localizedCaseInsensitiveCompare(b.name) == .orderedAscending
-        case .amount: a.monthlyEquivalent > b.monthlyEquivalent
-        case .category: a.category.label.localizedCaseInsensitiveCompare(b.category.label) == .orderedAscending
+        case .nextRenewal:
+            // Decorate-sort-undecorate: projecting the next renewal walks the
+            // calendar, so compute it once per row — not once per comparison
+            // on every body evaluation (this re-sorts on each search keystroke).
+            return subs.map { (sub: $0, next: $0.projectedNextRenewal()) }
+                .sorted { $0.next < $1.next }
+                .map(\.sub)
+        case .name:
+            return subs.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        case .amount:
+            return subs.sorted { $0.monthlyEquivalent > $1.monthlyEquivalent }
+        case .category:
+            return subs.sorted { $0.category.label.localizedCaseInsensitiveCompare($1.category.label) == .orderedAscending }
         }
     }
 
@@ -157,6 +168,11 @@ struct SubscriptionListView: View {
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
+                }
+
+                let trials = TrialRadar.endingTrials(in: profileSubscriptions)
+                if !trials.isEmpty {
+                    TrialRadarSection(trials: trials)
                 }
             }
 
