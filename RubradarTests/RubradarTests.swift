@@ -315,7 +315,7 @@ struct HomeMetricsTests {
 @MainActor
 struct PersistenceTests {
     private func makeContext() throws -> ModelContext {
-        let schema = Schema([Subscription.self])
+        let schema = Schema([Subscription.self, Profile.self, PriceChange.self])
         let container = try ModelContainer(
             for: schema,
             configurations: ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)

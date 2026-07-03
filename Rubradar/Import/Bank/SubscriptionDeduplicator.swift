@@ -12,9 +12,15 @@ enum SubscriptionDeduplicator {
     static func mark(_ detected: [DetectedSubscription], against existing: [Subscription]) -> [DetectedSubscription] {
         detected.map { item in
             var copy = item
-            copy.alreadyTracked = existing.contains { matches(item, $0) }
+            copy.alreadyTracked = match(item, in: existing) != nil
             return copy
         }
+    }
+
+    /// The tracked subscription a detection corresponds to, if any. Also used by
+    /// `PriceUpdateDetector` to diff a re-imported charge against the stored price.
+    static func match(_ detected: DetectedSubscription, in existing: [Subscription]) -> Subscription? {
+        existing.first { matches(detected, $0) }
     }
 
     private static func matches(_ detected: DetectedSubscription, _ subscription: Subscription) -> Bool {

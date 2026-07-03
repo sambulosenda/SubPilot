@@ -40,6 +40,11 @@ final class Subscription {
     /// so existing data lightweight-migrates; the inverse lives on `Profile`.
     var profile: Profile?
 
+    /// Recorded price movements, newest data appended as edits/imports detect
+    /// them. Optional for CloudKit; cascade so history dies with the sub.
+    @Relationship(deleteRule: .cascade, inverse: \PriceChange.subscription)
+    var priceChanges: [PriceChange]?
+
     // Branding / catalogue linkage
     var catalogueID: String?
     var symbolName: String?
@@ -136,13 +141,10 @@ extension Subscription {
     /// read it raw. Mirrors `RenewalProjector`; a free trial anchors on its end date.
     func projectedNextRenewal(asOf now: Date = Date(), calendar: Calendar = .current) -> Date {
         let start = calendar.startOfDay(for: now)
-        var date = (isFreeTrial && trialEndDate != nil) ? trialEndDate! : nextRenewalDate
-        var steps = 0
-        while date < start && steps < 600 {
-            date = billingCycle.nextDate(after: date, customDays: customCycleDays, calendar: calendar)
-            steps += 1
-        }
-        return date
+        let anchor = (isFreeTrial && trialEndDate != nil) ? trialEndDate! : nextRenewalDate
+        return billingCycle.firstOccurrence(
+            onOrAfter: start, anchor: anchor, customDays: customCycleDays, calendar: calendar
+        ).date
     }
 
     /// URL to open the provider's site (or app, via universal links): the explicit
@@ -157,6 +159,11 @@ extension Subscription {
             return URL(string: "https://\(domain)")
         }
         return nil
+    }
+
+    /// Price history, newest first. Empty when the price never moved.
+    var priceHistory: [PriceChange] {
+        (priceChanges ?? []).sorted { $0.changedAt > $1.changedAt }
     }
 
     /// Localised price like "£9.99".

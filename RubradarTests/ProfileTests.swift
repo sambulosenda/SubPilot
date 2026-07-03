@@ -13,7 +13,7 @@ struct ProfileTests {
     /// In-memory container with CloudKit disabled, for deterministic tests.
     private func makeContext() throws -> ModelContext {
         let container = try ModelContainer(
-            for: Subscription.self, Profile.self,
+            for: Subscription.self, Profile.self, PriceChange.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
         )
         return ModelContext(container)

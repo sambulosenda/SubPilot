@@ -19,6 +19,8 @@ final class BankImportModel {
                                 amountIndex: 2, debitIndex: nil, creditIndex: nil)
     /// Detected subscriptions, mapped to review candidates for `ImportReviewView`.
     var candidates: [ImportCandidate] = []
+    /// Tracked subscriptions whose imported charge differs from the stored price.
+    var priceUpdates: [PriceUpdate] = []
     var errorMessage: String?
 
     let preferredCurrency: String
@@ -61,6 +63,7 @@ final class BankImportModel {
                                                          defaultCurrency: preferredCurrency)
         let detected = RecurringChargeDetector().detect(transactions, catalogue: catalogue)
         let marked = SubscriptionDeduplicator.mark(detected, against: existing)
+        priceUpdates = PriceUpdateDetector.updates(from: detected, against: existing)
         candidates = marked.map { item in
             let count = item.occurrenceCount == 1 ? "1 charge" : "\(item.occurrenceCount) charges"
             return ImportCandidate(

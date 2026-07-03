@@ -20,7 +20,7 @@ extension ModelContainer {
     /// provisioned yet on this build), we fall back to the same on-disk store
     /// without mirroring so the app always launches instead of crashing.
     static let app: ModelContainer = {
-        let schema = Schema([Subscription.self, Profile.self])
+        let schema = Schema([Subscription.self, Profile.self, PriceChange.self])
         let cloudConfig = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
@@ -49,7 +49,7 @@ extension ModelContainer {
     /// Release (the whole block is compiled out).
     static let demoSeeded: ModelContainer = {
         let container = try! ModelContainer(
-            for: Subscription.self, Profile.self,
+            for: Subscription.self, Profile.self, PriceChange.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
         )
         // First access happens from the main-actor App body, so this is safe.
@@ -68,7 +68,7 @@ extension ModelContainer {
     /// (non-Pro) `PurchaseManager.shared` so paywall gates behave like release.
     static let uiTestLocal: ModelContainer = {
         try! ModelContainer(
-            for: Subscription.self, Profile.self,
+            for: Subscription.self, Profile.self, PriceChange.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
         )
     }()
@@ -80,7 +80,7 @@ extension ModelContainer {
     static let preview: ModelContainer = {
         do {
             let container = try ModelContainer(
-                for: Subscription.self, Profile.self,
+                for: Subscription.self, Profile.self, PriceChange.self,
                 configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
             )
             SampleData.seed(into: container.mainContext)

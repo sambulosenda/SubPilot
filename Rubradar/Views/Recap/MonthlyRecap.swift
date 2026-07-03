@@ -6,12 +6,27 @@
 import SwiftUI
 import UIKit
 
+/// A recent price movement flattened for the recap card. Pure value type so the
+/// card stays deterministic and unit-testable without SwiftData.
+struct RecapPriceChange: Identifiable, Equatable {
+    let id: UUID
+    let name: String
+    /// "£10.99 → £12.99"
+    let transition: String
+    let isRise: Bool
+}
+
 /// Snapshot of a month's spend for the shareable recap card. Pure value type so
 /// the card renders deterministically (and stays unit-testable).
 struct MonthlyRecapData {
+    /// How far back the "price changes" panel looks. ~One recap period.
+    static let priceChangeWindowDays = 30
+
     let monthTitle: String
     let activeCount: Int
     let breakdown: SpendBreakdown
+    /// Price movements recorded in the last `priceChangeWindowDays`, newest first.
+    var priceChanges: [RecapPriceChange] = []
 
     var formattedMonthly: String { breakdown.formattedTotal }
     var formattedYearly: String {
@@ -30,8 +45,27 @@ struct MonthlyRecapData {
         MonthlyRecapData(
             monthTitle: now.formatted(.dateTime.month(.wide).year()),
             activeCount: subscriptions.filter { !$0.isCancelled }.count,
-            breakdown: SpendBreakdown.make(from: subscriptions, preferred: preferred, rates: rates)
+            breakdown: SpendBreakdown.make(from: subscriptions, preferred: preferred, rates: rates),
+            priceChanges: recentPriceChanges(in: subscriptions, now: now)
         )
+    }
+
+    /// Price changes recorded within the window on non-cancelled subscriptions,
+    /// newest first.
+    static func recentPriceChanges(in subscriptions: [Subscription], now: Date = Date()) -> [RecapPriceChange] {
+        let cutoff = now.addingTimeInterval(-Double(priceChangeWindowDays) * 86_400)
+        return subscriptions
+            .filter { !$0.isCancelled }
+            .flatMap { sub in
+                sub.priceHistory
+                    .filter { $0.changedAt >= cutoff && $0.changedAt <= now }
+                    .map { (date: $0.changedAt,
+                            change: RecapPriceChange(id: $0.id, name: sub.name,
+                                                     transition: $0.transitionLabel,
+                                                     isRise: $0.newAmount > $0.oldAmount)) }
+            }
+            .sorted { $0.date > $1.date }
+            .map(\.change)
     }
 }
 
@@ -48,6 +82,10 @@ struct MonthlyRecapCard: View {
             hero
             Spacer(minLength: Spacing.lg)
             categories
+            if !data.priceChanges.isEmpty {
+                Spacer(minLength: Spacing.md)
+                priceChangesPanel
+            }
             Spacer(minLength: Spacing.lg)
             footer
         }
@@ -85,7 +123,7 @@ struct MonthlyRecapCard: View {
                 .font(.system(size: 60, weight: .heavy, design: .rounded))
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-            Text("a month across \(data.activeCount) \(data.activeCount == 1 ? "subscription" : "subscriptions")")
+            Text("a month across ^[\(data.activeCount) subscription](inflect: true)")
                 .font(.title3.weight(.medium))
                 .opacity(0.85)
         }
@@ -108,6 +146,41 @@ struct MonthlyRecapCard: View {
                         .font(.subheadline.weight(.semibold))
                         .monospacedDigit()
                 }
+            }
+        }
+        .padding(Spacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.white.opacity(0.12), in: .rect(cornerRadius: Radius.card))
+    }
+
+    /// Recent price movements, capped at two rows so the fixed-size card never
+    /// overflows; anything beyond folds into a "+N more" line.
+    private var priceChangesPanel: some View {
+        let shown = Array(data.priceChanges.prefix(2))
+        let overflow = data.priceChanges.count - shown.count
+        return VStack(alignment: .leading, spacing: Spacing.sm) {
+            Text("Price changes")
+                .font(.headline)
+                .opacity(0.9)
+            ForEach(shown) { change in
+                HStack(spacing: Spacing.sm) {
+                    Image(systemName: change.isRise ? "arrow.up.right" : "arrow.down.right")
+                        .font(.caption.weight(.bold))
+                        .opacity(0.9)
+                    Text(change.name)
+                        .font(.subheadline.weight(.medium))
+                        .lineLimit(1)
+                    Spacer(minLength: Spacing.sm)
+                    Text(change.transition)
+                        .font(.subheadline.weight(.semibold))
+                        .monospacedDigit()
+                        .lineLimit(1)
+                }
+            }
+            if overflow > 0 {
+                Text("+ ^[\(overflow) more change](inflect: true)")
+                    .font(.caption)
+                    .opacity(0.8)
             }
         }
         .padding(Spacing.md)

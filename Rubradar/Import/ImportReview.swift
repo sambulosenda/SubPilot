@@ -23,6 +23,10 @@ struct ImportCandidate: Identifiable {
 /// caller supplies the navigation title.
 struct ImportReviewView: View {
     let candidates: [ImportCandidate]
+    /// Tracked subscriptions whose imported charge differs from the stored
+    /// price. Shown in their own section; accepting one updates the stored
+    /// amount and records a `PriceChange`.
+    var priceUpdates: [PriceUpdate] = []
     var footer: LocalizedStringKey = "Pick the subscriptions you'd like to track."
     var emptyTitle: LocalizedStringKey = "Nothing found"
     var emptyMessage: LocalizedStringKey = "We couldn't find any subscriptions to add."
@@ -38,49 +42,70 @@ struct ImportReviewView: View {
     @Query(sort: \Profile.sortIndex) private var profiles: [Profile]
     @AppStorage("selectedProfileID") private var selectedProfileID = ""
     @State private var selected: Set<String>
+    @State private var selectedUpdates: Set<UUID>
     @State private var didAdd = false
 
     init(candidates: [ImportCandidate],
+         priceUpdates: [PriceUpdate] = [],
          footer: LocalizedStringKey = "Pick the subscriptions you'd like to track.",
          emptyTitle: LocalizedStringKey = "Nothing found",
          emptyMessage: LocalizedStringKey = "We couldn't find any subscriptions to add.",
          origin: AddMethod = .scan,
          onFinish: (() -> Void)? = nil) {
         self.candidates = candidates
+        self.priceUpdates = priceUpdates
         self.footer = footer
         self.emptyTitle = emptyTitle
         self.emptyMessage = emptyMessage
         self.origin = origin
         self.onFinish = onFinish
         _selected = State(initialValue: Set(candidates.filter { $0.isPreselected && !$0.alreadyTracked }.map(\.id)))
+        _selectedUpdates = State(initialValue: Set(priceUpdates.map(\.id)))
     }
 
     var body: some View {
         Group {
-            if candidates.isEmpty {
+            if candidates.isEmpty && priceUpdates.isEmpty {
                 ContentUnavailableView(emptyTitle, systemImage: "magnifyingglass", description: Text(emptyMessage))
             } else {
                 List {
-                    Section {
-                        ForEach(candidates) { candidate in
-                            ImportCandidateRow(
-                                candidate: candidate,
-                                isSelected: selected.contains(candidate.id),
-                                onToggle: { toggle(candidate.id) }
-                            )
+                    if !priceUpdates.isEmpty {
+                        Section {
+                            ForEach(priceUpdates) { update in
+                                PriceUpdateRow(
+                                    update: update,
+                                    isSelected: selectedUpdates.contains(update.id),
+                                    onToggle: { toggleUpdate(update.id) }
+                                )
+                            }
+                        } header: {
+                            Text("Price changes")
+                        } footer: {
+                            Text("These subscriptions were charged a different amount than you have saved. Selected ones will be updated to the new price.")
                         }
-                    } footer: {
-                        Text(footer)
+                    }
+                    if !candidates.isEmpty {
+                        Section {
+                            ForEach(candidates) { candidate in
+                                ImportCandidateRow(
+                                    candidate: candidate,
+                                    isSelected: selected.contains(candidate.id),
+                                    onToggle: { toggle(candidate.id) }
+                                )
+                            }
+                        } footer: {
+                            Text(footer)
+                        }
                     }
                 }
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if !selected.isEmpty {
+            if !selected.isEmpty || !selectedUpdates.isEmpty {
                 Button {
                     addSelected()
                 } label: {
-                    Text("Add \(selected.count) subscriptions")
+                    Text(confirmLabel)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glassProminent)
@@ -91,8 +116,20 @@ struct ImportReviewView: View {
         .sensoryFeedback(.success, trigger: didAdd)
     }
 
+    private var confirmLabel: LocalizedStringKey {
+        switch (selected.count, selectedUpdates.count) {
+        case (0, let updates): return "Update \(updates) prices"
+        case (let adds, 0): return "Add \(adds) subscriptions"
+        case (let adds, let updates): return "Add \(adds) · Update \(updates)"
+        }
+    }
+
     private func toggle(_ id: String) {
         if selected.contains(id) { selected.remove(id) } else { selected.insert(id) }
+    }
+
+    private func toggleUpdate(_ id: UUID) {
+        if selectedUpdates.contains(id) { selectedUpdates.remove(id) } else { selectedUpdates.insert(id) }
     }
 
     private func addSelected() {
@@ -102,6 +139,17 @@ struct ImportReviewView: View {
             modelContext.insert(candidate.subscription)
             candidate.subscription.profile = profile
             added += 1
+        }
+        for update in priceUpdates where selectedUpdates.contains(update.id) {
+            let sub = update.subscription
+            let oldAmount = sub.amount
+            sub.amount = update.newAmount
+            sub.updatedAt = Date()
+            if PriceChange.record(on: sub, oldAmount: oldAmount,
+                                  oldCurrencyCode: sub.currencyCode,
+                                  source: .bankImport, in: modelContext) != nil {
+                Analytics.priceChangeRecorded(source: .bankImport)
+            }
         }
         try? modelContext.save()
         didAdd = true
@@ -122,6 +170,39 @@ struct ImportReviewView: View {
             return profile
         }
         return profiles.first
+    }
+}
+
+/// A tracked subscription whose imported charge differs from the saved price.
+/// Selecting it accepts the new price; mirrors `ImportCandidateRow` styling.
+private struct PriceUpdateRow: View {
+    let update: PriceUpdate
+    let isSelected: Bool
+    let onToggle: () -> Void
+
+    var body: some View {
+        Button(action: onToggle) {
+            HStack(spacing: Spacing.md) {
+                BrandLogoView(subscription: update.subscription, size: 40)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(update.subscription.name).font(.headline).lineLimit(1)
+                    Text(update.transitionLabel).font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer(minLength: Spacing.sm)
+                Text(update.newAmount.formatted(.currency(code: update.subscription.currencyCode)))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(update.newAmount > update.oldAmount ? Color.red : Color.green)
+                    .lineLimit(1)
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(isSelected ? Color.accentColor : .secondary)
+                    .accessibilityHidden(true)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityValue(update.transitionLabel)
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 }
 

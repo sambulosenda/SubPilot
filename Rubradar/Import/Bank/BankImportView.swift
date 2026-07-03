@@ -120,6 +120,7 @@ struct BankImportView: View {
     private var reviewStep: some View {
         ImportReviewView(
             candidates: model.candidates,
+            priceUpdates: model.priceUpdates,
             footer: "We look for charges that repeat on a regular schedule. Pick the ones you'd like to track.",
             emptyTitle: "No subscriptions found",
             emptyMessage: "We couldn't spot recurring charges in this statement. Try a statement covering a longer period, or add subscriptions manually.",

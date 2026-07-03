@@ -15,8 +15,9 @@ import TelemetryDeck
 /// Privacy: TelemetryDeck is anonymous by design (no account, no IDFA, a salted
 /// per-vendor id). We deliberately send only non-identifying signals — add
 /// methods, paywall gate names, counts, and product tiers — never subscription
-/// names, amounts, notes, or any user content. Keeps the "private by default"
-/// promise (and the "Data Not Collected" privacy label) honest.
+/// names, amounts, notes, or any user content. Disclosed in the privacy policy
+/// and the ASC privacy label ("Product Interaction — Data Not Linked to You");
+/// keep all three in sync if events ever change shape.
 ///
 /// All calls are no-ops until the TelemetryDeck package is linked (the
 /// `canImport` guards), so the app builds and runs unchanged without it.
@@ -101,6 +102,12 @@ enum Analytics {
         send("purchaseCompleted",
              parameters: ["product": product,
                           "context": context?.rawValue ?? "unknown"])
+    }
+
+    /// A price change was recorded on a tracked subscription. Only the source
+    /// (manual edit / bank re-import / receipt) is sent — never the amounts.
+    static func priceChangeRecorded(source: PriceChangeSource) {
+        send("priceChangeRecorded", parameters: ["source": source.rawValue])
     }
 
     // MARK: - Plumbing

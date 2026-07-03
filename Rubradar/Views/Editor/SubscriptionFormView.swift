@@ -228,7 +228,16 @@ struct SubscriptionFormView: View {
             modelContext.insert(target)
             isNew = true
         case .edit(let existing):
+            // Diff the amount across the edit so a manual price bump lands in
+            // the subscription's price history.
+            let oldAmount = existing.amount
+            let oldCurrency = existing.currencyCode
             model.apply(to: existing)
+            if PriceChange.record(on: existing, oldAmount: oldAmount,
+                                  oldCurrencyCode: oldCurrency,
+                                  source: .manual, in: modelContext) != nil {
+                Analytics.priceChangeRecorded(source: .manual)
+            }
             target = existing
             isNew = false
         }

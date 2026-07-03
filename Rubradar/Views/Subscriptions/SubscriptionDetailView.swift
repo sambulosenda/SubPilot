@@ -146,6 +146,16 @@ struct SubscriptionDetailView: View {
                           subscription.monthlyEquivalent.formatted(.currency(code: subscription.currencyCode)))
             }
 
+            if !subscription.priceHistory.isEmpty {
+                card("Price history") {
+                    let history = subscription.priceHistory
+                    ForEach(Array(history.enumerated()), id: \.element.id) { index, change in
+                        priceChangeRow(change)
+                        if index < history.count - 1 { rowDivider }
+                    }
+                }
+            }
+
             card("Renewal") {
                 detailRow("Next renewal",
                           subscription.projectedNextRenewal().formatted(.dateTime.day().month().year()))
@@ -259,6 +269,29 @@ struct SubscriptionDetailView: View {
         }
         .buttonStyle(.plain)
         .foregroundStyle(role == .destructive ? Color.red : Color.accentColor)
+    }
+
+    /// One price movement: date on the left, "£10.99 → £12.99" plus a tinted
+    /// percentage on the right (red rise, green drop).
+    private func priceChangeRow(_ change: PriceChange) -> some View {
+        HStack {
+            Text(change.changedAt.formatted(.dateTime.day().month().year()))
+                .foregroundStyle(.secondary)
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(change.transitionLabel)
+                if let relative = change.relativeChange {
+                    Text(relative.formatted(.percent.precision(.fractionLength(0...1)).sign(strategy: .always())))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(change.newAmount > change.oldAmount ? Color.red : Color.green)
+                }
+            }
+        }
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, 14)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(change.changedAt.formatted(.dateTime.day().month().year())))
+        .accessibilityValue(change.transitionLabel)
     }
 
     private func detailRow(_ label: LocalizedStringKey, _ value: String) -> some View {
