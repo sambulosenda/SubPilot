@@ -32,6 +32,15 @@ struct AppRootView: View {
         // style (.headline/.body/.caption…) and presented sheet inherits it,
         // matching the rounded splash + brand mark.
         .fontDesign(.rounded)
+        // Widget deep links land here — the only view mounted from the very
+        // first frame. During the splash hold `RootView` doesn't exist yet, so
+        // handling URLs there would drop cold-launch taps; buffering through
+        // `AppRouter.pendingAction` (like App Intents) is launch-order-proof.
+        .onOpenURL { url in
+            if let action = AppRouter.action(for: url) {
+                AppRouter.shared.pendingAction = action
+            }
+        }
         .task {
             try? await Task.sleep(for: .seconds(1.6))
             withAnimation(.easeInOut(duration: 0.45)) { phase = .ready }

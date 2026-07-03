@@ -126,6 +126,27 @@ struct StatementParserTests {
         #expect(StatementParser.parseAmount("9,99")?.magnitude == Decimal(string: "9.99")) // EU decimal comma
         #expect(StatementParser.parseAmount("1,234")?.magnitude == Decimal(string: "1234")) // thousands, no decimal
     }
+
+    /// European statements/receipts write €1.234,56 — the separator that occurs
+    /// last is the decimal one. A lone separator with a 3-digit tail is
+    /// grouping ("1,234" = 1234), except after a bare zero ("0,999" = 0.999).
+    @Test func parsesEuropeanAndGroupedAmounts() {
+        #expect(HeuristicReceiptParser.decimal(from: "1.234,56") == Decimal(string: "1234.56")) // EU
+        #expect(HeuristicReceiptParser.decimal(from: "1,234.56") == Decimal(string: "1234.56")) // US
+        #expect(HeuristicReceiptParser.decimal(from: "1.234") == Decimal(string: "1234"))       // EU thousands
+        #expect(HeuristicReceiptParser.decimal(from: "1,234") == Decimal(string: "1234"))       // US thousands
+        #expect(HeuristicReceiptParser.decimal(from: "9,99") == Decimal(string: "9.99"))
+        #expect(HeuristicReceiptParser.decimal(from: "0,999") == Decimal(string: "0.999"))
+        #expect(HeuristicReceiptParser.decimal(from: "12.345.678,90") == Decimal(string: "12345678.90"))
+        #expect(StatementParser.parseAmount("1.234,56 €")?.magnitude == Decimal(string: "1234.56"))
+    }
+
+    /// Receipt lines reach `decimal(from:)` straight from the regex capture —
+    /// "¥1,500" must import as 1500, not 1.5.
+    @Test func receiptAmountsKeepThousandsGrouping() {
+        let matches = HeuristicReceiptParser.amounts(in: "Total ¥1,500")
+        #expect(matches.contains { $0.0 == Decimal(1500) && $0.1 == "JPY" })
+    }
 }
 
 struct RecurringChargeDetectorTests {

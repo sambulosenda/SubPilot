@@ -57,4 +57,54 @@ struct RenewalProjectionTests {
         )
         #expect(sub.projectedNextRenewal(asOf: now, calendar: calendar) == trialEnd)
     }
+
+    private func day(_ y: Int, _ m: Int, _ d: Int) -> Date {
+        DateComponents(calendar: calendar, year: y, month: m, day: d).date!
+    }
+
+    /// A subscription billing on the 31st must clamp through February and then
+    /// RETURN to the 31st — chaining month-adds would drift it to the 28th
+    /// forever (Jan 31 → Feb 28 → Mar 28 …).
+    @Test func monthEndAnchorRecoversAfterFebruary() {
+        let sub = Subscription(name: "iCloud", amount: 2.99, billingCycle: .monthly,
+                               nextRenewalDate: day(2026, 1, 31))
+        #expect(sub.projectedNextRenewal(asOf: day(2026, 2, 10), calendar: calendar) == day(2026, 2, 28))
+        #expect(sub.projectedNextRenewal(asOf: day(2026, 3, 10), calendar: calendar) == day(2026, 3, 31))
+        #expect(sub.projectedNextRenewal(asOf: day(2026, 4, 10), calendar: calendar) == day(2026, 4, 30))
+    }
+
+    /// Same guarantee for the calendar's event list: each occurrence is computed
+    /// from the anchor, so the projected series is Feb 28, Mar 31, Apr 30, May 31.
+    @Test func projectorEventsKeepMonthEndDay() {
+        let sub = Subscription(name: "iCloud", amount: 2.99, billingCycle: .monthly,
+                               nextRenewalDate: day(2026, 1, 31))
+        let events = RenewalProjector.events(for: [sub], from: day(2026, 2, 1),
+                                             horizonMonths: 4, calendar: calendar)
+        let dates = events.map(\.date)
+        #expect(dates == [day(2026, 2, 28), day(2026, 3, 31), day(2026, 4, 30), day(2026, 5, 31)])
+    }
+
+    /// A leap-day yearly anchor clamps to Feb 28 in common years and returns to
+    /// Feb 29 in the next leap year.
+    @Test func leapDayYearlyAnchor() {
+        let sub = Subscription(name: "Domain", amount: 12, billingCycle: .yearly,
+                               nextRenewalDate: day(2024, 2, 29))
+        #expect(sub.projectedNextRenewal(asOf: day(2026, 1, 1), calendar: calendar) == day(2026, 2, 28))
+        #expect(sub.projectedNextRenewal(asOf: day(2027, 3, 1), calendar: calendar) == day(2028, 2, 29))
+    }
+
+    /// An arbitrarily stale short-cycle anchor must resolve to a FUTURE date —
+    /// the old 600-step walk gave up and could surface (and schedule reminders
+    /// for) dates years in the past.
+    @Test func veryStaleShortCycleAnchorNeverReturnsPast() {
+        let anchor = day(2020, 6, 15)
+        let now = day(2026, 7, 1)
+        let sub = Subscription(name: "Daily thing", amount: 1, billingCycle: .custom,
+                               customCycleDays: 1, nextRenewalDate: anchor)
+        #expect(sub.projectedNextRenewal(asOf: now, calendar: calendar) >= now)
+
+        let events = RenewalProjector.events(for: [sub], from: now, horizonMonths: 1, calendar: calendar)
+        #expect(!events.isEmpty)
+        #expect(events.allSatisfy { $0.date >= calendar.startOfDay(for: now) })
+    }
 }

@@ -79,6 +79,20 @@ struct PaywallView: View {
             // Dismiss once Pro is unlocked (purchase or restore).
             if isPro { dismiss() }
         }
+        // Failed/pending purchases and empty restores must never end in
+        // silence — the user just tried to pay.
+        .alert(
+            purchases.feedback?.title ?? "",
+            isPresented: Binding(
+                get: { purchases.feedback != nil },
+                set: { if !$0 { purchases.feedback = nil } }
+            ),
+            presenting: purchases.feedback
+        ) { _ in
+            Button("OK", role: .cancel) {}
+        } message: { feedback in
+            Text(feedback.message)
+        }
     }
 
     // MARK: - Hero
@@ -275,7 +289,7 @@ struct PaywallView: View {
 
     private func heroSubtitle(_ pitch: OnboardingPitch?) -> Text {
         guard let pitch else { return Text(context.subtitle) }
-        return Text("Across ^[\(pitch.count) subscription](inflect: true). Start a free trial and we'll remind you before every renewal — including this one.")
+        return Text("Across ^[\(pitch.count) subscription](inflect: true). Start a free trial and we'll remind you before every renewal.")
     }
 
     // MARK: - Derived
@@ -345,7 +359,7 @@ struct PaywallView: View {
         case PurchaseManager.ProductID.annual:
             let perMonth = (product.price / 12).formatted(product.priceFormatStyle)
             return hasFreeTrial(product)
-                ? String(localized: "7 days free, then \(perMonth)/\u{2060}mo")
+                ? String(localized: "7 days free, then \(product.displayPrice)/\u{2060}year (≈\(perMonth)/\u{2060}mo)")
                 : String(localized: "Just \(perMonth)/\u{2060}mo")
         case PurchaseManager.ProductID.lifetime:
             return String(localized: "One-time purchase")

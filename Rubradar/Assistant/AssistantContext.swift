@@ -130,14 +130,7 @@ enum AssistantContext {
     /// `RenewalProjector`: a trial anchors the first occurrence and stale dates
     /// roll forward by the billing cycle.
     private static func nextOccurrence(for sub: Subscription, now: Date, calendar: Calendar) -> Date {
-        let start = calendar.startOfDay(for: now)
-        var date = (sub.isFreeTrial && sub.trialEndDate != nil) ? sub.trialEndDate! : sub.nextRenewalDate
-        var steps = 0
-        while date < start && steps < 600 {
-            date = sub.billingCycle.nextDate(after: date, customDays: sub.customCycleDays, calendar: calendar)
-            steps += 1
-        }
-        return date
+        sub.projectedNextRenewal(asOf: now, calendar: calendar)
     }
 
     private static func isoDay(_ date: Date, calendar: Calendar) -> String {

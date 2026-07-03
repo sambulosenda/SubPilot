@@ -42,21 +42,23 @@ enum RenewalProjector {
         for sub in subscriptions where !sub.isCancelled {
             // A free trial's end is the first meaningful (first-charge) event.
             let usesTrialAnchor = sub.isFreeTrial && sub.trialEndDate != nil
-            var date = usesTrialAnchor ? sub.trialEndDate! : sub.nextRenewalDate
+            let anchor = usesTrialAnchor ? sub.trialEndDate! : sub.nextRenewalDate
+            let cycle = sub.billingCycle
 
-            // Roll a stale anchor forward to the next future occurrence.
+            // Occurrences are always computed from the anchor by index, never
+            // chained date-to-date — chaining clamps month-end anchors and
+            // drifts them permanently (Jan 31 → Feb 28 → Mar 28 …).
+            var (n, date) = cycle.firstOccurrence(
+                onOrAfter: start, anchor: anchor, customDays: sub.customCycleDays, calendar: calendar
+            )
             var steps = 0
-            while date < start && steps < maxOccurrences {
-                date = sub.billingCycle.nextDate(after: date, customDays: sub.customCycleDays, calendar: calendar)
-                steps += 1
-            }
-
-            var isFirst = true
-            steps = 0
             while date <= end && steps < maxOccurrences {
-                events.append(RenewalEvent(subscription: sub, date: date, isTrialEnd: usesTrialAnchor && isFirst))
-                date = sub.billingCycle.nextDate(after: date, customDays: sub.customCycleDays, calendar: calendar)
-                isFirst = false
+                // "Trial ends" only if the trial-end anchor itself is still
+                // upcoming (n == 0); a rolled-forward stale trial has already
+                // converted, so its occurrences are plain renewals.
+                events.append(RenewalEvent(subscription: sub, date: date, isTrialEnd: usesTrialAnchor && n == 0))
+                n += 1
+                date = cycle.date(byAddingCycles: n, to: anchor, customDays: sub.customCycleDays, calendar: calendar)
                 steps += 1
             }
         }

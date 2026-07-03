@@ -57,6 +57,18 @@ struct SubscriptionCSVTests {
         #expect(csv.contains("\"Line one\nLine \"\"two\"\"\""))
     }
 
+    /// Spreadsheets execute cells starting with = + - @ or a tab. Names and
+    /// notes can carry imported text, so exported fields must be neutralized
+    /// with a leading apostrophe.
+    @Test func neutralizesSpreadsheetFormulas() {
+        let s = sub("=HYPERLINK(\"http://evil.tld\")", renewal: date(2026, 1, 1))
+        s.notes = "+SUM(A1:A9)"
+        let csv = SubscriptionCSV.export([s], timeZone: utc)
+        #expect(!csv.contains("\n=") && !csv.contains(",=") && !csv.contains("\"="))
+        #expect(csv.contains("'=HYPERLINK"))
+        #expect(csv.contains("'+SUM"))
+    }
+
     @Test func roundTripsThroughCSVParser() {
         let s = sub("Spotify, Family", renewal: date(2026, 3, 9))
         s.notes = "Shared \"plan\""

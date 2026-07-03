@@ -43,6 +43,11 @@ final class PurchaseManager {
     /// `.sheet(item:)` bound to this, so any view can trigger the upsell.
     var paywallContext: PaywallContext?
 
+    /// User-visible outcome of the last explicit purchase/restore attempt.
+    /// The paywall binds an alert to this; a silent outcome (user cancelled,
+    /// success) never sets it. Cleared by the alert's dismiss.
+    var feedback: PurchaseFeedback?
+
     private init() {
         isPro = UserDefaults.standard.bool(forKey: Self.isProDefaultsKey)
         // Listen for transactions signed outside an explicit purchase call:
@@ -116,19 +121,32 @@ final class PurchaseManager {
             let result = try await product.purchase()
             switch result {
             case .success(let verification):
-                guard let transaction = verified(verification) else { return false }
+                guard let transaction = verified(verification) else {
+                    feedback = .purchaseFailed(message: String(localized: "The App Store receipt couldn't be verified. You haven't been charged — please try again."))
+                    return false
+                }
                 await transaction.finish()
                 await refreshEntitlements()
                 if isPro {
                     Analytics.purchaseCompleted(product: Self.tierKey(for: product.id), context: paywallContext)
                 }
                 return isPro
-            case .userCancelled, .pending:
+            case .userCancelled:
+                return false
+            case .pending:
+                // Ask to Buy: the family organizer must approve. The
+                // `Transaction.updates` listener unlocks Pro when they do.
+                feedback = .purchasePending
                 return false
             @unknown default:
                 return false
             }
+        } catch StoreKitError.userCancelled {
+            return false
         } catch {
+            // A user who tried to pay and got silence assumes the app is
+            // broken — surface every non-cancellation failure.
+            feedback = .purchaseFailed(message: error.localizedDescription)
             return false
         }
     }
@@ -138,8 +156,15 @@ final class PurchaseManager {
         guard !purchaseInProgress else { return }
         purchaseInProgress = true
         defer { purchaseInProgress = false }
-        try? await AppStore.sync()
-        await refreshEntitlements()
+        do {
+            try await AppStore.sync()
+            await refreshEntitlements()
+            if !isPro { feedback = .nothingToRestore }
+        } catch StoreKitError.userCancelled {
+            // Backed out of the App Store sign-in — silence is correct.
+        } catch {
+            feedback = .restoreFailed(message: error.localizedDescription)
+        }
     }
 
     // MARK: - Entitlements
@@ -171,5 +196,47 @@ final class PurchaseManager {
     private func setPro(_ value: Bool) {
         if isPro != value { isPro = value }
         UserDefaults.standard.set(value, forKey: Self.isProDefaultsKey)
+    }
+}
+
+/// A purchase/restore outcome the user must be told about. Success and
+/// cancellation stay silent; everything else gets an alert on the paywall.
+enum PurchaseFeedback: Identifiable, Equatable {
+    /// The purchase failed after the user committed (network, payment issue).
+    case purchaseFailed(message: String)
+    /// Ask to Buy — waiting for the family organizer's approval.
+    case purchasePending
+    /// Restore ran but found no prior purchase on this Apple Account.
+    case nothingToRestore
+    /// The App Store sync behind Restore failed.
+    case restoreFailed(message: String)
+
+    var id: String {
+        switch self {
+        case .purchaseFailed: "purchaseFailed"
+        case .purchasePending: "purchasePending"
+        case .nothingToRestore: "nothingToRestore"
+        case .restoreFailed: "restoreFailed"
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .purchaseFailed: String(localized: "Purchase Failed")
+        case .purchasePending: String(localized: "Waiting for Approval")
+        case .nothingToRestore: String(localized: "Nothing to Restore")
+        case .restoreFailed: String(localized: "Restore Failed")
+        }
+    }
+
+    var message: String {
+        switch self {
+        case .purchaseFailed(let message), .restoreFailed(let message):
+            message
+        case .purchasePending:
+            String(localized: "Ask your family organizer to approve the purchase — Pro unlocks automatically once they do.")
+        case .nothingToRestore:
+            String(localized: "No previous purchases were found for this Apple Account.")
+        }
     }
 }

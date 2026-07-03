@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — SubHelm</title>
+<meta name="description" content="SubHelm privacy policy. Your subscriptions stay on your device — no account, no ads, no cross-app tracking.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#060A09">
+<link rel="icon" type="image/png" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<style>
+:root{
+  --bg:#060A09;
+  --bg-raise:#0C1413;
+  --ink:#EAF6F3;
+  --ink-dim:#85A09A;
+  --teal:#14B8A6;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:400 17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+main{max-width:720px;margin:0 auto;padding:48px 24px 96px}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+h1{font-size:2rem;line-height:1.2;margin:0 0 4px}
+h2{font-size:1.25rem;margin:2.2em 0 .6em;color:var(--ink)}
+p,li{color:var(--ink-dim)}
+strong{color:var(--ink);font-weight:600}
+.updated{color:var(--ink-dim);font-size:.9rem;margin-bottom:2em}
+.home{display:inline-block;margin-bottom:32px;font-weight:600}
+ul,ol{padding-left:1.3em}
+li{margin-bottom:.5em}
+</style>
+</head>
+<body>
+<main>
+<a class="home" href="/">← SubHelm</a>
+<h1>Privacy Policy</h1>
+<p class="updated">Last updated: 2 July 2026</p>
+
+<p>SubHelm is built privacy-first. There is no account, no sign-up, and no
+advertising or cross-app tracking. This policy explains exactly what happens
+to your data.</p>
+
+<h2>The short version</h2>
+<ul>
+<li>Your subscriptions are stored <strong>on your device</strong>.</li>
+<li>If you're signed into iCloud, they sync through <strong>your own private iCloud
+account</strong> (Apple CloudKit). We, the developers, <strong>cannot see them</strong>.</li>
+<li>We do <strong>not</strong> collect, sell, or share your personal data. Your subscription
+names, amounts, and notes never leave your device for our benefit.</li>
+<li>We use <strong>anonymous, aggregate product analytics</strong> (TelemetryDeck) to
+understand which features are used — never your content, and you can turn
+it off in Settings. There are no advertising or tracking SDKs.</li>
+</ul>
+
+<h2>What we collect</h2>
+<p>Your subscription data, spending totals, and profiles never reach us — SubHelm
+has no developer-operated servers and no account system.</p>
+<p>To improve the app we collect <strong>anonymous usage analytics</strong> via
+<a href="https://telemetrydeck.com">TelemetryDeck</a>, a privacy-focused analytics
+service based in Germany (GDPR-compliant). What this includes:</p>
+<ul>
+<li>Which features are used (for example "a subscription was added via scan",
+"the paywall was shown") and simple counts, plus general device information
+such as app version, iOS version, and device type.</li>
+<li>A <strong>salted, hashed identifier</strong> derived from a per-app Apple vendor ID, used
+only so repeat launches aren't counted as new users. TelemetryDeck cannot
+reverse it or link it to you, and it cannot be used to track you across apps.</li>
+</ul>
+<p>What it <strong>never</strong> includes: subscription names, amounts, notes, currencies,
+or any content you enter. Analytics can be disabled at any time with
+<strong>Settings → Share anonymous usage data</strong>; the app works identically with it
+off. TelemetryDeck's own policy is at
+<a href="https://telemetrydeck.com/privacy/">telemetrydeck.com/privacy</a>.</p>
+
+<h2>Where your data lives</h2>
+<ul>
+<li><strong>On your device</strong>, in the app's local database.</li>
+<li><strong>In your private iCloud database</strong> (Apple CloudKit), <em>only if</em> you are signed
+into iCloud. This is the standard mechanism Apple provides to sync your data
+across your own devices and back it up. Access is controlled by your Apple
+account; the developers have no access to it. Apple's handling of this data is
+governed by <a href="https://www.apple.com/legal/privacy/">Apple's Privacy Policy</a>.</li>
+</ul>
+
+<h2>Network requests</h2>
+<p>SubHelm makes a small number of network requests. <strong>None of them include
+your subscription content or any personal data that identifies you.</strong></p>
+<ol>
+<li><strong>Brand logos</strong> — to show a logo next to a subscription, the app sends the
+brand's public website <strong>domain</strong> (for example, <code>netflix.com</code>) to
+<a href="https://logo.dev">logo.dev</a> and receives a logo image. No personal
+information is sent.</li>
+<li><strong>Currency exchange rates</strong> — to convert amounts into your preferred
+currency, the app requests reference rates from
+<a href="https://www.frankfurter.app">frankfurter.app</a>, sending only a <strong>currency
+code</strong> (for example, <code>GBP</code>). No personal information is sent.</li>
+<li><strong>Anonymous analytics</strong> — usage events are sent to
+<a href="https://telemetrydeck.com">TelemetryDeck</a> as described above, unless you
+turn analytics off in Settings.</li>
+<li><strong>iCloud sync</strong> — handled by Apple CloudKit as described above.</li>
+</ol>
+<p>If you are offline, the app falls back gracefully (generic icons, last-known
+rates) and keeps working.</p>
+
+<h2>Receipts and the AI assistant</h2>
+<ul>
+<li><strong>Receipt scanning</strong> is performed <strong>entirely on your device</strong>. Receipt images
+are read locally to pre-fill subscription details and are never uploaded.</li>
+<li>The <strong>AI assistant</strong> runs <strong>on-device</strong> using Apple Intelligence on supported
+hardware. Your subscription information is not sent to any external AI service.</li>
+</ul>
+
+<h2>Notifications</h2>
+<p>Renewal and free-trial reminders are scheduled <strong>locally on your device</strong>. They
+are not sent through any external service.</p>
+
+<h2>Your choices</h2>
+<ul>
+<li><strong>Delete data:</strong> remove any subscription or profile in the app at any time.</li>
+<li><strong>Turn off analytics:</strong> Settings → Share anonymous usage data.</li>
+<li><strong>Stop iCloud sync:</strong> sign out of iCloud, or disable iCloud for SubHelm in
+the iOS Settings app.</li>
+</ul>
+
+<h2>Children</h2>
+<p>SubHelm is not directed at children and does not knowingly collect any data
+from anyone. It is rated 4+.</p>
+
+<h2>Changes to this policy</h2>
+<p>If this policy changes, the "Last updated" date above will change. Material
+changes will be reflected in an app update.</p>
+
+<h2>Contact</h2>
+<p>Questions about privacy? Email <a href="mailto:sambulosendas@gmail.com">sambulosendas@gmail.com</a>.</p>
+</main>
+</body>
+</html>

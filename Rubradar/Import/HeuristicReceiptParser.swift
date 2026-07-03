@@ -117,12 +117,30 @@ struct HeuristicReceiptParser {
 
     /// Parses a numeric string into a `Decimal`, disambiguating `,`/`.` as
     /// thousands vs decimal separators. Shared with the bank-statement importer.
+    ///
+    /// With both separators present, the last-occurring one is the decimal
+    /// separator ("1.234,56" and "1,234.56" both → 1234.56). A single separator
+    /// whose every following group is exactly three digits is thousands
+    /// grouping ("1,234" / "1.234" → 1234) — unless led by a bare zero
+    /// ("0,999" → 0.999); anything else is a decimal separator ("9,99" → 9.99).
     static func decimal(from raw: String) -> Decimal? {
         var s = raw
-        if s.contains(",") && s.contains(".") {
-            s = s.replacingOccurrences(of: ",", with: "")          // comma = thousands
-        } else if s.contains(",") {
-            s = s.replacingOccurrences(of: ",", with: ".")          // comma = decimal
+        switch (s.lastIndex(of: ","), s.lastIndex(of: ".")) {
+        case let (comma?, dot?) where comma > dot:                  // 1.234,56
+            s = s.replacingOccurrences(of: ".", with: "")
+                .replacingOccurrences(of: ",", with: ".")
+        case (.some, .some):                                        // 1,234.56
+            s = s.replacingOccurrences(of: ",", with: "")
+        case (.some, nil):
+            s = s.range(of: #"^[1-9]\d{0,2}(,\d{3})+$"#, options: .regularExpression) != nil
+                ? s.replacingOccurrences(of: ",", with: "")         // 1,234 → grouping
+                : s.replacingOccurrences(of: ",", with: ".")        // 9,99 → decimal
+        case (nil, .some):
+            if s.range(of: #"^[1-9]\d{0,2}(\.\d{3})+$"#, options: .regularExpression) != nil {
+                s = s.replacingOccurrences(of: ".", with: "")       // 1.234 → grouping
+            }
+        case (nil, nil):
+            break
         }
         return Decimal(string: s)
     }

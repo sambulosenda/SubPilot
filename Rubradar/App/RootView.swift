@@ -177,32 +177,17 @@ struct RootView: View {
         .onChange(of: preferredCurrencyCode) {
             WidgetSync.refresh(modelContext: modelContext)
         }
-        .onOpenURL { url in
-            // Deep links from the widget (subpilot://renewals | home | add).
-            guard url.scheme == WidgetDeepLink.scheme else { return }
-            switch url.host {
-            case "renewals": selection = .calendar
-            case "home": selection = .subscriptions
-            case "add":
-                selection = .subscriptions
-                requestAdd(.manual)
-            default: break
-            }
+        // Widget deep links and App Intents both arrive as `pendingAction`
+        // (the URL handler lives on AppRootView so cold launches can't drop
+        // it). initial: true catches an action set before the shell's first
+        // body evaluation.
+        .onChange(of: router.pendingAction, initial: true) { _, _ in
+            consumePendingRouterAction()
         }
-        // initial: true catches a cold launch where the intent ran before the
-        // shell's first body evaluation.
-        .onChange(of: router.pendingAction, initial: true) { _, action in
-            guard let action else { return }
-            router.pendingAction = nil
-            // Don't fight the first-run cover; onboarding wins.
-            guard hasCompletedOnboarding else { return }
-            switch action {
-            case .addSubscription:
-                selection = .subscriptions
-                requestAdd(.manual)
-            case .showRenewals:
-                selection = .calendar
-            }
+        .onChange(of: hasCompletedOnboarding) {
+            // An action that arrived during first-run stays pending (we don't
+            // fight the onboarding cover) — deliver it now.
+            consumePendingRouterAction()
         }
         .task {
             // Subscriptions synced in from another device (CloudKit import) need
@@ -220,6 +205,24 @@ struct RootView: View {
                     WidgetSync.refresh(modelContext: modelContext)
                 }
             }
+        }
+    }
+
+    /// Delivers a buffered intent/deep-link action. During first-run the action
+    /// stays pending (onboarding wins); `onChange(of: hasCompletedOnboarding)`
+    /// re-invokes this so a Siri "Add Subscription" from a brand-new install
+    /// lands after setup instead of being discarded.
+    private func consumePendingRouterAction() {
+        guard hasCompletedOnboarding, let action = router.pendingAction else { return }
+        router.pendingAction = nil
+        switch action {
+        case .addSubscription:
+            selection = .subscriptions
+            requestAdd(.manual)
+        case .showRenewals:
+            selection = .calendar
+        case .showHome:
+            selection = .subscriptions
         }
     }
 
@@ -243,10 +246,17 @@ struct RootView: View {
               !purchases.isPro,
               presentedSheet == nil,
               purchases.paywallContext == nil else { return }
-        pendingOnboardingUpsell = false
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(350))
-            guard !purchases.isPro else { return }
+            // Re-check after the delay: a shared-inbox import or add sheet may
+            // have presented meanwhile, which would swallow the paywall sheet.
+            // The one-shot flag is only consumed when we actually present, so
+            // a lost race keeps the offer armed for the next engagement signal.
+            guard pendingOnboardingUpsell,
+                  !purchases.isPro,
+                  presentedSheet == nil,
+                  purchases.paywallContext == nil else { return }
+            pendingOnboardingUpsell = false
             purchases.paywallContext = .onboarding
         }
     }

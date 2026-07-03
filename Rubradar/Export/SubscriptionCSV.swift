@@ -65,6 +65,14 @@ enum SubscriptionCSV {
     }
 
     private static func escape(_ value: String) -> String {
+        // Formula-injection guard: names/notes can carry imported (attacker-
+        // influenceable) text, and spreadsheets execute cells starting with
+        // = + - @ or a tab. A leading apostrophe makes Excel/Numbers/Sheets
+        // render the cell as text.
+        var value = value
+        if let first = value.first, "=+-@\t".contains(first) {
+            value = "'" + value
+        }
         let needsQuoting = value.contains { $0 == "," || $0 == "\"" || $0 == "\n" || $0 == "\r" }
         guard needsQuoting else { return value }
         return "\"" + value.replacingOccurrences(of: "\"", with: "\"\"") + "\""

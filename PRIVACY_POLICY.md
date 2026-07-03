@@ -1,23 +1,43 @@
 # SubHelm — Privacy Policy
 
-_Last updated: 8 June 2026_
+_Last updated: 2 July 2026_
 
 SubHelm is built privacy-first. There is no account, no sign-up, and no
-advertising or tracking. This policy explains exactly what happens to your data.
+advertising or cross-app tracking. This policy explains exactly what happens
+to your data.
 
 ## The short version
 
 - Your subscriptions are stored **on your device**.
 - If you're signed into iCloud, they sync through **your own private iCloud
   account** (Apple CloudKit). We, the developers, **cannot see them**.
-- We do **not** collect, sell, or share your personal data.
-- We use **no** analytics, advertising, or tracking SDKs.
+- We do **not** collect, sell, or share your personal data. Your subscription
+  names, amounts, and notes never leave your device for our benefit.
+- We use **anonymous, aggregate product analytics** (TelemetryDeck) to
+  understand which features are used — never your content, and you can turn
+  it off in Settings. There are no advertising or tracking SDKs.
 
 ## What we collect
 
-Nothing for ourselves. SubHelm has no developer-operated servers and no
-account system, so your subscription data, spending totals, and profiles never
-reach us.
+Your subscription data, spending totals, and profiles never reach us — SubHelm
+has no developer-operated servers and no account system.
+
+To improve the app we collect **anonymous usage analytics** via
+[TelemetryDeck](https://telemetrydeck.com), a privacy-focused analytics
+service based in Germany (GDPR-compliant). What this includes:
+
+- Which features are used (for example "a subscription was added via scan",
+  "the paywall was shown") and simple counts, plus general device information
+  such as app version, iOS version, and device type.
+- A **salted, hashed identifier** derived from a per-app Apple vendor ID, used
+  only so repeat launches aren't counted as new users. TelemetryDeck cannot
+  reverse it or link it to you, and it cannot be used to track you across apps.
+
+What it **never** includes: subscription names, amounts, notes, currencies,
+or any content you enter. Analytics can be disabled at any time with
+**Settings → Share anonymous usage data**; the app works identically with it
+off. TelemetryDeck's own policy is at
+[telemetrydeck.com/privacy](https://telemetrydeck.com/privacy/).
 
 ## Where your data lives
 
@@ -31,7 +51,7 @@ reach us.
 ## Network requests
 
 SubHelm makes a small number of network requests. **None of them include
-personal data or any identifier that could be linked to you.**
+your subscription content or any personal data that identifies you.**
 
 1. **Brand logos** — to show a logo next to a subscription, the app sends the
    brand's public website **domain** (for example, `netflix.com`) to
@@ -41,7 +61,10 @@ personal data or any identifier that could be linked to you.**
    currency, the app requests reference rates from
    [frankfurter.app](https://www.frankfurter.app), sending only a **currency
    code** (for example, `GBP`). No personal information is sent.
-3. **iCloud sync** — handled by Apple CloudKit as described above.
+3. **Anonymous analytics** — usage events are sent to
+   [TelemetryDeck](https://telemetrydeck.com) as described above, unless you
+   turn analytics off in Settings.
+4. **iCloud sync** — handled by Apple CloudKit as described above.
 
 If you are offline, the app falls back gracefully (generic icons, last-known
 rates) and keeps working.

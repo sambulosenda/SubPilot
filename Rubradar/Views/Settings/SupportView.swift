@@ -13,7 +13,6 @@ import UIKit
 /// No live chat: email is the support channel.
 struct SupportView: View {
     @Environment(\.openURL) private var openURL
-    @Environment(\.requestReview) private var requestReview
 
     @State private var expandedQuestion: String?
 
@@ -26,22 +25,18 @@ struct SupportView: View {
                     Label("Email support", systemImage: "envelope.fill")
                 }
                 Button {
-                    // Opens the public Featurebase board in the browser — kept
-                    // out of an embedded webview so no third-party code runs in
-                    // the app and the privacy story stays intact.
-                    openURL(SupportContact.featureBoardURL)
-                } label: {
-                    Label("Request a feature", systemImage: "lightbulb.fill")
-                }
-                Button {
-                    requestReview()
+                    // Explicit user-initiated rating: deep link straight to the
+                    // App Store write-review sheet. `requestReview` is reserved
+                    // for ReviewPrompter — the system caps it at 3/year and may
+                    // silently no-op, which would make this button feel dead.
+                    openURL(SupportContact.writeReviewURL)
                 } label: {
                     Label("Rate SubHelm", systemImage: "star.fill")
                 }
             } header: {
                 Text("Get in touch")
             } footer: {
-                Text("Found a bug, stuck on something, or want a service added to the catalogue? Email us — your app version and device are attached automatically so we can help faster. Got an idea? Post it on the feature board and vote on others.")
+                Text("Found a bug, stuck on something, or want a service added to the catalogue? Email us — your app version and device are attached automatically so we can help faster.")
             }
 
             Section("Frequently asked") {
@@ -79,9 +74,8 @@ struct SupportView: View {
 enum SupportContact {
     static let address = "sambulosendas@gmail.com"
 
-    /// Public feature-request board (Featurebase). Update here if a custom
-    /// domain like feedback.subpilotapp.com is connected later.
-    static let featureBoardURL = URL(string: "https://subpilot.featurebase.app")!
+    /// App Store write-review deep link — opens the review sheet directly.
+    static let writeReviewURL = URL(string: "https://apps.apple.com/app/id6777939621?action=write-review")!
 
     static func mailtoURL() -> URL? {
         let device = UIDevice.current

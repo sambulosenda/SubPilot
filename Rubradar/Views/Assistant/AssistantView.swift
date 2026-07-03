@@ -57,7 +57,7 @@ struct AssistantView: View {
     private var profileName: String {
         guard !selectedProfileID.isEmpty,
               let profile = profiles.first(where: { $0.id.uuidString == selectedProfileID })
-        else { return "All Profiles" }
+        else { return String(localized: "All Profiles") }
         return profile.name
     }
 
@@ -301,8 +301,8 @@ struct AssistantUnavailableView: View {
 
     private var title: String {
         switch availability {
-        case .modelNotReady: "Getting ready"
-        default: "Assistant unavailable"
+        case .modelNotReady: String(localized: "Getting ready")
+        default: String(localized: "Assistant unavailable")
         }
     }
 
@@ -313,13 +313,13 @@ struct AssistantUnavailableView: View {
     private var message: String {
         switch availability {
         case .deviceNotEligible:
-            "The on-device assistant needs an Apple Intelligence–capable device. Your other subscription features work as normal."
+            String(localized: "The on-device assistant needs an Apple Intelligence–capable device. Your other subscription features work as normal.")
         case .notEnabled:
-            "Turn on Apple Intelligence in Settings → Apple Intelligence & Siri to ask questions about your subscriptions."
+            String(localized: "Turn on Apple Intelligence in Settings → Apple Intelligence & Siri to ask questions about your subscriptions.")
         case .modelNotReady:
-            "Apple Intelligence is still downloading its model. This finishes automatically — check back shortly."
+            String(localized: "Apple Intelligence is still downloading its model. This finishes automatically — check back shortly.")
         case .unsupported, .available:
-            "The on-device assistant isn't available right now."
+            String(localized: "The on-device assistant isn't available right now.")
         }
     }
 }

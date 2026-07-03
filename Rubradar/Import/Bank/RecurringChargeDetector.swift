@@ -24,12 +24,13 @@ struct DetectedSubscription: Identifiable, Equatable {
     /// Builds a draft for the add path so all catalogue branding / defaults
     /// (`ReceiptDraft.makeSubscription`) are reused — no duplicated logic.
     func makeDraft(referenceDate: Date = Date(), calendar: Calendar = .current) -> ReceiptDraft {
-        var next = cycle.nextDate(after: lastSeen, calendar: calendar)
-        var guardCount = 0
-        while next < referenceDate, guardCount < 120 {
-            next = cycle.nextDate(after: next, calendar: calendar)
-            guardCount += 1
-        }
+        // Project forward from the last observed charge (start-of-day, so a
+        // renewal landing today isn't pushed a full cycle out). Index 0 is the
+        // charge we already saw — the draft's next renewal is at least one
+        // cycle after it.
+        let today = calendar.startOfDay(for: referenceDate)
+        let (n, projected) = cycle.firstOccurrence(onOrAfter: today, anchor: lastSeen, calendar: calendar)
+        let next = n == 0 ? cycle.date(byAddingCycles: 1, to: lastSeen, calendar: calendar) : projected
         return ReceiptDraft(providerName: displayName, amount: amount,
                             currencyCode: currencyCode, billingCycle: cycle, nextRenewalDate: next)
     }

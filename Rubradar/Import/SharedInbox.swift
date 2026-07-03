@@ -29,18 +29,35 @@ enum SharedInbox {
         return url
     }
 
+    /// Shared receipts can contain real PII (emails, card last-4). If the user
+    /// never reopens the app they shouldn't sit in the group container forever —
+    /// anything older than this is deleted on the next inbox access.
+    private static let maxAge: TimeInterval = 7 * 24 * 60 * 60
+
     /// True if at least one shared capture is waiting to be imported.
     static var hasPending: Bool {
         guard let folder = folderURL else { return false }
+        purgeStale(in: folder)
         let files = (try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? []
         return !files.isEmpty
+    }
+
+    private static func purgeStale(in folder: URL) {
+        guard let files = try? FileManager.default.contentsOfDirectory(
+            at: folder, includingPropertiesForKeys: [.creationDateKey]) else { return }
+        let cutoff = Date().addingTimeInterval(-maxAge)
+        for file in files {
+            let created = (try? file.resourceValues(forKeys: [.creationDateKey]).creationDate) ?? .distantPast
+            if created < cutoff { try? FileManager.default.removeItem(at: file) }
+        }
     }
 
     /// Returns the oldest pending capture as a `ReceiptSource` and deletes it.
     /// Returns nil when the folder is empty or unavailable.
     static func consumeNext() -> ReceiptSource? {
-        guard let folder = folderURL,
-              let files = try? FileManager.default.contentsOfDirectory(
+        guard let folder = folderURL else { return nil }
+        purgeStale(in: folder)
+        guard let files = try? FileManager.default.contentsOfDirectory(
                 at: folder, includingPropertiesForKeys: [.creationDateKey]),
               !files.isEmpty else { return nil }
 

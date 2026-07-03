@@ -68,7 +68,7 @@ enum PaywallContext: String, Identifiable, CaseIterable {
         case .profiles:
             String(localized: "Keep personal and work subscriptions in separate profiles, with Pro.")
         case .onboarding:
-            String(localized: "Start with a free trial — and we'll remind you before it ends, including this one.")
+            String(localized: "Start with a free trial — cancel anytime in the App Store.")
         case .generic:
             String(localized: "Everything in SubHelm, unlocked.")
         }

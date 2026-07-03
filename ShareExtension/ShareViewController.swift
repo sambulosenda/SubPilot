@@ -81,6 +81,9 @@ final class ShareViewController: UIViewController {
             .containerURL(forSecurityApplicationGroupIdentifier: appGroupID) else { return }
         let folder = container.appendingPathComponent(folderName, isDirectory: true)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        try? data.write(to: folder.appendingPathComponent("\(UUID().uuidString).\(ext)"))
+        // Receipts can carry PII — keep them encrypted at rest until the app
+        // consumes them (it deletes on consume, and purges anything > 7 days).
+        try? data.write(to: folder.appendingPathComponent("\(UUID().uuidString).\(ext)"),
+                        options: [.atomic, .completeFileProtection])
     }
 }
