@@ -1,8 +1,8 @@
-Esta versión estrena un nuevo diseño:
+SubHelm vigila tu dinero aún más de cerca:
 
-• Nueva pantalla de bienvenida animada al iniciar
-• Calendario de renovaciones rediseñado: desplazamiento fluido y continuo
-• Animaciones y transiciones más cuidadas en toda la app
-• Pantallas vacías y de carga renovadas
+• Seguimiento de cambios de precio — cada subida queda en el historial de la suscripción, y al reimportar un extracto puedes actualizar el nuevo importe con un toque
+• Pruebas a punto de terminar — nueva sección en Inicio y recordatorios extra el día antes y el mismo día, para que ninguna prueba gratuita se convierta en pago sin avisar
+• Cancelación guiada — «Cancelar suscripción» te guía paso a paso, con enlace directo a la página de cancelación del proveedor o a tus suscripciones de Apple
+• Tu resumen mensual ahora destaca las subidas de precio recientes
 
-¡Gracias por usar SubHelm! Cuéntanos qué te parece.
+¡Gracias por usar SubHelm! Nos encantaría conocer tu opinión.

@@ -1,8 +1,8 @@
-This release brings a fresh look:
+SubHelm now watches your money even more closely:
 
-• New animated welcome screen on launch
-• Redesigned renewal calendar with smooth, continuous scrolling
-• Refined animations and transitions throughout the app
-• Modernized empty and loading states
+• Price-change tracking — see every price rise on a subscription's history, and get one-tap updates when a re-imported statement shows a new amount
+• Trials ending soon — a new Home section and extra day-before and day-of reminders so a free trial never quietly converts
+• Guided cancellation — "Cancel subscription" now walks you through it, with a direct link to the provider's cancel page or your Apple subscriptions
+• Your monthly recap now calls out recent price rises
 
 Thanks for using SubHelm — we'd love your feedback!

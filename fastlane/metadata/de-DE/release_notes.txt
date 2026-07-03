@@ -1,8 +1,8 @@
-Diese Version bringt ein frisches Design:
+SubHelm behält dein Geld jetzt noch genauer im Blick:
 
-• Neuer animierter Willkommens-Bildschirm beim Start
-• Überarbeiteter Verlängerungskalender – jetzt mit flüssigem, durchgängigem Scrollen
-• Feinere Animationen und Übergänge in der gesamten App
-• Modernisierte leere Ansichten und Ladeanimationen
+• Preisänderungen im Blick — jede Preiserhöhung landet in der Historie des Abos, und beim erneuten Kontoauszug-Import aktualisierst du neue Beträge mit einem Tipp
+• Testphasen enden bald — neuer Bereich auf dem Startbildschirm plus zusätzliche Erinnerungen am Vortag und am Tag selbst, damit kein Gratis-Test still kostenpflichtig wird
+• Geführtes Kündigen — „Abo kündigen" führt dich Schritt für Schritt zur Kündigungsseite des Anbieters oder zu deinen Apple-Abos
+• Dein Monatsrückblick zeigt jetzt aktuelle Preiserhöhungen
 
 Danke, dass du SubHelm nutzt – wir freuen uns über dein Feedback!

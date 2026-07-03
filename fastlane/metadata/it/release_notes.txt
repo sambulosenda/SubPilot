@@ -1,8 +1,8 @@
-Questa versione si rifà il look:
+SubHelm tiene d'occhio i tuoi soldi ancora meglio:
 
-• Nuova schermata di benvenuto animata all'avvio
-• Calendario dei rinnovi ridisegnato – scorrimento fluido e continuo
-• Animazioni e transizioni più curate in tutta l'app
-• Schermate vuote e caricamenti rinnovati
+• Variazioni di prezzo — ogni aumento finisce nella cronologia dell'abbonamento, e reimportando un estratto conto aggiorni il nuovo importo con un tocco
+• Prove in scadenza — nuova sezione nella Home e promemoria extra il giorno prima e il giorno stesso, così nessuna prova gratuita diventa a pagamento in silenzio
+• Disdetta guidata — «Annulla abbonamento» ti accompagna passo passo, con link diretto alla pagina di disdetta del fornitore o ai tuoi abbonamenti Apple
+• Il riepilogo mensile ora segnala gli aumenti di prezzo recenti
 
-Grazie per usare SubHelm – facci sapere cosa ne pensi!
+Grazie per usare SubHelm — il tuo feedback è prezioso!
