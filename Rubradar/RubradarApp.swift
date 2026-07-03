@@ -13,6 +13,8 @@ struct RubradarApp: App {
     init() {
         Analytics.start()
         #if DEBUG
+        // One-shot CloudKit Development schema push (see the type's docs).
+        CloudKitSchemaInitializer.runIfRequested()
         if ProcessInfo.processInfo.arguments.contains("-UITestLocalStore") {
             // Deterministic first-run, non-Pro state for UI tests, via *real*
             // writes — not `-key value` launch args, which land in the argument
