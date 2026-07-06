@@ -213,6 +213,22 @@ struct PaywallView: View {
 
     private var purchaseBar: some View {
         VStack(spacing: Spacing.sm) {
+            // Guideline 3.1.2(c): the billed amount must be the most clear and
+            // conspicuous pricing element in the flow, so it sits bold and primary
+            // right above the CTA; the trial rides below it as a subordinate caption.
+            if let product = selectedProduct {
+                VStack(spacing: 2) {
+                    Text(billedAmountLine(for: product))
+                        .font(.title3.bold())
+                    if hasFreeTrial(product) {
+                        Text("after your 7-day free trial")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .accessibilityElement(children: .combine)
+            }
+
             Button(action: buySelected) {
                 HStack(spacing: Spacing.xs) {
                     if purchases.purchaseInProgress {
@@ -289,7 +305,7 @@ struct PaywallView: View {
 
     private func heroSubtitle(_ pitch: OnboardingPitch?) -> Text {
         guard let pitch else { return Text(context.subtitle) }
-        return Text("Across ^[\(pitch.count) subscription](inflect: true). Start a free trial and we'll remind you before every renewal.")
+        return Text("Across ^[\(pitch.count) subscription](inflect: true). We'll remind you before every renewal.")
     }
 
     // MARK: - Derived
@@ -309,9 +325,29 @@ struct PaywallView: View {
         return String(localized: "SAVE \(percent)%")
     }
 
+    /// CTA copy stays price/trial-neutral — the billed amount directly above the
+    /// button carries the pricing (Guideline 3.1.2(c)).
     private var ctaTitle: String {
-        if let product = selectedProduct, hasFreeTrial(product) { return String(localized: "Start Free Trial") }
-        return String(localized: "Unlock Pro")
+        guard let product = selectedProduct,
+              product.id != PurchaseManager.ProductID.lifetime else {
+            return String(localized: "Unlock Pro")
+        }
+        return String(localized: "Subscribe")
+    }
+
+    /// The total billed amount for the selected plan, spelled out with its
+    /// billing period — the loudest pricing element on the screen.
+    private func billedAmountLine(for product: Product) -> String {
+        switch product.id {
+        case PurchaseManager.ProductID.monthly:
+            return String(localized: "\(product.displayPrice) per month")
+        case PurchaseManager.ProductID.annual:
+            return String(localized: "\(product.displayPrice) per year")
+        case PurchaseManager.ProductID.lifetime:
+            return String(localized: "\(product.displayPrice) one-time")
+        default:
+            return product.displayPrice
+        }
     }
 
     private func buySelected() {
@@ -349,9 +385,10 @@ struct PaywallView: View {
         }
     }
 
-    /// The supporting line under the tier name — trial and/or the calculated
-    /// per-month equivalent, kept subordinate in size and colour to the billed
-    /// amount above. Word joiner (U+2060) keeps "$1.67/mo" from wrapping mid-unit.
+    /// The supporting line under the tier name — the calculated per-month
+    /// equivalent first, trial last, kept subordinate in size and colour to the
+    /// billed amount beside it (Guideline 3.1.2(c): never lead with the trial).
+    /// Word joiner (U+2060) keeps "$1.67/mo" from wrapping mid-unit.
     private func planCaption(for product: Product) -> String? {
         switch product.id {
         case PurchaseManager.ProductID.monthly:
@@ -359,7 +396,7 @@ struct PaywallView: View {
         case PurchaseManager.ProductID.annual:
             let perMonth = (product.price / 12).formatted(product.priceFormatStyle)
             return hasFreeTrial(product)
-                ? String(localized: "7 days free, then \(product.displayPrice)/\u{2060}year (≈\(perMonth)/\u{2060}mo)")
+                ? String(localized: "≈\(perMonth)/\u{2060}mo · 7 days free")
                 : String(localized: "Just \(perMonth)/\u{2060}mo")
         case PurchaseManager.ProductID.lifetime:
             return String(localized: "One-time purchase")

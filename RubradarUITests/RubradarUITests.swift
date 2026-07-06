@@ -42,6 +42,17 @@ final class RubradarUITests: XCTestCase {
         XCTAssertTrue(skip.waitForExistence(timeout: 15), "Onboarding 'Skip' did not appear")
         skip.tap()
 
+        // The upsell is deferred to the first engagement signal (tab switch,
+        // warm return, or next launch) — see RootView.armOnboardingUpsell. Use a
+        // warm return: unlike a tab tap it can't be swallowed by the cover's
+        // dismissal animation. Settle first so onDismiss has armed the flag.
+        XCTAssertTrue(app.tabBars.buttons["Calendar"].waitForExistence(timeout: 5),
+                      "Tab bar did not appear after onboarding")
+        Thread.sleep(forTimeInterval: 1.5)
+        XCUIDevice.shared.press(.home)
+        Thread.sleep(forTimeInterval: 1.0)
+        app.activate()
+
         // The soft onboarding paywall should now present.
         let maybeLater = app.buttons["Maybe later"]
         XCTAssertTrue(maybeLater.waitForExistence(timeout: 5),
@@ -97,6 +108,44 @@ final class RubradarUITests: XCTestCase {
         // Reaching the reminders step proves the seed persisted without crashing.
         XCTAssertTrue(app.buttons["Enable reminders"].waitForExistence(timeout: 5),
                       "Did not advance past the starter step after seeding")
+    }
+
+    /// Guideline 3.1.2(c) regression guard (App Review rejection, Jul 2026): the
+    /// billed amount must stay the most conspicuous pricing element — the CTA is
+    /// trial-neutral ("Subscribe") with the billed amount right above it.
+    /// Attaches a screenshot as review evidence.
+    @MainActor
+    func testPaywallBilledAmountProminence() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestLocalStore"]
+        app.launch()
+
+        let skip = app.buttons["Skip"]
+        XCTAssertTrue(skip.waitForExistence(timeout: 15), "Onboarding 'Skip' did not appear")
+        skip.tap()
+
+        // Deferred upsell fires on the first engagement signal — use a warm
+        // return (background → foreground; see note in the test above).
+        XCTAssertTrue(app.tabBars.buttons["Calendar"].waitForExistence(timeout: 5),
+                      "Tab bar did not appear after onboarding")
+        Thread.sleep(forTimeInterval: 1.5)
+        XCUIDevice.shared.press(.home)
+        Thread.sleep(forTimeInterval: 1.0)
+        app.activate()
+
+        // CTA must read "Subscribe" (not "Start Free Trial") once products load.
+        let subscribe = app.buttons["Subscribe"]
+        XCTAssertTrue(subscribe.waitForExistence(timeout: 10), "'Subscribe' CTA missing")
+
+        // The billed amount line ("$19.99 per year") sits directly above the CTA.
+        let billed = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS 'per year'")).firstMatch
+        XCTAssertTrue(billed.waitForExistence(timeout: 5), "Billed amount line missing")
+
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = "paywall-3-1-2c"
+        shot.lifetime = .keepAlways
+        add(shot)
     }
 
     @MainActor

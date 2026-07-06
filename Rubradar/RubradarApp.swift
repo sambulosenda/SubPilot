@@ -23,6 +23,9 @@ struct RubradarApp: App {
             // and PurchaseManager.isProDefaultsKey.
             UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
             UserDefaults.standard.set(false, forKey: "isProEntitlement")
+            // Also clear the deferred-upsell arm, or a paywall left unconsumed by
+            // a previous test run fires at launch and breaks determinism.
+            UserDefaults.standard.set(false, forKey: "pendingOnboardingUpsell")
         }
         #endif
     }
