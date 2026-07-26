@@ -11,17 +11,25 @@ import SwiftData
 /// *primes* the notification permission before the system prompt appears
 /// (FR-21). The hard ask is only fired from the reminders page; nothing here
 /// blocks the user from reaching the app.
+///
+/// Layout is a stationary frame — top chrome, hero anchor, bottom well — with
+/// only the middle content changing per page, so the flow reads as one composed
+/// surface. See `OnboardingChrome` for the backdrop, hero slot, and transition.
 struct OnboardingView: View {
     /// Called when the user finishes or skips. The parent marks onboarding
     /// complete and reschedules reminders.
     var onFinish: () -> Void
 
-    private enum Page: Int, CaseIterable { case welcome, privacy, add, reminders }
+    // `fileprivate` so the page's content lives in one extension at the bottom
+    // of this file rather than bloating the view body.
+    fileprivate enum Page: Int, CaseIterable { case welcome, privacy, add, reminders }
 
     @State private var page: Page = .welcome
     @State private var isRequesting = false
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AppStorage("selectedProfileID") private var selectedProfileID = ""
     @State private var starterItems: [OnboardingStarter] = []
     @State private var selectedStarters: Set<String> = []
@@ -31,81 +39,119 @@ struct OnboardingView: View {
     private let currencyCode = Locale.current.currency?.identifier ?? "GBP"
 
     var body: some View {
-        VStack(spacing: 0) {
-            skipBar
+        content
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // Insets rather than a VStack: the starter step's ScrollView then
+            // scrolls *under* both bars and insets its own content, instead of
+            // being clipped by them (the old layout hid the last chip row).
+            .safeAreaInset(edge: .top, spacing: 0) { skipBar }
+            .safeAreaInset(edge: .bottom, spacing: 0) { bottomWell }
+            .background { OnboardingBackdrop(tint: page.tint, phase: page.rawValue) }
+            // Declarative haptic on page advance (preferred over UIKit generators).
+            .sensoryFeedback(.selection, trigger: page)
+            .task { if starterItems.isEmpty { starterItems = OnboardingStarter.load() } }
+    }
 
-            // The starter step scrolls and fills the available height; the
-            // info pages stay vertically centred between flexible spacers.
+    // MARK: - Content
+
+    @ViewBuilder
+    private var content: some View {
+        Group {
             if page == .add {
-                content
-                    .id(page)
-                    .transition(.opacity)
+                OnboardingStarterStep(
+                    items: starterItems,
+                    selected: $selectedStarters,
+                    currencyCode: currencyCode
+                )
             } else {
-                Spacer(minLength: 0)
-                content
-                    .id(page)
-                    .transition(.opacity)
-                Spacer(minLength: 0)
+                infoPage
             }
-
-            PageDots(count: Page.allCases.count, index: page.rawValue)
-                .padding(.bottom, Spacing.lg)
-
-            actions
-                .padding(.horizontal, Spacing.xl)
-                .padding(.bottom, Spacing.xl)
         }
-        // Declarative haptic on page advance (preferred over UIKit generators).
-        .sensoryFeedback(.selection, trigger: page)
-        .task { if starterItems.isEmpty { starterItems = OnboardingStarter.load() } }
+        // `.welcome`, `.privacy` and `.reminders` share one branch, so identity
+        // has to be pinned to the page for the transition to fire between them.
+        .id(page)
+        .transition(pageTransition)
+    }
+
+    /// A hero anchored above copy, optically centred and biased just clear of
+    /// the bottom well.
+    ///
+    /// It scrolls, and the centring is a *minimum* height rather than a fixed
+    /// one: at accessibility text sizes a fixed frame squeezed `Text` until the
+    /// message truncated mid-sentence. `minHeight` centres the block while it
+    /// fits and lets it grow — and scroll — once it doesn't.
+    private var infoPage: some View {
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(spacing: Spacing.lg) {
+                    OnboardingHero(kind: page.hero, tint: page.tint)
+
+                    VStack(spacing: Spacing.sm) {
+                        Text(page.title)
+                            .font(.largeTitle.bold())
+                            // Long localisations (de/pt-BR) otherwise run to
+                            // three lines and crowd the message.
+                            .minimumScaleFactor(0.8)
+                        Text(page.message)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    }
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, Spacing.xl)
+                }
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: max(0, proxy.size.height - bottomBias),
+                    alignment: .center
+                )
+                .padding(.bottom, bottomBias)
+                .accessibilityElement(children: .combine)
+            }
+            .scrollIndicators(.hidden)
+            .scrollBounceBehavior(.basedOnSize)
+        }
+    }
+
+    /// Lifts the composition above the true centre so it doesn't sag toward the
+    /// CTA. Dropped at accessibility sizes, where the copy needs every point.
+    private var bottomBias: CGFloat {
+        dynamicTypeSize.isAccessibilitySize ? 0 : 72
+    }
+
+    private var pageTransition: AnyTransition {
+        // Reduce Motion: no travel, no defocus — a plain cross-fade.
+        guard !reduceMotion else { return .opacity }
+        return .asymmetric(
+            insertion: AnyTransition(PageSlide(edge: .trailing)),
+            removal: AnyTransition(PageSlide(edge: .leading))
+        )
     }
 
     // MARK: - Chrome
 
+    /// Progress leads, Skip trails. The indicator lives up here rather than
+    /// above the CTA because the starter step scrolls *under* the bottom bar —
+    /// down there the dots landed on top of brand logos.
     private var skipBar: some View {
         HStack {
+            PageProgress(count: Page.allCases.count, index: page.rawValue)
             Spacer()
             // No Skip on the reminders page — it already offers "Not now".
             if page != .reminders {
                 Button("Skip", action: onFinish)
-                    .padding(.trailing, Spacing.md)
-                    .padding(.top, Spacing.sm)
+                    .buttonStyle(.glass)
+                    .controlSize(.small)
             }
         }
-        .frame(height: 44)   // reserve space so the layout doesn't jump
+        .padding(.horizontal, Spacing.lg)
+        .frame(height: 52)   // reserve space so the layout doesn't jump
     }
 
-    @ViewBuilder
-    private var content: some View {
-        switch page {
-        case .welcome:
-            OnboardingPage(
-                hero: .brandMark,
-                tint: .accentColor,
-                title: String(localized: "Track every subscription"),
-                message: String(localized: "Keep all your recurring payments in one place and always know what's coming out next.")
-            )
-        case .privacy:
-            OnboardingPage(
-                hero: .symbol("lock.shield.fill"),
-                tint: .green,
-                title: String(localized: "Private by default"),
-                message: String(localized: "Your subscriptions stay on your device. No account, no sign-up, and no sharing your bank.")
-            )
-        case .add:
-            OnboardingStarterStep(
-                items: starterItems,
-                selected: $selectedStarters,
-                currencyCode: currencyCode
-            )
-        case .reminders:
-            OnboardingPage(
-                hero: .symbol("bell.badge.fill"),
-                tint: .orange,
-                title: String(localized: "Never miss a renewal"),
-                message: String(localized: "Get a reminder before each renewal or free-trial conversion, so you can cancel in time.")
-            )
-        }
+    private var bottomWell: some View {
+        actions
+            .padding(.horizontal, Spacing.xl)
+            .padding(.top, Spacing.sm)
+            .padding(.bottom, Spacing.md)
     }
 
     @ViewBuilder
@@ -130,13 +176,18 @@ struct OnboardingView: View {
                         .disabled(isRequesting)
                 } else {
                     Button(action: advance) {
-                        Text(continueLabel).frame(maxWidth: .infinity)
+                        Text(continueLabel)
+                            .contentTransition(.numericText())
+                            .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.glassProminent)
                     .controlSize(.extraLarge)
                 }
             }
         }
+        // The label counts up as starters are picked; animate it rather than
+        // letting it snap between "Continue" and "Add 3 & Continue".
+        .animation(.snappy(duration: 0.28), value: selectedStarters.count)
     }
 
     // MARK: - Actions
@@ -195,83 +246,47 @@ struct OnboardingView: View {
     }
 }
 
-// MARK: - Page layout
+// MARK: - Page content
 
-private struct OnboardingPage: View {
-    /// The page's leading visual: either an SF Symbol or the animated brand mark.
-    enum Hero {
-        case symbol(String)
-        case brandMark
-    }
-
-    let hero: Hero
-    let tint: Color
-    let title: String
-    let message: String
-
-    @State private var symbolPlayed = false
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    var body: some View {
-        VStack(spacing: Spacing.lg) {
-            heroView
-
-            VStack(spacing: Spacing.sm) {
-                Text(title)
-                    .font(.largeTitle.bold())
-                Text(message)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-            }
-            .multilineTextAlignment(.center)
-        }
-        .padding(.horizontal, Spacing.xl)
-        .accessibilityElement(children: .combine)
-    }
-
-    @ViewBuilder
-    private var heroView: some View {
-        switch hero {
-        case .brandMark:
-            // Reuse the shipped app mark (ring draws on, dot pops, soft sonar
-            // idle) so the very first screen is unmistakably SubHelm.
-            RecurraMarkView(size: 120, style: .plain, tint: tint, looping: true)
-                .accessibilityHidden(true)
-        case .symbol(let name):
-            Image(systemName: name)
-                .font(.system(size: 72))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(tint)
-                // Bounce once as the page settles in — native, no dependency.
-                .symbolEffect(.bounce, options: .nonRepeating, value: symbolPlayed)
-                .accessibilityHidden(true)
-                .task {
-                    guard !reduceMotion else { return }
-                    try? await Task.sleep(for: .milliseconds(280))
-                    symbolPlayed = true
-                }
+private extension OnboardingView.Page {
+    var tint: Color {
+        switch self {
+        case .welcome: return .accentColor
+        case .privacy: return .green
+        case .add: return .accentColor
+        case .reminders: return .orange
         }
     }
-}
 
-// MARK: - Page indicator
-
-private struct PageDots: View {
-    let count: Int
-    let index: Int
-
-    var body: some View {
-        HStack(spacing: Spacing.sm) {
-            ForEach(0..<count, id: \.self) { i in
-                Circle()
-                    .fill(i == index ? Color.accentColor : Color.secondary.opacity(0.3))
-                    .frame(width: 8, height: 8)
-            }
+    var hero: OnboardingHero.Kind {
+        switch self {
+        case .welcome: return .brandMark
+        case .privacy: return .symbol("lock.shield.fill")
+        case .add: return .brandMark          // unused — the starter step draws its own
+        case .reminders: return .symbol("bell.badge.fill")
         }
-        .animation(.smooth, value: index)
-        // Surface progress to VoiceOver instead of hiding the dots outright.
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Step \(index + 1) of \(count)")
+    }
+
+    var title: String {
+        switch self {
+        case .welcome: return String(localized: "Track every subscription")
+        case .privacy: return String(localized: "Private by default")
+        case .add: return ""
+        case .reminders: return String(localized: "Never miss a renewal")
+        }
+    }
+
+    var message: String {
+        switch self {
+        case .welcome:
+            return String(localized: "Keep all your recurring payments in one place and always know what's coming out next.")
+        case .privacy:
+            return String(localized: "Your subscriptions stay on your device. No account, no sign-up, and no sharing your bank.")
+        case .add:
+            return ""
+        case .reminders:
+            return String(localized: "Get a reminder before each renewal or free-trial conversion, so you can cancel in time.")
+        }
     }
 }
 

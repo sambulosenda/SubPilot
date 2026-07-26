@@ -31,21 +31,32 @@ struct OnboardingStarterStep: View {
         ScrollView {
             VStack(spacing: Spacing.lg) {
                 header
+                    .appearEntrance(0)
                 total
+                    .appearEntrance(1)
                 LazyVGrid(columns: columns, spacing: Spacing.sm) {
-                    ForEach(items) { item in
+                    ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                         StarterChip(
                             item: item,
                             currencyCode: currencyCode,
                             isSelected: selected.contains(item.id)
                         ) { toggle(item.id) }
+                        // Stagger by row (3-up), capped so the grid settles in
+                        // ~0.3s and late rows scrolled into view don't crawl.
+                        .appearEntrance(min(index / 3, 3) + 2)
                     }
                 }
             }
             .padding(.horizontal, Spacing.lg)
-            .padding(.bottom, Spacing.lg)
+            .padding(.bottom, Spacing.md)
         }
         .scrollIndicators(.hidden)
+        // The page's bars are safe-area insets, so chips scroll *under* them.
+        // Soft at the top (the title just needs to not hard-cut); hard at the
+        // bottom, where the CTA has to stay readable over whatever brand logo
+        // happens to scroll behind it.
+        .scrollEdgeEffectStyle(.soft, for: .top)
+        .scrollEdgeEffectStyle(.hard, for: .bottom)
     }
 
     private var header: some View {
@@ -62,40 +73,61 @@ struct OnboardingStarterStep: View {
         .accessibilityElement(children: .combine)
     }
 
-    @ViewBuilder
+    /// One container across both states, so the first tap *grows* a bare hint
+    /// line into the running total instead of swapping one element for another —
+    /// the moment the screen exists for should feel like a reveal, not a redraw.
+    /// Empty gets no card: a full-width blank surface reads as a broken element
+    /// and steals a chip row's worth of height.
     private var total: some View {
-        if selected.isEmpty {
-            Text("Tap a few to see your monthly spend")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, Spacing.lg)
-                .cardStyle()
-                .accessibilityHidden(true)
-        } else {
-            VStack(spacing: 2) {
+        VStack(spacing: 2) {
+            if selected.isEmpty {
+                Text("Tap a few to see your monthly spend")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
                 Text("You're tracking")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Text(monthlyTotal.formatted(.currency(code: currencyCode)) + " / mo")
+                Text(monthlyText)
                     .font(.largeTitle.bold())
                     .contentTransition(.numericText(value: monthlyDouble))
-                Text((monthlyTotal * 12).formatted(.currency(code: currencyCode)) + " / yr")
+                Text(yearlyText)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.md)
-            .cardStyle()
-            .animation(.snappy, value: monthlyDouble)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel("You're tracking \(monthlyTotal.formatted(.currency(code: currencyCode))) per month")
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, selected.isEmpty ? Spacing.sm : Spacing.md)
+        .background {
+            RoundedRectangle(cornerRadius: Radius.card)
+                .fill(Color.cardBackground)
+                .overlay {
+                    // Ring lights up once there's a number worth reading.
+                    RoundedRectangle(cornerRadius: Radius.card)
+                        .strokeBorder(Color.brand.opacity(0.35), lineWidth: 1)
+                }
+                .opacity(selected.isEmpty ? 0 : 1)
+        }
+        .animation(.snappy, value: monthlyDouble)
+        .animation(.snappy, value: selected.isEmpty)
+        .accessibilityElement(children: .ignore)
+        .accessibilityHidden(selected.isEmpty)
+        .accessibilityLabel("You're tracking \(monthlyTotal.formatted(.currency(code: currencyCode))) per month")
     }
 
     /// Drives `contentTransition`/`animation` — they key on an `Equatable`, and a
     /// `Double` snapshot of the total is stable and cheap to diff.
     private var monthlyDouble: Double { NSDecimalNumber(decimal: monthlyTotal).doubleValue }
+
+    // Hoisted out of the view body: `Decimal.formatted(...) + String` inside a
+    // container is a type-checker sinkhole (SourceKit times out on it inline).
+    private var monthlyText: String {
+        monthlyTotal.formatted(.currency(code: currencyCode)) + " / mo"
+    }
+
+    private var yearlyText: String {
+        (monthlyTotal * 12).formatted(.currency(code: currencyCode)) + " / yr"
+    }
 
     private func toggle(_ id: String) {
         if selected.contains(id) { selected.remove(id) } else { selected.insert(id) }
@@ -123,7 +155,10 @@ private struct StarterChip: View {
                 )
                 Text(item.provider.name)
                     .font(.caption.weight(.medium))
-                    .lineLimit(1)
+                    // Two lines so accessibility sizes truncate long names
+                    // ("YouTube Premium") rather than clipping them to "YouTu…".
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.8)
                     .foregroundStyle(.primary)
                 Text(item.monthlyPrice.formatted(.currency(code: currencyCode)) + " / mo")
@@ -133,10 +168,22 @@ private struct StarterChip: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, Spacing.md)
             .padding(.horizontal, Spacing.sm)
-            .background(Color.cardBackground, in: .rect(cornerRadius: Radius.card))
-            .overlay {
+            .background {
                 RoundedRectangle(cornerRadius: Radius.card)
-                    .strokeBorder(.tint, lineWidth: isSelected ? 2 : 0)
+                    .fill(Color.cardBackground)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: Radius.card)
+                            .fill(Color.accentColor.opacity(isSelected ? 0.10 : 0))
+                    }
+            }
+            .overlay {
+                // Unselected chips still get a hairline so they read as targets
+                // rather than free-floating logos.
+                RoundedRectangle(cornerRadius: Radius.card)
+                    .strokeBorder(
+                        isSelected ? Color.accentColor : Color.primary.opacity(0.07),
+                        lineWidth: isSelected ? 2 : 1
+                    )
             }
             .overlay(alignment: .topTrailing) {
                 if isSelected {
@@ -148,7 +195,7 @@ private struct StarterChip: View {
                 }
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.pressable)
         .animation(.snappy, value: isSelected)
         .sensoryFeedback(.selection, trigger: isSelected)
         .accessibilityLabel("\(item.provider.name), \(item.monthlyPrice.formatted(.currency(code: currencyCode))) per month")
