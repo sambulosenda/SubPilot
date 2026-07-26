@@ -624,10 +624,14 @@ private struct DayCell: View {
         return 0.14 + 0.16 * intensity
     }
 
-    /// Every in-month day sits on a tile so the grid reads as structure, not bare
-    /// numbers: a calm neutral fill normally, the brand-teal heat wash on renewals.
+    /// Only renewal days get a tile. A neutral fill on *every* in-month day was
+    /// meant to read as structure, but a typical month is ~33 empty days to 2
+    /// renewals — so the loudest thing on the screen became a field of grey
+    /// boxes representing nothing. Empty days now fall back to the background
+    /// (the weekday header and the numbers carry the structure), which leaves
+    /// the teal heat tiles as the only marks in the grid.
     private var tileFill: Color {
-        hasEvents ? Color.brand.opacity(backingOpacity) : Color(.tertiarySystemFill)
+        hasEvents ? Color.brand.opacity(backingOpacity) : .clear
     }
 
     var body: some View {
@@ -648,6 +652,15 @@ private struct DayCell: View {
         ZStack {
             RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
                 .fill(tileFill)
+                .overlay {
+                    // With the neutral tiles gone, the lightest heat wash (0.14)
+                    // has no grey neighbour to read against — a hairline keeps a
+                    // cheap renewal day as legible an object as an expensive one.
+                    if hasEvents {
+                        RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
+                            .strokeBorder(Color.brand.opacity(0.28), lineWidth: 1)
+                    }
+                }
 
             // Centered in the fixed-height cell — the empty marker still reserves
             // its height, so day numbers stay aligned across rows.
@@ -670,14 +683,17 @@ private struct DayCell: View {
                 if isToday {
                     Circle().fill(Color.brand)
                 } else if isSelected {
-                    Circle().fill(Color.primary)
+                    // Outline, not a solid fill. A filled neutral circle was
+                    // fine among the old grey tiles; on the cleared-out grid it
+                    // became the single heaviest mark on screen — louder than
+                    // today's brand circle and every renewal tile.
+                    Circle().strokeBorder(Color.primary.opacity(0.4), lineWidth: 1.5)
                 }
             }
     }
 
     private var numberColor: Color {
         if isToday { return .white }
-        if isSelected { return Color(.systemBackground) }
         return .primary
     }
 
@@ -783,19 +799,25 @@ private struct AgendaHeader: View {
 
 // MARK: - Next up header
 
-/// Header for the empty-day "Next up" section: the title plus a quiet caption
-/// confirming nothing renews on the selected day — one message, not two.
+/// Header for the empty-day "Next up" section: a quiet note that the *selected*
+/// day is clear, then the title for the renewals listed underneath.
+///
+/// The two lines were the other way round, which made the section read as
+/// "Next up: nothing" directly above three upcoming charges — the caption looked
+/// like it qualified the list rather than the selection. Leading with the date
+/// scopes the "nothing" to the day the user tapped, and leaves "Next up"
+/// adjacent to the rows it actually labels.
 private struct NextUpHeader: View {
     let date: Date
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("Next up")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.primary)
             Text("Nothing on \(date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+            Text("Next up")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
         }
         .textCase(nil)
         .padding(.vertical, 2)
