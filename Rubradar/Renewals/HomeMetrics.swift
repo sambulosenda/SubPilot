@@ -14,6 +14,9 @@ struct HomeMetrics {
     let nextEvent: RenewalEvent?
     /// Share of the monthly spend still due before this calendar month ends (0...1).
     let dueThisMonthFraction: Double
+    /// Monthly spend split by category — drives the Home hero's breakdown bar.
+    /// Reconciles to `summary.monthlyTotal` by construction (same conversion).
+    let breakdown: SpendBreakdown
 
     /// Whole days from today until the next charge. `nil` when nothing is upcoming.
     let daysUntilNextCharge: Int?
@@ -56,6 +59,7 @@ struct HomeMetrics {
             activeCount: activeCount,
             nextEvent: next,
             dueThisMonthFraction: fraction,
+            breakdown: SpendBreakdown.make(from: subscriptions, preferred: preferred, rates: rates),
             daysUntilNextCharge: days
         )
     }

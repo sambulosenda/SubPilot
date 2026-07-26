@@ -36,17 +36,23 @@ private struct TrialRadarRow: View {
                 Text(trial.subscription.name)
                     .font(.headline)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 Text(trial.endsLabel)
                     .font(.caption.weight(trial.isUrgent ? .semibold : .regular))
                     .foregroundStyle(trial.isUrgent ? AnyShapeStyle(.orange) : AnyShapeStyle(.secondary))
             }
             Spacer(minLength: Spacing.sm)
+            // Same width fight as SubscriptionRow: unprioritised, this clipped
+            // to "then US$20.00 /…", which hides the very number the row warns
+            // the user they're about to start paying.
             VStack(alignment: .trailing, spacing: 2) {
                 Text("then \(trial.subscription.priceLabel)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
             }
+            .layoutPriority(1)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(trial.subscription.name) free trial")
