@@ -34,6 +34,13 @@ struct SubscriptionFormView: View {
     /// Profile this subscription belongs to; resolved on appear, applied on save.
     @State private var formProfileID = ""
 
+    /// Text fields that can hold focus. Needed for two things: opening a blank
+    /// add form straight into the keyboard, and giving the decimal pad a way out
+    /// (it has no return key, so Amount was a one-way trip until you tapped a
+    /// different row).
+    private enum Field: Hashable { case name, website, amount, notes }
+    @FocusState private var focusedField: Field?
+
     init(mode: FormMode, addMethod: AddMethod = .manual, onSaved: (() -> Void)? = nil) {
         self.mode = mode
         self.addMethod = addMethod
@@ -84,6 +91,9 @@ struct SubscriptionFormView: View {
                 Section {
                     TextField("Name", text: $model.name)
                         .textInputAutocapitalization(.words)
+                        .focused($focusedField, equals: .name)
+                        .submitLabel(.next)
+                        .onSubmit { focusedField = .website }
                         // Placeholder stops being announced once filled.
                         .accessibilityLabel("Name")
                     TextField("Website (optional)", text: $model.linkURL)
@@ -91,6 +101,9 @@ struct SubscriptionFormView: View {
                         .textContentType(.URL)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
+                        .focused($focusedField, equals: .website)
+                        .submitLabel(.done)
+                        .onSubmit { focusedField = nil }
                         .accessibilityLabel("Website")
                 } header: {
                     Text("Details")
@@ -126,6 +139,7 @@ struct SubscriptionFormView: View {
                         TextField("0.00", value: $model.amount, format: .number.precision(.fractionLength(0...2)))
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
+                            .focused($focusedField, equals: .amount)
                             // One stop: "Amount, text field" — not label then field.
                             .accessibilityLabel("Amount")
                     }
@@ -164,6 +178,7 @@ struct SubscriptionFormView: View {
                 Section("Notes") {
                     TextField("Notes", text: $model.notes, axis: .vertical)
                         .lineLimit(3...6)
+                        .focused($focusedField, equals: .notes)
                         .accessibilityLabel("Notes")
                 }
             }
@@ -177,6 +192,12 @@ struct SubscriptionFormView: View {
                     Button("Save") { save() }
                         .disabled(!model.isValid)
                 }
+                // The decimal pad has no return key, so without this the Amount
+                // field can only be left by tapping another row.
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { focusedField = nil }
+                }
             }
             .sensoryFeedback(.success, trigger: didSave)
             .task {
@@ -184,6 +205,15 @@ struct SubscriptionFormView: View {
                     catalogue = CatalogueLoader.load()
                 }
                 if formProfileID.isEmpty { formProfileID = defaultProfileID }
+
+                // Open a blank add form straight into the keyboard — the first
+                // thing anyone does here is type a name. Skipped when a
+                // catalogue pick or receipt scan already filled it in, and when
+                // editing. The delay lets the sheet finish presenting; focusing
+                // mid-animation drops the keyboard on some presentations.
+                guard !mode.isEditing, model.name.isEmpty else { return }
+                try? await Task.sleep(for: .milliseconds(350))
+                focusedField = .name
             }
             .onChange(of: model.name) { _, newName in
                 // Recognise a known service as the user types and pre-pick its
@@ -285,6 +315,20 @@ private struct CategoryChipPicker: View {
                 .padding(.vertical, Spacing.xs)
             }
             .scrollIndicators(.hidden)
+            // The row ran to a hard edge mid-word ("Softwa…"), which reads as a
+            // clipped layout rather than a scrollable one. Fading the trailing
+            // edge says "there's more" without adding chrome.
+            .mask {
+                LinearGradient(
+                    stops: [
+                        .init(color: .black, location: 0),
+                        .init(color: .black, location: 0.88),
+                        .init(color: .clear, location: 1)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            }
         }
     }
 

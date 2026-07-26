@@ -16,6 +16,20 @@ import SwiftUI
 struct AddOptionsSheet: View {
     var onSelect: (AddSheet) -> Void
 
+    /// Measured height of the rows, so the sheet is exactly as tall as its
+    /// content. The detent used to be a hard-coded 400pt, which already clipped
+    /// the fourth option at the default text size and got worse from there —
+    /// "Import bank statement" wraps to two lines and pushes "Add manually" off
+    /// the bottom edge.
+    @State private var contentHeight: CGFloat = 400
+
+    /// Clamped so a mis-measure can't produce an unusable sheet: never shorter
+    /// than two rows, never taller than the screen can host (past that the
+    /// ScrollView takes over and the user scrolls).
+    private var detentHeight: CGFloat {
+        min(max(contentHeight, 280), 680)
+    }
+
     private struct Option: Identifiable {
         let flow: AddSheet
         let title: LocalizedStringKey
@@ -53,8 +67,15 @@ struct AddOptionsSheet: View {
             }
             .padding(.horizontal, Spacing.lg)
             .padding(.bottom, Spacing.lg)
+            // Measured on the content, not the ScrollView — the ScrollView
+            // reports the viewport, which is the height we're trying to derive.
+            .onGeometryChange(for: CGFloat.self) { proxy in
+                proxy.size.height
+            } action: { height in
+                contentHeight = height
+            }
         }
-        .presentationDetents([.height(400)])
+        .presentationDetents([.height(detentHeight)])
         .presentationDragIndicator(.visible)
         .presentationBackground(.thinMaterial)
     }
