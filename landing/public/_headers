@@ -1,0 +1,8 @@
+# Hashed build assets never change; cache them for a year.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Basic hardening. HSTS is enforced platform-wide by the .app TLD preload.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

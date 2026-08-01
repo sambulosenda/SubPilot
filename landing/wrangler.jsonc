@@ -1,0 +1,16 @@
+// Assets-only Worker: no code, just the built site.
+// Deploy with `npm run build && npx wrangler deploy` from landing/.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "subhelm-site",
+  "compatibility_date": "2026-08-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [
+    { "pattern": "subhelm.app", "custom_domain": true },
+    { "pattern": "www.subhelm.app", "custom_domain": true }
+  ]
+}
