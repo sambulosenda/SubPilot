@@ -1,0 +1,99 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const guides = (await getCollection('guides')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const title = 'Guides — SubHelm';
+const description =
+  'Plain-English guides to subscriptions: how to cancel them, what they really cost, and how to stop paying for free trials you forgot.';
+---
+
+<Base title={title} description={description}>
+  <section class="wrap">
+    <span class="kicker kicker--rule">Guides</span>
+    <h1>Subscriptions, <em>explained</em>.</h1>
+    <p class="lead">
+      Short, practical answers. No bank logins required, no savings promises,
+      nothing to sign up for.
+    </p>
+
+    <div class="list">
+      {
+        guides.map((guide) => (
+          <a class="item" href={`/guides/${guide.id}/`}>
+            <h2>{guide.data.title}</h2>
+            <p>{guide.data.description}</p>
+            <span class="more" aria-hidden="true">
+              Read the guide →
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  section {
+    max-width: 820px;
+    margin: 0 auto;
+    padding-block: clamp(48px, 6vw, 84px) clamp(76px, 9vw, 120px);
+  }
+
+  .kicker {
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    margin: 0 0 14px;
+    font-size: clamp(36px, 4.4vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .lead {
+    margin: 0 0 clamp(36px, 4.5vw, 52px);
+    color: var(--ink-dim);
+    font-size: 18px;
+    max-width: 52ch;
+  }
+
+  .list {
+    display: grid;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .item {
+    display: block;
+    padding: 26px 0 30px;
+    border-bottom: 1px solid var(--line-strong);
+    color: inherit;
+  }
+
+  .item h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+    letter-spacing: -0.015em;
+    transition: color 0.2s;
+  }
+
+  .item:hover h2 {
+    color: var(--accent-ink);
+  }
+
+  .item p {
+    margin: 0 0 10px;
+    color: var(--ink-dim);
+    font-size: 16px;
+    max-width: 62ch;
+  }
+
+  .more {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+</style>

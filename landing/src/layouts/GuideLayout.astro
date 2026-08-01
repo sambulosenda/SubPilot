@@ -1,0 +1,211 @@
+---
+import Base from './Base.astro';
+import AppStoreBadge from '../components/AppStoreBadge.astro';
+import { SITE_NAME } from '../consts';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  guide: CollectionEntry<'guides'>;
+}
+
+const { guide } = Astro.props;
+const { title, description, pubDate, updatedDate } = guide.data;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString().slice(0, 10),
+  dateModified: (updatedDate ?? pubDate).toISOString().slice(0, 10),
+  image: new URL('/assets/og-card.png', Astro.site).href,
+  author: { '@type': 'Person', name: 'Sambulo Senda' },
+  publisher: {
+    '@type': 'Organization',
+    name: SITE_NAME,
+    logo: {
+      '@type': 'ImageObject',
+      url: new URL('/assets/icon.png', Astro.site).href,
+    },
+  },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: 'Guides', item: new URL('/guides/', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: title },
+  ],
+};
+
+const dateShown = (updatedDate ?? pubDate).toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<Base title={`${title} — ${SITE_NAME}`} description={description}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
+
+  <article class="prose">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides/">Guides</a>
+    </nav>
+    <h1>{title}</h1>
+    <p class="dateline">
+      {updatedDate ? 'Updated ' : 'Published '}<time
+        datetime={(updatedDate ?? pubDate).toISOString().slice(0, 10)}
+      >
+        {dateShown}
+      </time>
+    </p>
+
+    <div class="body">
+      <slot />
+    </div>
+
+    <aside class="cta">
+      <div>
+        <h2>Let the app do the remembering</h2>
+        <p>
+          SubHelm keeps every subscription, trial and renewal in one place on
+          your iPhone. No account, no bank connection, free to use.
+        </p>
+      </div>
+      <AppStoreBadge />
+    </aside>
+  </article>
+</Base>
+
+<style>
+  .prose {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: clamp(40px, 5vw, 64px) var(--gutter) clamp(72px, 9vw, 110px);
+  }
+
+  .crumbs {
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+    margin-bottom: clamp(28px, 4vw, 44px);
+  }
+
+  .crumbs span {
+    color: var(--ink-dim);
+  }
+
+  h1 {
+    font-size: clamp(32px, 4vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -0.028em;
+    margin: 0 0 10px;
+  }
+
+  .dateline {
+    color: var(--ink-dim);
+    font-size: 14px;
+    margin: 0 0 2.2em;
+  }
+
+  /* Rendered markdown (scoped to .body so the CTA badge is untouched) */
+  .body :global(h2) {
+    font-size: 22px;
+    letter-spacing: -0.015em;
+    margin: 2.2em 0 0.6em;
+  }
+
+  .body :global(h3) {
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    margin: 1.8em 0 0.5em;
+  }
+
+  .body :global(p),
+  .body :global(li) {
+    color: var(--ink-dim);
+    line-height: 1.65;
+  }
+
+  .body :global(p),
+  .body :global(ul),
+  .body :global(ol) {
+    max-width: 68ch;
+  }
+
+  .body :global(strong) {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .body :global(em) {
+    color: inherit;
+  }
+
+  .body :global(ul),
+  .body :global(ol) {
+    padding-left: 1.3em;
+  }
+
+  .body :global(li) {
+    margin-bottom: 0.5em;
+  }
+
+  .body :global(a) {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+  }
+
+  .body :global(table) {
+    border-collapse: collapse;
+    margin: 1.2em 0;
+    font-size: 15.5px;
+  }
+
+  .body :global(th),
+  .body :global(td) {
+    text-align: left;
+    padding: 9px 22px 9px 0;
+    border-bottom: 1px solid var(--line-strong);
+    color: var(--ink-dim);
+  }
+
+  .body :global(th) {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .cta {
+    margin-top: clamp(48px, 6vw, 72px);
+    background: var(--band);
+    border: 1px solid var(--line-soft);
+    border-radius: 20px;
+    padding: 30px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .cta h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    letter-spacing: -0.015em;
+  }
+
+  .cta p {
+    margin: 0;
+    color: var(--ink-dim);
+    font-size: 15.5px;
+    max-width: 44ch;
+  }
+</style>
