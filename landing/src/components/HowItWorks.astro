@@ -1,0 +1,97 @@
+---
+const steps = [
+  {
+    n: '01',
+    title: 'Add',
+    body: 'Pick from a catalogue of 200+ services, or point the camera at a receipt and let it read the details.',
+  },
+  {
+    n: '02',
+    title: 'See',
+    body: 'One honest monthly total, every currency converted, personal and work kept apart.',
+  },
+  {
+    n: '03',
+    title: 'Know',
+    body: 'A reminder arrives before each renewal, and before a trial turns into a paid plan.',
+  },
+];
+---
+
+<section id="how" class="wrap">
+  <div class="head">
+    <h2>Three taps in, and you never guess <em>again</em>.</h2>
+    <p>Setting up takes about a minute. After that, SubHelm does the remembering.</p>
+  </div>
+
+  <div class="hairline-grid steps">
+    {
+      steps.map((step) => (
+        <div class="step">
+          <span class="n">{step.n}</span>
+          <h3>{step.title}</h3>
+          <p>{step.body}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  section {
+    padding-block: clamp(76px, 9vw, 124px);
+  }
+
+  .head {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(28px, 4vw, 64px);
+    align-items: end;
+    margin-bottom: clamp(40px, 5vw, 64px);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: clamp(34px, 4.2vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.028em;
+  }
+
+  .head p {
+    margin: 0;
+    color: var(--ink-dim);
+    font-size: 18px;
+    max-width: 44ch;
+  }
+
+  .steps {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .step {
+    background: var(--cell);
+    padding: 38px 32px 42px;
+  }
+
+  .n {
+    display: block;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-size: 30px;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    letter-spacing: -0.015em;
+  }
+
+  .step p {
+    margin: 0;
+    color: var(--ink-dim);
+    font-size: 15.5px;
+  }
+</style>

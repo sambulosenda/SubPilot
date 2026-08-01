@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Ticker from '../components/Ticker.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import Showcase from '../components/Showcase.astro';
+import Features from '../components/Features.astro';
+import Privacy from '../components/Privacy.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+import { SHOW_TICKER, SHOW_FAQ } from '../consts';
+
+const title = 'SubHelm: Subscription Tracker & Renewal Reminders for iPhone';
+const description =
+  'Track every subscription in one place. See your real monthly total and get reminders before each charge. No account, no ads, no tracking. Free on iPhone.';
+---
+
+<Base title={title} description={description} structuredData>
+  <Hero />
+  {SHOW_TICKER && <Ticker />}
+  <HowItWorks />
+  <Showcase />
+  <Features />
+  <Privacy />
+  {SHOW_FAQ && <Faq />}
+  <FinalCta />
+</Base>

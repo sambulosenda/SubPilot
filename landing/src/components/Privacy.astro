@@ -1,0 +1,105 @@
+---
+const facts = [
+  { label: 'Accounts required', value: 'None' },
+  { label: 'Third-party trackers', value: 'Zero' },
+  { label: 'Ads', value: 'Never' },
+  { label: 'Bank connection', value: 'Not asked' },
+];
+---
+
+<section id="privacy">
+  <div class="wrap inner">
+    <div class="copy">
+      <span class="kicker kicker--rule">Privacy</span>
+      <h2>There's no server to send your data <em>to</em>.</h2>
+      <p>
+        Your subscriptions live on your device and sync only through your own
+        iCloud. There's nothing to sign up for, nothing to log in to, and nothing
+        we could look at if we wanted to.
+      </p>
+    </div>
+
+    <dl class="facts">
+      {
+        facts.map((fact) => (
+          <div class="fact">
+            <dt>{fact.label}</dt>
+            <dd>{fact.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  section {
+    background: var(--night);
+    color: var(--night-ink);
+  }
+
+  .inner {
+    padding-block: clamp(84px, 10vw, 140px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(32px, 6vw, 80px);
+    align-items: center;
+  }
+
+  .kicker {
+    color: var(--night-accent);
+    margin-bottom: 22px;
+  }
+
+  h2 {
+    margin: 0 0 20px;
+    font-size: clamp(36px, 4.6vw, 62px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+  }
+
+  em {
+    color: var(--night-accent);
+  }
+
+  .copy p {
+    margin: 0;
+    color: var(--night-dim);
+    font-size: 18px;
+    max-width: 46ch;
+  }
+
+  .facts {
+    margin: 0;
+    display: grid;
+    gap: 1px;
+    background: var(--night-line);
+    border: 1px solid var(--night-line);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .fact {
+    background: var(--night);
+    padding: 22px 26px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  dt {
+    font-size: 15.5px;
+    font-weight: 500;
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-size: 24px;
+    color: var(--night-accent);
+    line-height: 1;
+    white-space: nowrap;
+  }
+</style>

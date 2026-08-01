@@ -1,0 +1,187 @@
+/* Design tokens, lifted verbatim from the approved "Site redesign directions"
+   design file so the build matches it pixel for pixel. */
+
+:root {
+  /* Surfaces, lightest to darkest */
+  --raised: #fff;        /* floating notification cards, assistant chips */
+  --cell: #FBFAF8;       /* hairline-grid cells */
+  --paper: #F4F3EF;      /* page */
+  --band: #EFEEE9;       /* alternating full-width bands */
+  --device: #0B0B0B;     /* phone bezel */
+
+  /* Ink */
+  --ink: #0F1613;
+  --ink-dim: #5C6B66;
+
+  /* Brand.
+     `--accent` is the app-icon teal. At 3.2:1 on paper it clears AA only as
+     large text (>=24px), so it is reserved for display italics, fills and
+     rules. Anything small and textual uses `--accent-ink` (5.5:1 on paper,
+     5.3:1 on the bands). */
+  --accent: #0D9488;
+  --accent-ink: #0A6E66;
+  --accent-ink-hover: #085650;
+
+  /* Night section */
+  --night: #0B120F;
+  --night-ink: #EAF2EF;
+  --night-dim: #94AEA8;
+  --night-accent: #5EEAD4;
+
+  /* Hairlines */
+  --line-faint: rgba(15, 22, 19, 0.07);
+  --line-soft: rgba(15, 22, 19, 0.09);
+  --line: rgba(15, 22, 19, 0.10);
+  --line-strong: rgba(15, 22, 19, 0.12);
+  --night-line: rgba(234, 242, 239, 0.10);
+
+  /* Motion */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout */
+  --wrap: 1180px;
+  --gutter: 28px;
+  --header-h: 59px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Instrument Sans Variable', 'Instrument Sans', system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--accent-ink);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-ink-hover);
+}
+
+img {
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Anchor targets clear the sticky header. */
+[id] {
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
+
+/* Shared primitives -------------------------------------------------------- */
+
+.wrap {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+/* Section eyebrow: uppercase label, optionally preceded by a short rule. */
+.kicker {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.kicker--rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+}
+
+.kicker--rule::before {
+  content: '';
+  display: block;
+  width: 22px;
+  height: 1px;
+  background: currentColor;
+}
+
+/* The italic word carried through every headline. */
+em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+
+/* Hairline grid: 1px gaps over a ruled background, one outer radius. */
+.hairline-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

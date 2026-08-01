@@ -1,0 +1,126 @@
+---
+const questions = [
+  {
+    q: 'Do I need to connect my bank?',
+    a: 'No. SubHelm never asks for bank credentials. You add subscriptions from a built-in catalogue, by hand, or by scanning a receipt.',
+  },
+  {
+    q: 'Is there an account to create?',
+    a: "There isn't. Open the app and start adding. Your data stays on your device and syncs through your own iCloud if you have more than one.",
+  },
+  {
+    q: 'What does the assistant send to a server?',
+    a: 'Nothing. It runs on-device through Apple Intelligence, so both your question and its answer stay on your iPhone.',
+  },
+  {
+    q: 'Can it handle subscriptions in other currencies?',
+    a: "Yes. Add them in whatever currency you're billed in and SubHelm converts everything into one monthly total.",
+  },
+  {
+    q: 'Will it remind me before a free trial ends?',
+    a: 'Yes. Mark a subscription as a trial and SubHelm sends a reminder before it converts into a paid plan, and before every renewal after that.',
+  },
+  {
+    q: 'Can SubHelm cancel subscriptions for me?',
+    a: "No, and nobody else can either without your account credentials. SubHelm shows you what to cancel and reminds you before the charge, while there's still time to do it; you cancel with the provider, which usually takes a minute.",
+  },
+  {
+    q: "What's in SubHelm Pro?",
+    a: 'The app is free to download and use. Pro is an optional in-app upgrade; you can see exactly what it includes inside the app before buying anything.',
+  },
+];
+
+// Same questions, machine-readable: earns the FAQ rich result in search.
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: questions.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+<section id="faq">
+  <h2>Questions, answered.</h2>
+  <div class="list">
+    {
+      questions.map((item) => (
+        <details>
+          <summary>
+            {item.q}
+            <span class="plus" aria-hidden="true">
+              +
+            </span>
+          </summary>
+          <p>{item.a}</p>
+        </details>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  section {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: clamp(76px, 9vw, 120px) var(--gutter);
+  }
+
+  h2 {
+    margin: 0 0 clamp(28px, 3.5vw, 44px);
+    font-size: clamp(32px, 4vw, 50px);
+    line-height: 1.06;
+    letter-spacing: -0.028em;
+  }
+
+  .list {
+    display: grid;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  details {
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  summary {
+    cursor: pointer;
+    padding: 22px 0;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .plus {
+    color: var(--accent-ink);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1;
+    transition: transform 0.25s var(--ease);
+    flex: none;
+  }
+
+  details[open] .plus {
+    transform: rotate(45deg);
+  }
+
+  p {
+    margin: 0;
+    padding: 0 0 24px;
+    color: var(--ink-dim);
+    font-size: 16.5px;
+    max-width: 62ch;
+  }
+</style>

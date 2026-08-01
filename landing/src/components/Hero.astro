@@ -1,0 +1,225 @@
+---
+import AppStoreBadge from './AppStoreBadge.astro';
+import Phone from './Phone.astro';
+import home from '../assets/01-home.png';
+---
+
+<section id="top">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap inner">
+    <div class="copy">
+      <span class="kicker kicker--rule">Subscription tracker for iPhone</span>
+      <h1>Know exactly what's<br class="hold" /> charging you <em>next</em>.</h1>
+      <p>
+        Every subscription in one place, your real monthly total, and a reminder
+        before each charge, so a free trial never quietly becomes a bill.
+      </p>
+      <div class="actions">
+        <AppStoreBadge />
+        <span class="note">Free · <b>Pro</b> available in-app</span>
+      </div>
+    </div>
+
+    <div class="stage">
+      <Phone
+        src={home}
+        alt="SubHelm home screen showing a total monthly spend of $119.13 and upcoming renewals"
+        loading="eager"
+      />
+      <div class="card card--one">
+        <span class="chip" style="background:#E50914">N</span>
+        <span class="text">
+          Netflix renews in 2 days
+          <small>US$17.99 / mo</small>
+        </span>
+      </div>
+      <div class="card card--two">
+        <span class="chip chip--accent">✓</span>
+        <span class="text">
+          Trial ends Friday
+          <small>Reminder set</small>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 55% 60% at 78% 30%,
+      rgba(13, 148, 136, 0.13),
+      transparent 68%
+    );
+  }
+
+  .inner {
+    position: relative;
+    padding-block: clamp(56px, 8vw, 104px) clamp(64px, 7vw, 96px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+  }
+
+  /* The headline is the widest thing on the page and the phone is a fixed
+     300px; an even split starves the copy and breaks the intended two-line
+     composition, so give the copy column the surplus. */
+  @media (min-width: 900px) {
+    .inner {
+      grid-template-columns: 1.12fr 0.88fr;
+    }
+  }
+
+  .copy {
+    animation: rise 0.8s var(--ease) both;
+  }
+
+  .kicker {
+    margin-bottom: 26px;
+  }
+
+  h1 {
+    margin: 0;
+    /* Capped at 62px: above that "Know exactly what's" outgrows its column and
+       the hard break below collapses into four ragged lines. */
+    font-size: clamp(44px, 4.9vw, 62px);
+    line-height: 1.04;
+    letter-spacing: -0.032em;
+    text-wrap: pretty;
+  }
+
+  .copy p {
+    max-width: 46ch;
+    color: var(--ink-dim);
+    font-size: 19px;
+    line-height: 1.55;
+    margin: 26px 0 34px;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .note {
+    font-size: 14px;
+    color: var(--ink-dim);
+  }
+
+  .note b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .stage {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    animation: rise 0.9s 0.12s var(--ease) both;
+  }
+
+  .card {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    background: var(--raised);
+    border: 1px solid var(--line-faint);
+    border-radius: 15px;
+    padding: 11px 15px;
+    box-shadow: 0 18px 44px -18px rgba(15, 22, 19, 0.35);
+    animation: floaty 6s ease-in-out infinite;
+  }
+
+  .card--one {
+    top: 11%;
+    left: -4%;
+  }
+
+  .card--two {
+    bottom: 13%;
+    right: -5%;
+    animation-delay: 2.4s;
+  }
+
+  .chip {
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+
+  .chip--accent {
+    background: var(--accent-ink);
+  }
+
+  .text {
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .text small {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 400;
+    color: var(--ink-dim);
+  }
+
+  /* The hard break is a desktop nicety; below that the headline sets itself. */
+  @media (max-width: 720px) {
+    .hold {
+      display: none;
+    }
+  }
+
+  /* Keep the floating cards on the page rather than under the clip edge.
+     Shrink via padding and type, not transform: `floaty` owns the transform. */
+  @media (max-width: 560px) {
+    .card {
+      padding: 9px 12px;
+      gap: 9px;
+    }
+
+    .card--one {
+      top: 6%;
+      left: 0;
+    }
+
+    .card--two {
+      bottom: 8%;
+      right: 0;
+    }
+
+    .chip {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .text {
+      font-size: 12.5px;
+    }
+
+    .text small {
+      font-size: 11px;
+    }
+  }
+</style>

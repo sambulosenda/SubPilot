@@ -1,0 +1,99 @@
+---
+// Self-hosted so the page makes no third-party request. Weight axis only:
+// the design uses 400-700 upright plus a 600 italic for the accented word.
+import '@fontsource-variable/instrument-sans/wght.css';
+import '@fontsource-variable/instrument-sans/wght-italic.css';
+import '../styles/global.css';
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_NAME, APP_STORE_URL } from '../consts';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Emit the SoftwareApplication JSON-LD block. Home page only. */
+  structuredData?: boolean;
+}
+
+const { title, description, structuredData = false } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/assets/og-card.png', Astro.site).href;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: SITE_NAME,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'iOS',
+  url: new URL('/', Astro.site).href,
+  installUrl: APP_STORE_URL,
+  image: new URL('/assets/icon.png', Astro.site).href,
+  description,
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  featureList: [
+    'Track every subscription in one place',
+    'Renewal and free-trial reminders before each charge',
+    'Real monthly total across currencies',
+    'On-device receipt scanning',
+    'On-device AI assistant (Apple Intelligence)',
+    'Private iCloud sync, no account required',
+    'Home Screen and Lock Screen widgets',
+  ],
+  author: {
+    '@type': 'Person',
+    name: 'Sambulo Senda',
+  },
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#F4F3EF" />
+
+    <link rel="icon" type="image/png" href="/assets/icon.png" />
+    <link rel="apple-touch-icon" href="/assets/icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {
+      structuredData && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(schema)}
+        />
+      )
+    }
+  </head>
+
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

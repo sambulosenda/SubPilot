@@ -1,0 +1,139 @@
+---
+import Phone from './Phone.astro';
+import calendar from '../assets/02-calendar.png';
+import assistant from '../assets/03-assistant.png';
+import receipt from '../assets/05-scan-receipt.png';
+---
+
+<section class="band">
+  <div class="wrap rows">
+    <div class="row">
+      <div class="copy">
+        <span class="kicker">Calendar</span>
+        <h2>The month, before it happens.</h2>
+        <p>
+          Every upcoming charge and trial ending laid out day by day. You see the
+          expensive week coming while there's still time to cancel something.
+        </p>
+      </div>
+      <div class="stage">
+        <Phone
+          src={calendar}
+          alt="Calendar of upcoming subscription charges in SubHelm"
+          crop
+        />
+      </div>
+    </div>
+
+    <div class="row row--flip">
+      <div class="copy">
+        <span class="kicker">Assistant</span>
+        <h2>Ask it anything. It answers <em>on your phone</em>.</h2>
+        <p>
+          "Where could I cut back?" "What renews in the next 7 days?" Powered by
+          Apple Intelligence, running on-device, so the questions and the answers
+          never leave it.
+        </p>
+        <div class="chips">
+          <span>How much do I spend per year?</span>
+          <span>Where could I cut back?</span>
+        </div>
+      </div>
+      <div class="stage">
+        <Phone
+          src={assistant}
+          alt="SubHelm's on-device assistant answering a question about subscription spending"
+          crop
+        />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="copy">
+        <span class="kicker">Receipt scanning</span>
+        <h2>Point the camera. Done.</h2>
+        <p>
+          Found a charge you don't recognise on a receipt? Scan it and the name,
+          price and date are read straight into SubHelm. Nothing is uploaded
+          anywhere.
+        </p>
+      </div>
+      <div class="stage">
+        <Phone
+          src={receipt}
+          alt="Scanning a receipt to add a subscription in SubHelm"
+          crop
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .band {
+    background: var(--band);
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .rows {
+    padding-block: clamp(72px, 9vw, 120px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(64px, 7vw, 100px);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(32px, 6vw, 88px);
+    align-items: center;
+  }
+
+  .stage {
+    display: flex;
+    justify-content: center;
+  }
+
+  .kicker {
+    margin-bottom: 18px;
+  }
+
+  h2 {
+    margin: 0 0 16px;
+    font-size: clamp(30px, 3.6vw, 46px);
+    line-height: 1.07;
+    letter-spacing: -0.028em;
+  }
+
+  .copy p {
+    margin: 0;
+    color: var(--ink-dim);
+    font-size: 17.5px;
+    max-width: 42ch;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 22px;
+  }
+
+  .chips span {
+    background: var(--raised);
+    border: 1px solid var(--line-soft);
+    border-radius: 99px;
+    padding: 7px 14px;
+    font-size: 13.5px;
+    color: var(--ink-dim);
+  }
+
+  /* Copy leads in the DOM on every row so the reading order stays consistent
+     when the grid collapses; the alternation is a desktop-only flip. */
+  @media (min-width: 700px) {
+    .row--flip .copy {
+      order: 2;
+    }
+  }
+</style>
