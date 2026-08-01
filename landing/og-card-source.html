@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face {
+    font-family: 'Instrument Sans';
+    src: url('node_modules/@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2') format('woff2-variations');
+    font-weight: 400 700;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Instrument Sans';
+    src: url('node_modules/@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-italic.woff2') format('woff2-variations');
+    font-weight: 400 700;
+    font-style: italic;
+  }
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 630px;
+    background: #F4F3EF;
+    font-family: 'Instrument Sans', sans-serif;
+    color: #0F1613;
+    overflow: hidden;
+    position: relative;
+  }
+  .glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 70% at 82% 20%, rgba(13, 148, 136, 0.14), transparent 65%);
+  }
+  .card {
+    position: relative;
+    height: 100%;
+    padding: 64px 72px 58px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .brand img {
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+    box-shadow: 0 12px 28px -12px rgba(15, 22, 19, 0.4);
+  }
+  h1 {
+    font-size: 96px;
+    line-height: 1.02;
+    letter-spacing: -0.032em;
+    font-weight: 600;
+  }
+  em {
+    font-style: italic;
+    color: #0D9488;
+    letter-spacing: -0.01em;
+  }
+  .foot {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5C6B66;
+  }
+  .foot .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #0D9488;
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="card">
+    <div class="brand">
+      <img src="public/assets/icon.png" alt="">
+      SubHelm
+    </div>
+    <h1>Know exactly what's<br>charging you <em>next</em>.</h1>
+    <div class="foot">
+      <span>No account</span><span class="dot"></span>
+      <span>No ads</span><span class="dot"></span>
+      <span>No tracking</span><span class="dot"></span>
+      <span>Free on iPhone</span>
+    </div>
+  </div>
+</body>
+</html>
