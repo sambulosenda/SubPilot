@@ -1,40 +1,17 @@
 ---
-const features = [
-  {
-    title: 'Widgets',
-    body: 'Your next renewal and monthly total on the Home and Lock Screen.',
-  },
-  {
-    title: 'Smart reminders',
-    body: 'A heads-up before each renewal, and before a free trial converts.',
-  },
-  {
-    title: '200+ services',
-    body: 'Netflix, Spotify, ChatGPT and more, added in a few seconds.',
-  },
-  {
-    title: 'Profiles',
-    body: 'Personal and work kept separate, each with its own total.',
-  },
-  {
-    title: 'Multi-currency',
-    body: 'Subscriptions in any currency, converted into one real total.',
-  },
-  {
-    title: 'iCloud sync',
-    body: 'Across your devices, through your own private iCloud.',
-  },
-];
+import en from '../i18n/en';
+
+const { t = en.features } = Astro.props;
 ---
 
 <section id="features" class="wrap">
-  <h2>Small things that make it stick.</h2>
+  <h2>{t.title}</h2>
   <div class="hairline-grid cells">
     {
-      features.map((feature) => (
+      t.cells.map((cell: { title: string; body: string }) => (
         <div class="cell">
-          <h3>{feature.title}</h3>
-          <p>{feature.body}</p>
+          <h3>{cell.title}</h3>
+          <p>{cell.body}</p>
         </div>
       ))
     }

@@ -1,27 +1,20 @@
 ---
-const facts = [
-  { label: 'Accounts required', value: 'None' },
-  { label: 'Third-party trackers', value: 'Zero' },
-  { label: 'Ads', value: 'Never' },
-  { label: 'Bank connection', value: 'Not asked' },
-];
+import en from '../i18n/en';
+
+const { t = en.privacy } = Astro.props;
 ---
 
 <section id="privacy">
   <div class="wrap inner">
     <div class="copy">
-      <span class="kicker kicker--rule">Privacy</span>
-      <h2>There's no server to send your data <em>to</em>.</h2>
-      <p>
-        Your subscriptions live on your device and sync only through your own
-        iCloud. There's nothing to sign up for, nothing to log in to, and nothing
-        we could look at if we wanted to.
-      </p>
+      <span class="kicker kicker--rule">{t.kicker}</span>
+      <h2 set:html={t.titleHtml} />
+      <p>{t.body}</p>
     </div>
 
     <dl class="facts">
       {
-        facts.map((fact) => (
+        t.facts.map((fact: { label: string; value: string }) => (
           <div class="fact">
             <dt>{fact.label}</dt>
             <dd>{fact.value}</dd>
@@ -58,7 +51,7 @@ const facts = [
     letter-spacing: -0.03em;
   }
 
-  em {
+  h2 :global(em) {
     color: var(--night-accent);
   }
 

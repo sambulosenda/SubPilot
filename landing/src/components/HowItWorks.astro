@@ -1,34 +1,22 @@
 ---
-const steps = [
-  {
-    n: '01',
-    title: 'Add',
-    body: 'Pick from a catalogue of 200+ services, or point the camera at a receipt and let it read the details.',
-  },
-  {
-    n: '02',
-    title: 'See',
-    body: 'One honest monthly total, every currency converted, personal and work kept apart.',
-  },
-  {
-    n: '03',
-    title: 'Know',
-    body: 'A reminder arrives before each renewal, and before a trial turns into a paid plan.',
-  },
-];
+import en from '../i18n/en';
+
+const { t = en.how } = Astro.props;
+
+const numbers = ['01', '02', '03'];
 ---
 
 <section id="how" class="wrap">
   <div class="head">
-    <h2>Three taps in, and you never guess <em>again</em>.</h2>
-    <p>Setting up takes about a minute. After that, SubHelm does the remembering.</p>
+    <h2 set:html={t.titleHtml} />
+    <p>{t.lead}</p>
   </div>
 
   <div class="hairline-grid steps">
     {
-      steps.map((step) => (
+      t.steps.map((step: { title: string; body: string }, i: number) => (
         <div class="step">
-          <span class="n">{step.n}</span>
+          <span class="n">{numbers[i]}</span>
           <h3>{step.title}</h3>
           <p>{step.body}</p>
         </div>

@@ -2,42 +2,38 @@
 import AppStoreBadge from './AppStoreBadge.astro';
 import Phone from './Phone.astro';
 import home from '../assets/01-home.png';
+import en from '../i18n/en';
+
+const { t = en.hero, badge = en.badge } = Astro.props;
 ---
 
 <section id="top">
   <div class="glow" aria-hidden="true"></div>
   <div class="wrap inner">
     <div class="copy">
-      <span class="kicker kicker--rule">Subscription tracker for iPhone</span>
-      <h1>Know exactly what's<br class="hold" /> charging you <em>next</em>.</h1>
-      <p>
-        Every subscription in one place, your real monthly total, and a reminder
-        before each charge, so a free trial never quietly becomes a bill.
-      </p>
+      <span class="kicker kicker--rule">{t.kicker}</span>
+      <h1 set:html={t.titleHtml} />
+      <p>{t.sub}</p>
       <div class="actions">
-        <AppStoreBadge />
-        <span class="note">Free · <b>Pro</b> available in-app</span>
+        <AppStoreBadge t={badge} />
+        <span class="note" set:html={t.noteHtml} />
       </div>
     </div>
 
     <div class="stage">
-      <Phone
-        src={home}
-        alt="SubHelm home screen showing a total monthly spend of $119.13 and upcoming renewals"
-        loading="eager"
-      />
+      <Phone src={home} alt={t.phoneAlt} loading="eager" />
       <div class="card card--one">
         <span class="chip" style="background:#E50914">N</span>
         <span class="text">
-          Netflix renews in 2 days
-          <small>US$17.99 / mo</small>
+          {t.pill1.title}
+          <small>{t.pill1.sub}</small>
         </span>
       </div>
       <div class="card card--two">
         <span class="chip chip--accent">✓</span>
         <span class="text">
-          Trial ends Friday
-          <small>Reminder set</small>
+          {t.pill2.title}
+          <small>{t.pill2.sub}</small>
         </span>
       </div>
     </div>
@@ -117,7 +113,7 @@ import home from '../assets/01-home.png';
     color: var(--ink-dim);
   }
 
-  .note b {
+  .note :global(b) {
     color: var(--ink);
     font-weight: 600;
   }
@@ -184,7 +180,7 @@ import home from '../assets/01-home.png';
 
   /* The hard break is a desktop nicety; below that the headline sets itself. */
   @media (max-width: 720px) {
-    .hold {
+    h1 :global(.hold) {
       display: none;
     }
   }

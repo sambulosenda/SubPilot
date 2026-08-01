@@ -1,19 +1,25 @@
 ---
 import { SITE_NAME, APP_STORE_URL } from '../consts';
+import en from '../i18n/en';
+
+const { t = en.header } = Astro.props;
 ---
 
 <header>
   <div class="wrap bar">
-    <a class="brand" href="/">
+    <a class="brand" href={t.homeHref}>
       <img src="/assets/icon.png" alt="" width="30" height="30" />
       {SITE_NAME}
     </a>
     <nav>
-      <a class="section-link" href="/#how">How it works</a>
-      <a class="section-link" href="/#features">Features</a>
-      <a class="section-link" href="/#privacy">Privacy</a>
-      <a class="section-link" href="/guides/">Guides</a>
-      <a class="cta" href={APP_STORE_URL}>Get the app</a>
+      {
+        t.links.map((link: { label: string; href: string }) => (
+          <a class="section-link" href={link.href}>
+            {link.label}
+          </a>
+        ))
+      }
+      <a class="cta" href={APP_STORE_URL}>{t.cta}</a>
     </nav>
   </div>
 </header>
@@ -87,7 +93,7 @@ import { SITE_NAME, APP_STORE_URL } from '../consts';
     color: #fff;
   }
 
-  /* Three in-page anchors are a luxury on a phone; the CTA is not. */
+  /* Four in-page anchors are a luxury on a phone; the CTA is not. */
   @media (max-width: 720px) {
     .section-link {
       display: none;

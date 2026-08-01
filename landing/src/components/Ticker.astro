@@ -1,18 +1,12 @@
 ---
-const claims = [
-  'No account',
-  'No ads',
-  'No tracking',
-  'On-device AI',
-  'Private iCloud sync',
-  'Multi-currency',
-  'Widgets',
-];
+import en from '../i18n/en';
+
+const { t = en.ticker } = Astro.props;
 ---
 
 <div class="strip">
   <div class="wrap row">
-    {claims.map((claim) => <span>{claim}</span>)}
+    {t.map((claim: string) => <span>{claim}</span>)}
   </div>
 </div>
 

@@ -9,13 +9,21 @@ import Privacy from '../components/Privacy.astro';
 import Faq from '../components/Faq.astro';
 import FinalCta from '../components/FinalCta.astro';
 import { SHOW_TICKER, SHOW_FAQ } from '../consts';
+import en from '../i18n/en';
 
-const title = 'SubHelm: Subscription Tracker & Renewal Reminders for iPhone';
-const description =
-  'Track every subscription in one place. See your real monthly total and get reminders before each charge. No account, no ads, no tracking. Free on iPhone.';
+const alternates = [
+  { hreflang: 'en', href: '/' },
+  { hreflang: 'de', href: '/de/' },
+  { hreflang: 'x-default', href: '/' },
+];
 ---
 
-<Base title={title} description={description} structuredData>
+<Base
+  title={en.meta.title}
+  description={en.meta.description}
+  structuredData
+  alternates={alternates}
+>
   <Hero />
   {SHOW_TICKER && <Ticker />}
   <HowItWorks />

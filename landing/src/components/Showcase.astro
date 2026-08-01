@@ -3,69 +3,42 @@ import Phone from './Phone.astro';
 import calendar from '../assets/02-calendar.png';
 import assistant from '../assets/03-assistant.png';
 import receipt from '../assets/05-scan-receipt.png';
+import en from '../i18n/en';
+
+const { t = en.showcase } = Astro.props;
+
+// Row order is fixed; only the copy is localized.
+const images = [calendar, assistant, receipt];
 ---
 
 <section class="band">
   <div class="wrap rows">
-    <div class="row">
-      <div class="copy">
-        <span class="kicker">Calendar</span>
-        <h2>The month, before it happens.</h2>
-        <p>
-          Every upcoming charge and trial ending laid out day by day. You see the
-          expensive week coming while there's still time to cancel something.
-        </p>
-      </div>
-      <div class="stage">
-        <Phone
-          src={calendar}
-          alt="Calendar of upcoming subscription charges in SubHelm"
-          crop
-        />
-      </div>
-    </div>
-
-    <div class="row row--flip">
-      <div class="copy">
-        <span class="kicker">Assistant</span>
-        <h2>Ask it anything. It answers <em>on your phone</em>.</h2>
-        <p>
-          "Where could I cut back?" "What renews in the next 7 days?" Powered by
-          Apple Intelligence, running on-device, so the questions and the answers
-          never leave it.
-        </p>
-        <div class="chips">
-          <span>How much do I spend per year?</span>
-          <span>Where could I cut back?</span>
-        </div>
-      </div>
-      <div class="stage">
-        <Phone
-          src={assistant}
-          alt="SubHelm's on-device assistant answering a question about subscription spending"
-          crop
-        />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="copy">
-        <span class="kicker">Receipt scanning</span>
-        <h2>Point the camera. Done.</h2>
-        <p>
-          Found a charge you don't recognise on a receipt? Scan it and the name,
-          price and date are read straight into SubHelm. Nothing is uploaded
-          anywhere.
-        </p>
-      </div>
-      <div class="stage">
-        <Phone
-          src={receipt}
-          alt="Scanning a receipt to add a subscription in SubHelm"
-          crop
-        />
-      </div>
-    </div>
+    {
+      t.rows.map(
+        (
+          row: { kicker: string; titleHtml: string; body: string; alt: string },
+          i: number
+        ) => (
+          <div class={i === 1 ? 'row row--flip' : 'row'}>
+            <div class="copy">
+              <span class="kicker">{row.kicker}</span>
+              <h2 set:html={row.titleHtml} />
+              <p>{row.body}</p>
+              {i === 1 && (
+                <div class="chips">
+                  {t.chips.map((chip: string) => (
+                    <span>{chip}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div class="stage">
+              <Phone src={images[i]!} alt={row.alt} crop />
+            </div>
+          </div>
+        )
+      )
+    }
   </div>
 </section>
 

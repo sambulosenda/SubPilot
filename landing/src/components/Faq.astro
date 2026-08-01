@@ -1,40 +1,13 @@
 ---
-const questions = [
-  {
-    q: 'Do I need to connect my bank?',
-    a: 'No. SubHelm never asks for bank credentials. You add subscriptions from a built-in catalogue, by hand, or by scanning a receipt.',
-  },
-  {
-    q: 'Is there an account to create?',
-    a: "There isn't. Open the app and start adding. Your data stays on your device and syncs through your own iCloud if you have more than one.",
-  },
-  {
-    q: 'What does the assistant send to a server?',
-    a: 'Nothing. It runs on-device through Apple Intelligence, so both your question and its answer stay on your iPhone.',
-  },
-  {
-    q: 'Can it handle subscriptions in other currencies?',
-    a: "Yes. Add them in whatever currency you're billed in and SubHelm converts everything into one monthly total.",
-  },
-  {
-    q: 'Will it remind me before a free trial ends?',
-    a: 'Yes. Mark a subscription as a trial and SubHelm sends a reminder before it converts into a paid plan, and before every renewal after that.',
-  },
-  {
-    q: 'Can SubHelm cancel subscriptions for me?',
-    a: "No, and nobody else can either without your account credentials. SubHelm shows you what to cancel and reminds you before the charge, while there's still time to do it; you cancel with the provider, which usually takes a minute.",
-  },
-  {
-    q: "What's in SubHelm Pro?",
-    a: 'The app is free to download and use. Pro is an optional in-app upgrade; you can see exactly what it includes inside the app before buying anything.',
-  },
-];
+import en from '../i18n/en';
+
+const { t = en.faq } = Astro.props;
 
 // Same questions, machine-readable: earns the FAQ rich result in search.
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: questions.map((item) => ({
+  mainEntity: t.items.map((item: { q: string; a: string }) => ({
     '@type': 'Question',
     name: item.q,
     acceptedAnswer: { '@type': 'Answer', text: item.a },
@@ -45,10 +18,10 @@ const faqSchema = {
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 
 <section id="faq">
-  <h2>Questions, answered.</h2>
+  <h2>{t.title}</h2>
   <div class="list">
     {
-      questions.map((item) => (
+      t.items.map((item: { q: string; a: string }) => (
         <details>
           <summary>
             {item.q}

@@ -1,5 +1,8 @@
 ---
 import AppStoreBadge from './AppStoreBadge.astro';
+import en from '../i18n/en';
+
+const { t = en.finalCta, badge = en.badge } = Astro.props;
 ---
 
 <section>
@@ -9,11 +12,11 @@ import AppStoreBadge from './AppStoreBadge.astro';
       width="1024"
       height="1024"
       loading="lazy"
-      alt="SubHelm app icon"
+      alt={t.iconAlt}
     />
-    <h2>Take control of your<br class="hold" /> recurring spending.</h2>
-    <p>Free on the App Store. No account, no ads, no tracking.</p>
-    <AppStoreBadge />
+    <h2 set:html={t.titleHtml} />
+    <p>{t.note}</p>
+    <AppStoreBadge t={badge} />
   </div>
 </section>
 
@@ -51,7 +54,7 @@ import AppStoreBadge from './AppStoreBadge.astro';
   }
 
   @media (max-width: 720px) {
-    .hold {
+    h2 :global(.hold) {
       display: none;
     }
   }

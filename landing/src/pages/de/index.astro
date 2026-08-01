@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import Ticker from '../../components/Ticker.astro';
+import HowItWorks from '../../components/HowItWorks.astro';
+import Showcase from '../../components/Showcase.astro';
+import Features from '../../components/Features.astro';
+import Privacy from '../../components/Privacy.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import { SHOW_TICKER, SHOW_FAQ } from '../../consts';
+import de from '../../i18n/de';
+
+const alternates = [
+  { hreflang: 'en', href: '/' },
+  { hreflang: 'de', href: '/de/' },
+  { hreflang: 'x-default', href: '/' },
+];
+---
+
+<Base
+  title={de.meta.title}
+  description={de.meta.description}
+  structuredData
+  lang="de"
+  strings={de}
+  alternates={alternates}
+>
+  <Hero t={de.hero} badge={de.badge} />
+  {SHOW_TICKER && <Ticker t={de.ticker} />}
+  <HowItWorks t={de.how} />
+  <Showcase t={de.showcase} />
+  <Features t={de.features} />
+  <Privacy t={de.privacy} />
+  {SHOW_FAQ && <Faq t={de.faq} />}
+  <FinalCta t={de.finalCta} badge={de.badge} />
+</Base>
