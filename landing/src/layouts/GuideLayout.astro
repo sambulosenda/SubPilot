@@ -5,10 +5,12 @@ import { SITE_NAME } from '../consts';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
-  guide: CollectionEntry<'guides'>;
+  guide: CollectionEntry<'guides'> | CollectionEntry<'cancel'>;
+  /** Breadcrumb parent; defaults to the guides index. */
+  section?: { name: string; href: string };
 }
 
-const { guide } = Astro.props;
+const { guide, section = { name: 'Guides', href: '/guides/' } } = Astro.props;
 const { title, description, pubDate, updatedDate } = guide.data;
 
 const articleSchema = {
@@ -35,7 +37,7 @@ const breadcrumbSchema = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site).href },
-    { '@type': 'ListItem', position: 2, name: 'Guides', item: new URL('/guides/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: section.name, item: new URL(section.href, Astro.site).href },
     { '@type': 'ListItem', position: 3, name: title },
   ],
 };
@@ -56,7 +58,7 @@ const dateShown = (updatedDate ?? pubDate).toLocaleDateString('en-GB', {
 
   <article class="prose">
     <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides/">Guides</a>
+      <a href="/">Home</a><span aria-hidden="true">/</span><a href={section.href}>{section.name}</a>
     </nav>
     <h1>{title}</h1>
     <p class="dateline">

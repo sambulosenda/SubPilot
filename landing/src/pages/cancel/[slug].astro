@@ -1,0 +1,19 @@
+---
+import { getCollection, render } from 'astro:content';
+import GuideLayout from '../../layouts/GuideLayout.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('cancel');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<GuideLayout guide={entry} section={{ name: 'Cancel guides', href: '/cancel/' }}>
+  <Content />
+</GuideLayout>

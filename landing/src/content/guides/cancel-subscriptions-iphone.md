@@ -24,7 +24,7 @@ Two things worth knowing:
 
 ## Cancelling subscriptions billed directly
 
-Netflix, Spotify, Amazon Prime and most newspapers usually bill you directly, so they never appear in Apple's list. For each one, sign in to your account on the company's **website** and look for a billing, membership or subscription page. The cancel button is often easier to find in a desktop browser than in the app, and some services don't offer it in the app at all.
+Netflix, Spotify, Amazon Prime and most newspapers usually bill you directly, so they never appear in Apple's list. We keep [per-service cancel guides](/cancel/) for the popular ones, each covering every billing path. For each one, sign in to your account on the company's **website** and look for a billing, membership or subscription page. The cancel button is often easier to find in a desktop browser than in the app, and some services don't offer it in the app at all.
 
 If you're not sure how a service bills you, check where the charge appears: Apple charges show as one combined Apple bill, direct charges show the company's own name on your statement or receipt email.
 
