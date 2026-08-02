@@ -52,6 +52,7 @@ accessibility trap.
 - The hero cap is deliberate: above 62px the headline outgrows its column and the
   intended two-line break collapses.
 - Body 17px/1.55; section leads 17.5–19px; kickers 12.5px, `.14em`, uppercase, 600.
+  Kickers are text only: no dash/rule prefix (owner's explicit preference, removed 2026-08-01).
 - One italic word per headline, in accent. It is the site's only typographic
   flourish; keep it to a single word.
 

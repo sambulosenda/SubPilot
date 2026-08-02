@@ -11,7 +11,7 @@ const { t = en.hero, badge = en.badge } = Astro.props;
   <div class="glow" aria-hidden="true"></div>
   <div class="wrap inner">
     <div class="copy">
-      <span class="kicker kicker--rule">{t.kicker}</span>
+      <span class="kicker">{t.kicker}</span>
       <h1 set:html={t.titleHtml} />
       <p>{t.sub}</p>
       <div class="actions">

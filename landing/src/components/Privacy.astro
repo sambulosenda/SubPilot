@@ -7,7 +7,7 @@ const { t = en.privacy } = Astro.props;
 <section id="privacy">
   <div class="wrap inner">
     <div class="copy">
-      <span class="kicker kicker--rule">{t.kicker}</span>
+      <span class="kicker">{t.kicker}</span>
       <h2 set:html={t.titleHtml} />
       <p>{t.body}</p>
     </div>

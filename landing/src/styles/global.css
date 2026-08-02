@@ -109,7 +109,8 @@ img {
   padding-inline: var(--gutter);
 }
 
-/* Section eyebrow: uppercase label, optionally preceded by a short rule. */
+/* Section eyebrow: uppercase label, text only. No decorative dash before it;
+   the owner dislikes that treatment, don't reintroduce it. */
 .kicker {
   display: block;
   font-size: 12.5px;
@@ -117,21 +118,6 @@ img {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent-ink);
-}
-
-.kicker--rule {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  white-space: nowrap;
-}
-
-.kicker--rule::before {
-  content: '';
-  display: block;
-  width: 22px;
-  height: 1px;
-  background: currentColor;
 }
 
 /* The italic word carried through every headline. */
