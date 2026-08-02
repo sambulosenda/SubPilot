@@ -1,29 +1,46 @@
-SubHelm keeps every subscription in one place — and makes sure a forgotten
-free trial never becomes a surprise charge.
+SubHelm helps you see every subscription you pay for, what it costs you each month, and what's about to renew — so a forgotten free trial never becomes a surprise charge.
 
-Add a subscription in seconds from a catalogue of 200+ popular services, or scan
-a receipt and let SubHelm read the details on your device. See your real
-monthly total in your own currency, and get a reminder before every renewal and
-free-trial conversion so you can cancel in time.
+It's built for people who've lost count: anyone juggling streaming, software and AI subscriptions, freelancers keeping work and personal spending apart, and households sharing plans across a family.
 
-WHAT YOU GET
+SET UP IN UNDER A MINUTE
 
-• Next-renewal at a glance — Home Screen and Lock Screen widgets show what's
-  charging next and your monthly total.
-• Smart reminders — a heads-up before each renewal or trial ends.
-• Receipt scanning — read on-device; nothing is uploaded.
-• Profiles — keep personal and work subscriptions separate.
-• Multi-currency — see everything converted into one total.
-• On-device AI assistant — ask about your subscriptions, powered by Apple
-  Intelligence (on supported devices).
-• iCloud sync — your data syncs privately across your devices.
+Pick from a catalogue of 200+ popular services, scan a receipt, or import a bank statement. SubHelm fills in the price and the renewal date, so you're not typing everything in by hand.
+
+KNOW WHAT YOU'RE ACTUALLY PAYING
+
+See one real monthly total, converted into your own currency, with a breakdown of where the money goes by category. A six-month forecast shows you which months spike — so the annual renewal you'd forgotten about doesn't land as a shock.
+
+NEVER GET CHARGED BY SURPRISE
+
+Get a reminder days before every renewal, and before each free trial converts to a paid plan. See the whole month laid out in a calendar, and check what's charging next from your Home Screen or Lock Screen without opening the app.
+
+CANCEL BEFORE THEY CHARGE YOU
+
+When you want out, SubHelm walks you through cancelling that particular service step by step, links you straight to the right page, and stops the reminders once it's done.
+
+ASK ABOUT YOUR OWN SPENDING
+
+A built-in assistant answers questions about your subscriptions, entirely on your device:
+
+• "How much do I spend per year?"
+• "What's my most expensive subscription?"
+• "What renews in the next 7 days?"
+• "Where could I cut back?"
+
+ALSO INCLUDED
+
+• Profiles — keep personal and work subscriptions apart.
+• Price-change tracking — spot it when a service quietly puts its price up.
+• Monthly recap — a summary of what you spent and what changed.
+• iCloud sync — your subscriptions on all your devices, privately.
 
 PRIVATE BY DEFAULT
 
-No account. No sign-up. No ads or tracking. Your subscriptions stay on your
-device and sync only through your own private iCloud — we can't see them.
+No account. No sign-up. No ads, no tracking, and no bank login required.
+Receipts are read on your device and never uploaded. Your subscriptions stay on
+your device and sync only through your own private iCloud — we can't see them.
 
 Take control of your recurring spending with SubHelm.
 
-Privacy Policy: https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9
+Privacy Policy: https://subhelm.app/privacy/
 Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

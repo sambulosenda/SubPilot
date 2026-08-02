@@ -30,9 +30,9 @@ struct PaywallView: View {
     /// Selected product id. Defaults to annual (the value option we steer toward).
     @State private var selectedID = PurchaseManager.ProductID.annual
 
-    /// Apple-hosted standard EULA. Privacy policy URL is set once the policy is hosted.
+    /// Apple-hosted standard EULA; privacy policy on the marketing site.
     private let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
-    private let privacyURL = URL(string: "https://gist.github.com/sambulosenda/744ff503ade4a19c0a4ac298160248f9")!
+    private let privacyURL = URL(string: "https://subhelm.app/privacy/")!
 
     private let benefits: [(symbol: String, text: String)] = [
         ("infinity", String(localized: "Track unlimited subscriptions")),
