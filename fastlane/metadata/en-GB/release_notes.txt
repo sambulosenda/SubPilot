@@ -4,5 +4,9 @@ SubHelm now watches your money even more closely:
 • Trials ending soon — a new Home section and extra day-before and day-of reminders so a free trial never quietly converts
 • Guided cancellation — "Cancel subscription" now walks you through it, with a direct link to the provider's cancel page or your Apple subscriptions
 • Your monthly recap now calls out recent price rises
+• Home shows where the money goes: a spend-by-category breakdown inside the total card
+• The calendar now highlights the days that actually have renewals, instead of every empty square
+• Adding a subscription is smoother — the chooser fits every option at any text size, and the form moves through its fields from the keyboard
+• A clearer, more legible first run
 
 Thanks for using SubHelm — we'd love your feedback!
