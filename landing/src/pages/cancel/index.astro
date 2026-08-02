@@ -9,9 +9,15 @@ const services = (await getCollection('cancel')).sort((a, b) =>
 const title = 'How to cancel any subscription — SubHelm';
 const description =
   'Step-by-step cancellation guides for popular services: who bills you, where the cancel button lives, and the gotchas worth knowing first.';
+
+const alternates = [
+  { hreflang: 'en', href: '/cancel/' },
+  { hreflang: 'de', href: '/de/kuendigen/' },
+  { hreflang: 'x-default', href: '/cancel/' },
+];
 ---
 
-<Base title={title} description={description}>
+<Base title={title} description={description} alternates={alternates}>
   <section class="wrap">
     <span class="kicker kicker--rule">Cancel guides</span>
     <h1>Cancel any subscription, <em>properly</em>.</h1>

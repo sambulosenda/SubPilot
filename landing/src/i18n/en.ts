@@ -165,6 +165,7 @@ export default {
     guides: 'Guides',
     guidesHref: '/guides/',
     cancelGuides: 'Cancel guides',
+    cancelHref: '/cancel/',
     featureRequests: 'Feature requests',
     privacyPolicy: 'Privacy policy',
     terms: 'Terms of use',

@@ -4,16 +4,33 @@ import GuideLayout from '../../layouts/GuideLayout.astro';
 
 export async function getStaticPaths() {
   const entries = await getCollection('cancel');
+  const german = await getCollection('cancelDe');
   return entries.map((entry) => ({
     params: { slug: entry.id },
-    props: { entry },
+    props: {
+      entry,
+      deSlug: german.find((g) => g.data.enSlug === entry.id)?.id ?? null,
+    },
   }));
 }
 
-const { entry } = Astro.props;
+const { entry, deSlug } = Astro.props;
 const { Content } = await render(entry);
+
+// hreflang pair only when a German twin exists (Hulu and HBO Max have none).
+const alternates = deSlug
+  ? [
+      { hreflang: 'en', href: `/cancel/${entry.id}/` },
+      { hreflang: 'de', href: `/de/kuendigen/${deSlug}/` },
+      { hreflang: 'x-default', href: `/cancel/${entry.id}/` },
+    ]
+  : undefined;
 ---
 
-<GuideLayout guide={entry} section={{ name: 'Cancel guides', href: '/cancel/' }}>
+<GuideLayout
+  guide={entry}
+  section={{ name: 'Cancel guides', href: '/cancel/' }}
+  alternates={alternates}
+>
   <Content />
 </GuideLayout>

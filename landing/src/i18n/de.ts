@@ -167,6 +167,7 @@ const de: typeof en = {
     guides: 'Guides',
     guidesHref: '/de/guides/',
     cancelGuides: 'Kündigungs-Guides',
+    cancelHref: '/de/kuendigen/',
     featureRequests: 'Feature-Wünsche',
     privacyPolicy: 'Datenschutz',
     terms: 'Nutzungsbedingungen',

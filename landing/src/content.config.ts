@@ -35,4 +35,17 @@ const guidesDe = defineCollection({
   }),
 });
 
-export const collections = { guides, cancel, guidesDe };
+const cancelDe = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/cancel-de' }),
+  schema: z.object({
+    title: z.string().max(70),
+    description: z.string().max(160),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    service: z.string(),
+    /** id of the English twin; absent for Germany-only services (DAZN). */
+    enSlug: z.string().optional(),
+  }),
+});
+
+export const collections = { guides, cancel, guidesDe, cancelDe };

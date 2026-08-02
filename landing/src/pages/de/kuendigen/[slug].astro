@@ -1,0 +1,35 @@
+---
+import { getCollection, render } from 'astro:content';
+import GuideLayout from '../../../layouts/GuideLayout.astro';
+import de from '../../../i18n/de';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('cancelDe');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+// Germany-only services (no enSlug) get no hreflang pair.
+const alternates = entry.data.enSlug
+  ? [
+      { hreflang: 'en', href: `/cancel/${entry.data.enSlug}/` },
+      { hreflang: 'de', href: `/de/kuendigen/${entry.id}/` },
+      { hreflang: 'x-default', href: `/cancel/${entry.data.enSlug}/` },
+    ]
+  : undefined;
+---
+
+<GuideLayout
+  guide={entry}
+  section={{ name: 'Kündigungs-Guides', href: '/de/kuendigen/' }}
+  lang="de"
+  strings={de}
+  alternates={alternates}
+>
+  <Content />
+</GuideLayout>
