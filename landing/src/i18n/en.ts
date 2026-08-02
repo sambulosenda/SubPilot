@@ -163,10 +163,20 @@ export default {
   },
   footer: {
     guides: 'Guides',
+    guidesHref: '/guides/',
     cancelGuides: 'Cancel guides',
     featureRequests: 'Feature requests',
     privacyPolicy: 'Privacy policy',
     terms: 'Terms of use',
     support: 'Support',
+  },
+  guide: {
+    crumbHome: 'Home',
+    published: 'Published ',
+    updated: 'Updated ',
+    dateLocale: 'en-GB',
+    ctaTitle: 'Let the app do the remembering',
+    ctaBody:
+      'SubHelm keeps every subscription, trial and renewal in one place on your iPhone. No account, no bank connection, free to use.',
   },
 };

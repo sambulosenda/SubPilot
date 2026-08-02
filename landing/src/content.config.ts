@@ -23,4 +23,16 @@ const cancel = defineCollection({
   }),
 });
 
-export const collections = { guides, cancel };
+const guidesDe = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/guides-de' }),
+  schema: z.object({
+    title: z.string().max(70),
+    description: z.string().max(160),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    /** id of the English twin, for hreflang pairing. */
+    enSlug: z.string(),
+  }),
+});
+
+export const collections = { guides, cancel, guidesDe };

@@ -9,9 +9,15 @@ const guides = (await getCollection('guides')).sort(
 const title = 'Guides — SubHelm';
 const description =
   'Plain-English guides to subscriptions: how to cancel them, what they really cost, and how to stop paying for free trials you forgot.';
+
+const alternates = [
+  { hreflang: 'en', href: '/guides/' },
+  { hreflang: 'de', href: '/de/guides/' },
+  { hreflang: 'x-default', href: '/guides/' },
+];
 ---
 
-<Base title={title} description={description}>
+<Base title={title} description={description} alternates={alternates}>
   <section class="wrap">
     <span class="kicker kicker--rule">Guides</span>
     <h1>Subscriptions, <em>explained</em>.</h1>

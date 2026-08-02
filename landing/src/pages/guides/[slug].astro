@@ -4,16 +4,29 @@ import GuideLayout from '../../layouts/GuideLayout.astro';
 
 export async function getStaticPaths() {
   const guides = await getCollection('guides');
+  const german = await getCollection('guidesDe');
   return guides.map((guide) => ({
     params: { slug: guide.id },
-    props: { guide },
+    props: {
+      guide,
+      deSlug: german.find((g) => g.data.enSlug === guide.id)?.id ?? null,
+    },
   }));
 }
 
-const { guide } = Astro.props;
+const { guide, deSlug } = Astro.props;
 const { Content } = await render(guide);
+
+// hreflang pair only when a German twin exists.
+const alternates = deSlug
+  ? [
+      { hreflang: 'en', href: `/guides/${guide.id}/` },
+      { hreflang: 'de', href: `/de/guides/${deSlug}/` },
+      { hreflang: 'x-default', href: `/guides/${guide.id}/` },
+    ]
+  : undefined;
 ---
 
-<GuideLayout guide={guide}>
+<GuideLayout guide={guide} alternates={alternates}>
   <Content />
 </GuideLayout>

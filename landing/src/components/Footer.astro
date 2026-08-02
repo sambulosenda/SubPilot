@@ -9,7 +9,7 @@ const { t = en.footer } = Astro.props;
   <div class="wrap inner">
     <span>© 2026 Sambulo Senda</span>
     <div class="links">
-      <a href="/guides/">{t.guides}</a>
+      <a href={t.guidesHref}>{t.guides}</a>
       <a href="/cancel/">{t.cancelGuides}</a>
       <a href={FEATUREBASE_URL}>{t.featureRequests}</a>
       <a href="/privacy/">{t.privacyPolicy}</a>

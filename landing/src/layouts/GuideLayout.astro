@@ -3,14 +3,29 @@ import Base from './Base.astro';
 import AppStoreBadge from '../components/AppStoreBadge.astro';
 import { SITE_NAME } from '../consts';
 import type { CollectionEntry } from 'astro:content';
+import en from '../i18n/en';
 
 interface Props {
-  guide: CollectionEntry<'guides'> | CollectionEntry<'cancel'>;
+  guide:
+    | CollectionEntry<'guides'>
+    | CollectionEntry<'cancel'>
+    | CollectionEntry<'guidesDe'>;
   /** Breadcrumb parent; defaults to the guides index. */
   section?: { name: string; href: string };
+  lang?: string;
+  strings?: typeof en;
+  alternates?: { hreflang: string; href: string }[];
 }
 
-const { guide, section = { name: 'Guides', href: '/guides/' } } = Astro.props;
+const {
+  guide,
+  section = { name: 'Guides', href: '/guides/' },
+  lang = 'en',
+  strings = en,
+  alternates,
+} = Astro.props;
+const t = strings.guide;
+const badge = strings.badge;
 const { title, description, pubDate, updatedDate } = guide.data;
 
 const articleSchema = {
@@ -36,20 +51,26 @@ const breadcrumbSchema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL(lang === 'en' ? '/' : `/${lang}/`, Astro.site).href },
     { '@type': 'ListItem', position: 2, name: section.name, item: new URL(section.href, Astro.site).href },
     { '@type': 'ListItem', position: 3, name: title },
   ],
 };
 
-const dateShown = (updatedDate ?? pubDate).toLocaleDateString('en-GB', {
+const dateShown = (updatedDate ?? pubDate).toLocaleDateString(t.dateLocale, {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
 });
 ---
 
-<Base title={`${title} — ${SITE_NAME}`} description={description}>
+<Base
+  title={`${title} — ${SITE_NAME}`}
+  description={description}
+  lang={lang}
+  strings={strings}
+  alternates={alternates}
+>
   <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   <script
     type="application/ld+json"
@@ -58,11 +79,11 @@ const dateShown = (updatedDate ?? pubDate).toLocaleDateString('en-GB', {
 
   <article class="prose">
     <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="/">Home</a><span aria-hidden="true">/</span><a href={section.href}>{section.name}</a>
+      <a href={strings.header.homeHref}>{t.crumbHome}</a><span aria-hidden="true">/</span><a href={section.href}>{section.name}</a>
     </nav>
     <h1>{title}</h1>
     <p class="dateline">
-      {updatedDate ? 'Updated ' : 'Published '}<time
+      {updatedDate ? t.updated : t.published}<time
         datetime={(updatedDate ?? pubDate).toISOString().slice(0, 10)}
       >
         {dateShown}
@@ -75,13 +96,10 @@ const dateShown = (updatedDate ?? pubDate).toLocaleDateString('en-GB', {
 
     <aside class="cta">
       <div>
-        <h2>Let the app do the remembering</h2>
-        <p>
-          SubHelm keeps every subscription, trial and renewal in one place on
-          your iPhone. No account, no bank connection, free to use.
-        </p>
+        <h2>{t.ctaTitle}</h2>
+        <p>{t.ctaBody}</p>
       </div>
-      <AppStoreBadge />
+      <AppStoreBadge t={badge} />
     </aside>
   </article>
 </Base>

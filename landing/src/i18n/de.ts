@@ -14,7 +14,7 @@ const de: typeof en = {
       { label: "So funktioniert's", href: '/de/#how' },
       { label: 'Funktionen', href: '/de/#features' },
       { label: 'Privatsphäre', href: '/de/#privacy' },
-      { label: 'Guides', href: '/guides/' },
+      { label: 'Guides', href: '/de/guides/' },
     ],
     cta: 'App laden',
   },
@@ -165,11 +165,21 @@ const de: typeof en = {
   },
   footer: {
     guides: 'Guides',
+    guidesHref: '/de/guides/',
     cancelGuides: 'Kündigungs-Guides',
     featureRequests: 'Feature-Wünsche',
     privacyPolicy: 'Datenschutz',
     terms: 'Nutzungsbedingungen',
     support: 'Support',
+  },
+  guide: {
+    crumbHome: 'Start',
+    published: 'Veröffentlicht am ',
+    updated: 'Aktualisiert am ',
+    dateLocale: 'de-DE',
+    ctaTitle: 'Lass die App sich erinnern',
+    ctaBody:
+      'SubHelm behält jedes Abo, jede Testphase und jede Verlängerung auf deinem iPhone im Blick. Kein Konto, keine Bankverbindung, gratis nutzbar.',
   },
 };
 
