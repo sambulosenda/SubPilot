@@ -3,6 +3,15 @@ title: 'How to cancel Audible'
 description: 'Cancel Audible from your account page on the web, spend your credits first, and consider the pause option before you fully cancel.'
 pubDate: 2026-08-01
 service: 'Audible'
+faq:
+  - q: "Do I keep my audiobooks after cancelling?"
+    a: "Titles you bought with credits or cash stay in your library permanently. Anything you were only listening to through the Plus Catalogue is a licence rather than a purchase, and it disappears when the membership ends."
+  - q: "What happens to unused credits?"
+    a: "They are normally forfeited when the membership ends, which is why spending them is the step before cancelling. Credits also expire on their own after about a year, whether you cancel or not."
+  - q: "How long can I pause my membership?"
+    a: "Typically one to three months, offered from the membership area or through support. A pause keeps your credits and member pricing, then resumes billing by itself on the restart date."
+  - q: "Can I cancel Audible in the iPhone app?"
+    a: "No. Membership is managed on the Audible website in a browser, unless Apple bills you, in which case it cancels in Settings, your name, Subscriptions like any other Apple subscription."
 ---
 
 Audible has one rule that outranks the cancel steps: **spend your credits first.** Unused credits are typically forfeited when a membership ends, and cancelling with three credits banked is like leaving three audiobooks on the table.

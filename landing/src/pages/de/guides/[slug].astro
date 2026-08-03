@@ -2,16 +2,23 @@
 import { getCollection, render } from 'astro:content';
 import GuideLayout from '../../../layouts/GuideLayout.astro';
 import de from '../../../i18n/de';
+import { ringNeighbours } from '../../../lib/related';
 
 export async function getStaticPaths() {
   const guides = await getCollection('guidesDe');
   return guides.map((guide) => ({
     params: { slug: guide.id },
-    props: { guide },
+    props: {
+      guide,
+      related: ringNeighbours(guides, guide.id).map((sibling) => ({
+        title: sibling.data.title,
+        href: `/de/guides/${sibling.id}/`,
+      })),
+    },
   }));
 }
 
-const { guide } = Astro.props;
+const { guide, related } = Astro.props;
 const { Content } = await render(guide);
 
 const alternates = [
@@ -27,6 +34,7 @@ const alternates = [
   lang="de"
   strings={de}
   alternates={alternates}
+  related={related}
 >
   <Content />
 </GuideLayout>

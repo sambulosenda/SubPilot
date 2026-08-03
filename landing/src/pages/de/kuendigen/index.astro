@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
+import HubSchema from '../../../components/HubSchema.astro';
 import de from '../../../i18n/de';
 
 const services = (await getCollection('cancelDe')).sort((a, b) =>
@@ -25,6 +26,16 @@ const alternates = [
   strings={de}
   alternates={alternates}
 >
+  <HubSchema
+    name="Kündigungs-Guides"
+    homeName="Start"
+    homeHref="/de/"
+    lang="de"
+    items={services.map((entry) => ({
+      name: entry.data.service,
+      href: `/de/kuendigen/${entry.id}/`,
+    }))}
+  />
   <section class="wrap">
     <span class="kicker">Kündigungs-Guides</span>
     <h1>Jedes Abo kündigen, <em>richtig</em>.</h1>

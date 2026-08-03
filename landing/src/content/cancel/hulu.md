@@ -3,6 +3,15 @@ title: 'How to cancel Hulu'
 description: 'Cancel Hulu from your account page on the web, through Apple if you subscribed there, or via Disney+ if you pay for a bundle.'
 pubDate: 2026-08-01
 service: 'Hulu'
+faq:
+  - q: "How long can I pause Hulu?"
+    a: "Up to twelve weeks, set from the Account page. Billing stops for the pause and restarts automatically on the date you chose, so it needs a reminder in the same way a free trial does."
+  - q: "Do my add-ons cancel at the same time?"
+    a: "Add-ons like Live TV or premium channels are attached to the base subscription and end with it. If Hulu sits inside a Disney bundle, the bundle's rules apply instead and everything in it goes together."
+  - q: "Will I lose my watch history and profiles?"
+    a: "They are kept for a period after cancellation, so returning within a few months usually picks up where you left off. Leave it long enough and the account is cleared."
+  - q: "Can I cancel Hulu from the iPhone app?"
+    a: "Not directly; the app links out to the account page in a browser. If Apple is your biller, cancel in Settings, your name, Subscriptions instead."
 ---
 
 Hulu cancellation depends on who bills you, and with Hulu there are three realistic answers: Hulu itself, Apple, or Disney, because Hulu now travels inside Disney's bundles as often as it travels alone.

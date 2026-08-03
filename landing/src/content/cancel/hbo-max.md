@@ -3,6 +3,15 @@ title: 'How to cancel HBO Max'
 description: 'HBO Max might be billed by the service itself, by Apple, or by your TV or mobile provider. Find your biller, then cancel in the right place.'
 pubDate: 2026-08-01
 service: 'HBO Max'
+faq:
+  - q: "What happens to my downloads when I cancel?"
+    a: "Downloaded titles stop playing at the end of the paid period. They are licences tied to an active subscription, not files you keep."
+  - q: "Can I get a refund if I cancel right after a renewal?"
+    a: "For direct billing, generally no; access simply runs to the period end. If Apple bills you, refunds go through Apple's own request form at reportaproblem.apple.com, which is judged case by case."
+  - q: "Is there a way to pause instead of cancel?"
+    a: "There is no official pause on a direct subscription. Cancelling and resubscribing later is the practical equivalent, and your profiles and watch history normally survive the gap."
+  - q: "How do I work out who bills me?"
+    a: "Check the name on the charge, not the app. The service's own name means direct, Apple means the App Store, and a TV or mobile provider's name means the provider owns both the billing and the cancellation."
 ---
 
 HBO Max subscriptions arrive from more directions than most: directly from the service, through Apple or Google, or bundled by a TV or mobile provider. The charge on your statement is the map: the service's own name means direct, Apple means App Store, and a provider's name means the provider owns the cancellation.

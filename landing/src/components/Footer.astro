@@ -11,7 +11,10 @@ const { t = en.footer } = Astro.props;
     <div class="links">
       <a href={t.guidesHref}>{t.guides}</a>
       <a href={t.cancelHref}>{t.cancelGuides}</a>
-      <a href={FEATUREBASE_URL}>{t.featureRequests}</a>
+      {/* nofollow while this still points at the pre-rebrand subdomain: no
+          reason to hand every page's link equity to the old brand name. Drop
+          the rel once the Featurebase rename in consts.ts is done. */}
+      <a href={FEATUREBASE_URL} rel="nofollow">{t.featureRequests}</a>
       <a href="/privacy/">{t.privacyPolicy}</a>
       <a href={EULA_URL}>{t.terms}</a>
       <a href={`mailto:${SUPPORT_EMAIL}`}>{t.support}</a>

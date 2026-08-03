@@ -4,6 +4,15 @@ description: 'Adobes Jahresabo mit Monatszahlung hat eine Abbruchgebühr, die vi
 pubDate: 2026-08-01
 service: 'Adobe Creative Cloud'
 enSlug: 'adobe-creative-cloud'
+faq:
+  - q: "Was passiert mit meinen Dateien in der Creative Cloud?"
+    a: "Dein Speicher fällt auf die kostenlosen 2 GB zurück. Dateien werden nicht sofort gelöscht, aber alles über dem Limit wird schreibgeschützt und ist auf Dauer gefährdet. Lade dir vorher herunter, was dir wichtig ist."
+  - q: "Kann ich meine Photoshop- und Illustrator-Dateien danach noch öffnen?"
+    a: "Die Dateien gehören dir, die Programme hören nach Laufzeitende auf zu funktionieren. PSD und AI lassen sich auch mit anderer Software öffnen, nicht immer originalgetreu. Exportier von wichtigen Sachen vorher flache Kopien."
+  - q: "Wie vermeide ich die Abbruchgebühr legal?"
+    a: "Drei Wege: innerhalb von 14 Tagen nach Start oder Verlängerung kündigen und den vollen Betrag zurückbekommen, das Verlängerungsfenster abwarten, oder auf ein echtes Monatsabo wechseln, bei dem gar keine Gebühr anfällt."
+  - q: "Kündigt das Deinstallieren der Programme mein Abo?"
+    a: "Nein. Das Deinstallieren macht Platz auf der Festplatte und sonst nichts. Der Plan bucht weiter ab, bis du ihn auf deiner Adobe-Kontoseite kündigst."
 ---
 
 Adobe Creative Cloud ist die Kündigung mit Haken: Der beliebte Tarif ist ein **Jahresvertrag mit monatlicher Zahlung**, und ein Ausstieg mitten im Jahr löst in der Regel eine Abbruchgebühr aus. Die Gebührenregeln zu kennen, bevor du auf Kündigen drückst, ist hier bares Geld wert.

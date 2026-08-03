@@ -1,5 +1,27 @@
 export const SITE_NAME = 'SubHelm';
 
+export const AUTHOR_NAME = 'Sambulo Senda';
+
+/**
+ * Profile URLs for the author entity in JSON-LD. Google leans on these to tie
+ * the byline to a real, findable person, which matters on money-adjacent
+ * content. Empty means the `sameAs` property is omitted rather than emitted
+ * blank — add GitHub / X / LinkedIn here.
+ */
+export const AUTHOR_SAME_AS: string[] = [];
+
+/**
+ * Stable JSON-LD node ids, resolved against `Astro.site`. Base.astro defines
+ * these nodes on every page; everything else references them by id so the
+ * bylines, the app listing and the site collapse into one entity in Google's
+ * graph rather than a dozen unrelated copies.
+ */
+export const SCHEMA_ID = {
+  organization: '#organization',
+  author: '#author',
+  website: '#website',
+} as const;
+
 export const APP_STORE_URL =
   'https://apps.apple.com/us/app/subhelm-subscription-tracker/id6777939621';
 

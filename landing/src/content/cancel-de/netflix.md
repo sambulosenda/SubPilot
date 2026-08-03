@@ -4,6 +4,15 @@ description: 'Netflix rechnet fast alle direkt ab; der Kündigen-Button liegt au
 pubDate: 2026-08-01
 service: 'Netflix'
 enSlug: 'netflix'
+faq:
+  - q: "Bleiben Profile und Verlauf erhalten?"
+    a: "Erst einmal ja. Netflix hebt Kontodaten, Profile und Verlauf eine begrenzte Zeit nach der Kündigung auf, historisch etwa zehn Monate. Wer in diesem Fenster zurückkommt, findet alles wieder; danach fängst du bei null an."
+  - q: "Kann ich Netflix in der iPhone-App kündigen?"
+    a: "Nein. Die Netflix-App hat keinen Kündigen-Button, sie schickt dich in den Browser auf netflix.com. Einzige Ausnahme ist ein altes Apple-Abo, das du in den Einstellungen kündigst."
+  - q: "Bekomme ich den Rest des Monats erstattet?"
+    a: "Nein. Netflix erstattet angebrochene Monate nicht. Die Mitgliedschaft läuft bis zum Ende des bezahlten Zeitraums, egal ob du am zweiten oder am achtundzwanzigsten Tag kündigst."
+  - q: "Gibt es einen Kündigungsbutton?"
+    a: "Ja. Anbieter, die sich an deutsche Verbraucher richten, müssen seit Juli 2022 einen leicht auffindbaren Kündigungsbutton auf der Website anbieten. Er führt zum selben Ergebnis wie der Weg über die Kontoseite."
 ---
 
 Netflix rechnet fast alle Mitglieder direkt ab, der Kündigen-Button liegt also für die meisten auf **netflix.com**, nicht in der Abo-Liste deines iPhones. Neue Mitgliedschaften über Apples Abrechnung gibt es seit Jahren nicht mehr; deshalb taucht Netflix dort so gut wie nie auf.

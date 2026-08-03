@@ -3,6 +3,15 @@ title: 'How to cancel ChatGPT Plus'
 description: 'Cancel ChatGPT Plus from settings on the web, or through iPhone Settings if you subscribed in the iOS app. The steps for both.'
 pubDate: 2026-08-01
 service: 'ChatGPT Plus'
+faq:
+  - q: "Do I lose my chat history when I cancel?"
+    a: "No. The account drops to the free tier and your conversations, custom instructions and saved memory stay where they are. Plus-only capabilities become unavailable, but nothing is deleted."
+  - q: "Can I get a refund for the current month?"
+    a: "OpenAI generally does not refund mid-period, and Plus runs to the end of the paid month. Consumers in the UK and EU may have statutory rights worth raising with support; Apple-billed subscriptions go through Apple instead."
+  - q: "What about custom GPTs I have built?"
+    a: "They stay in your account. Some remain usable on the free tier and some do not, but cancelling does not delete anything you have created."
+  - q: "Is cancelling Pro or a Team plan any different?"
+    a: "Pro cancels by the same route in settings. A Team or Business workspace is managed by its owner, so an individual member cannot cancel the plan; only the owner can, from the workspace billing page."
 ---
 
 ChatGPT Plus bills from wherever you subscribed: OpenAI directly if you signed up on the web, Apple if you tapped subscribe inside the iOS app. The charge on your statement tells you which: OpenAI's name means web, an Apple charge means the App Store.

@@ -3,6 +3,15 @@ title: 'How to cancel Amazon Prime'
 description: 'Where the End Membership button hides in your Amazon account, how Prime refunds work, and the difference between Prime and Prime Video Channels.'
 pubDate: 2026-08-01
 service: 'Amazon Prime'
+faq:
+  - q: "How much of my Prime fee gets refunded?"
+    a: "Amazon refunds an unused membership in full and prorates a partly used one, though taking the refund usually ends your benefits immediately rather than at the period end. The cancellation screen states which offer applies before you confirm."
+  - q: "Does cancelling Prime cancel Prime Video too?"
+    a: "Prime Video access ends with Prime, but any Prime Video Channels you added are separate subscriptions that keep billing on their own. Cancel each one under memberships and subscriptions in your Amazon account."
+  - q: "Can I pause Amazon Prime instead of cancelling?"
+    a: "There is no pause. You can switch between monthly and annual billing, or cancel and rejoin later; an Amazon account keeps your order history and addresses either way."
+  - q: "Is Prime Student cancelled the same way?"
+    a: "Yes, the path is identical: Account, then your Prime membership, then end membership. The discounted rate does not change the cancellation steps or the refund treatment."
 ---
 
 Amazon Prime is cancelled inside your Amazon account, and Amazon is actually one of the fairer ones about it: cancel an unused period and you'll often get money back.

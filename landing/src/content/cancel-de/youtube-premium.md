@@ -4,6 +4,15 @@ description: 'YouTube Premium kündigst du auf der Mitgliedschafts-Seite oder in
 pubDate: 2026-08-01
 service: 'YouTube Premium'
 enSlug: 'youtube-premium'
+faq:
+  - q: "Was passiert mit Downloads und Hintergrundwiedergabe?"
+    a: "Beides endet mit dem Abrechnungszeitraum. Heruntergeladene Videos lassen sich offline nicht mehr abspielen und die Werbung kommt zurück; Playlists, Abos und Verlauf bleiben unangetastet."
+  - q: "Wie lange kann ich YouTube Premium pausieren?"
+    a: "Bis zu sechs Monate, über dieselbe Seite für bezahlte Mitgliedschaften. Nach der Pause läuft die Abrechnung automatisch weiter, also notiere das Datum an einer Stelle, die dich wirklich erinnert."
+  - q: "Bekomme ich den gerade abgebuchten Monat zurück?"
+    a: "Google erstattet mitten im Zeitraum in der Regel nicht; Premium läuft bis zum Periodenende. Bei einem Apple-Abo entscheidet Apple, über reportaproblem.apple.com."
+  - q: "Endet damit auch YouTube Music?"
+    a: "Ja. YouTube Music Premium ist Teil von Premium und endet zeitgleich. Wenn du für beides getrennt zahlst, ist eine der Abbuchungen ein Duplikat und sollte weg."
 ---
 
 YouTube Premium hat zwei übliche Abrechnungs-Zuhause: Google, wenn du im Web oder auf Android abonniert hast, und Apple, wenn du es in der iOS-App warst. Gekündigt wird an unterschiedlichen Orten, und der Apple-Weg war historisch auch der teurere für dieselbe Leistung.

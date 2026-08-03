@@ -1,7 +1,7 @@
 ---
 import Base from './Base.astro';
 import AppStoreBadge from '../components/AppStoreBadge.astro';
-import { SITE_NAME } from '../consts';
+import { SITE_NAME, SCHEMA_ID } from '../consts';
 import type { CollectionEntry } from 'astro:content';
 import en from '../i18n/en';
 
@@ -16,6 +16,8 @@ interface Props {
   lang?: string;
   strings?: typeof en;
   alternates?: { hreflang: string; href: string }[];
+  /** Sibling pages to link to. See lib/related.ts for how they're picked. */
+  related?: { title: string; href: string }[];
 }
 
 const {
@@ -24,29 +26,41 @@ const {
   lang = 'en',
   strings = en,
   alternates,
+  related = [],
 } = Astro.props;
 const t = strings.guide;
 const badge = strings.badge;
-const { title, description, pubDate, updatedDate } = guide.data;
+const { title, description, pubDate, updatedDate, faq } = guide.data;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
 
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: title,
   description,
+  inLanguage: lang,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   datePublished: pubDate.toISOString().slice(0, 10),
   dateModified: (updatedDate ?? pubDate).toISOString().slice(0, 10),
   image: new URL('/assets/og-card.png', Astro.site).href,
-  author: { '@type': 'Person', name: 'Sambulo Senda' },
-  publisher: {
-    '@type': 'Organization',
-    name: SITE_NAME,
-    logo: {
-      '@type': 'ImageObject',
-      url: new URL('/assets/icon.png', Astro.site).href,
-    },
-  },
+  author: { '@id': new URL(SCHEMA_ID.author, Astro.site).href },
+  publisher: { '@id': new URL(SCHEMA_ID.organization, Astro.site).href },
+  isPartOf: { '@id': new URL(SCHEMA_ID.website, Astro.site).href },
 };
+
+// Same questions the reader sees below, machine-readable.
+const faqSchema = faq?.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faq.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
+    }
+  : null;
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -77,6 +91,11 @@ const dateShown = (updatedDate ?? pubDate).toLocaleDateString(t.dateLocale, {
     type="application/ld+json"
     set:html={JSON.stringify(breadcrumbSchema)}
   />
+  {
+    faqSchema && (
+      <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    )
+  }
 
   <article class="prose">
     <nav class="crumbs" aria-label="Breadcrumb">
@@ -94,6 +113,42 @@ const dateShown = (updatedDate ?? pubDate).toLocaleDateString(t.dateLocale, {
     <div class="body">
       <slot />
     </div>
+
+    {
+      faq && faq.length > 0 && (
+        <section class="faq" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">{t.faqTitle}</h2>
+          <div class="faq-list">
+            {faq.map((item) => (
+              <details>
+                <summary>
+                  {item.q}
+                  <span class="plus" aria-hidden="true">
+                    +
+                  </span>
+                </summary>
+                <p>{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      related.length > 0 && (
+        <nav class="related" aria-labelledby="related-heading">
+          <h2 id="related-heading">{t.relatedTitle}</h2>
+          <ul>
+            {related.map((item) => (
+              <li>
+                <a href={item.href}>{item.title}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
 
     <aside class="cta">
       <div>
@@ -202,6 +257,95 @@ const dateShown = (updatedDate ?? pubDate).toLocaleDateString(t.dateLocale, {
   .body :global(th) {
     color: var(--ink);
     font-weight: 600;
+  }
+
+  /* Same disclosure pattern as the home-page FAQ, at article scale. */
+  .faq {
+    margin-top: clamp(44px, 5.5vw, 66px);
+  }
+
+  .faq h2,
+  .related h2 {
+    margin: 0 0 18px;
+    font-size: 22px;
+    letter-spacing: -0.015em;
+  }
+
+  .faq-list {
+    display: grid;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  details {
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  summary {
+    cursor: pointer;
+    padding: 18px 0;
+    font-size: 16.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .plus {
+    color: var(--accent-ink);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1;
+    transition: transform 0.25s var(--ease);
+    flex: none;
+  }
+
+  details[open] .plus {
+    transform: rotate(45deg);
+  }
+
+  details p {
+    margin: 0;
+    padding: 0 0 20px;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+
+  .related {
+    margin-top: clamp(44px, 5.5vw, 66px);
+  }
+
+  .related ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .related li {
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .related a {
+    display: block;
+    padding: 15px 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    transition: color 0.2s;
+  }
+
+  .related a:hover {
+    color: var(--accent-ink);
   }
 
   .cta {

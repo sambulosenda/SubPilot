@@ -4,6 +4,15 @@ description: 'In der Handy-App lässt sich Spotify Premium nicht kündigen. Wo d
 pubDate: 2026-08-01
 service: 'Spotify'
 enSlug: 'spotify'
+faq:
+  - q: "Was passiert mit meinen Downloads?"
+    a: "Offline gespeicherte Titel lassen sich nicht mehr abspielen, sobald Premium endet; sie sind lizenziert, nicht gekauft. Die Playlists selbst bleiben im Gratis-Tarif erhalten, und die Downloads kommen zurück, wenn du erneut abonnierst."
+  - q: "Kann ich den laufenden Monat erstattet bekommen?"
+    a: "In der Regel nicht; Premium läuft bis zum Ende des bezahlten Zeitraums. Bei einem Abschluss vor weniger als 14 Tagen kann das Widerrufsrecht greifen, ist bei sofort gestarteten Diensten aber oft schon erloschen. Frag im Zweifel den Support."
+  - q: "Wie verlasse ich ein Familien-Abo, das ich nicht verwalte?"
+    a: "Mitglieder verlassen den Plan über ihre eigene Kontoseite; kündigen kann ihn nur die verwaltende Person. Wer geht, landet im Gratis-Tarif und behält seine Bibliothek."
+  - q: "Kündigt das Löschen der App mein Abo?"
+    a: "Nein. Das Löschen entfernt nur die App. Das Abo bucht weiter ab, bis du es auf spotify.com/account kündigst, oder dort, wo dein Abrechner sitzt."
 ---
 
 Der nützlichste Fakt zur Spotify-Kündigung: **In der Handy-App geht es nicht.** Der Kündigen-Button liegt auf der Website, und genau deshalb geben so viele auf halbem Weg auf und bleiben aus Versehen Abonnenten.

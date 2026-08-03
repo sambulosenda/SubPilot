@@ -4,6 +4,15 @@ description: 'ChatGPT Plus kündigst du in den Einstellungen im Web, oder über 
 pubDate: 2026-08-01
 service: 'ChatGPT Plus'
 enSlug: 'chatgpt-plus'
+faq:
+  - q: "Verliere ich meinen Chat-Verlauf?"
+    a: "Nein. Der Account fällt auf den Gratis-Tarif zurück, Unterhaltungen, eigene Anweisungen und gespeicherte Erinnerungen bleiben. Nur die Plus-Funktionen sind nicht mehr verfügbar; gelöscht wird nichts."
+  - q: "Bekomme ich den laufenden Monat erstattet?"
+    a: "OpenAI erstattet mitten im Zeitraum in der Regel nicht, Plus läuft bis zum Monatsende. Verbraucherrechte in der EU können im Einzelfall greifen; das klärst du mit dem Support. Apple-Abos laufen ohnehin über Apple."
+  - q: "Was ist mit den GPTs, die ich gebaut habe?"
+    a: "Die bleiben in deinem Konto. Manche lassen sich im Gratis-Tarif weiter nutzen, andere nicht, aber die Kündigung löscht nichts von dem, was du erstellt hast."
+  - q: "Ist es bei Pro oder Team anders?"
+    a: "Pro kündigst du auf demselben Weg in den Einstellungen. Einen Team- oder Business-Arbeitsbereich verwaltet dessen Inhaber, einzelne Mitglieder können den Plan also nicht kündigen; das geht nur über die Abrechnungsseite des Arbeitsbereichs."
 ---
 
 ChatGPT Plus wird dort abgerechnet, wo du abonniert hast: bei OpenAI direkt, wenn im Web, bei Apple, wenn du in der iOS-App auf Abonnieren getippt hast. Die Abbuchung verrät es: OpenAI auf dem Auszug heißt Web, eine Apple-Abbuchung heißt App Store.

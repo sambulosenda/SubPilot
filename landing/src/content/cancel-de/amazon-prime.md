@@ -4,6 +4,15 @@ description: 'Wo sich Mitgliedschaft beenden im Amazon-Konto versteckt, wie Prim
 pubDate: 2026-08-01
 service: 'Amazon Prime'
 enSlug: 'amazon-prime'
+faq:
+  - q: "Wie viel bekomme ich erstattet?"
+    a: "Amazon erstattet eine ungenutzte Mitgliedschaft voll und eine teilweise genutzte anteilig. Wer die Erstattung nimmt, verliert die Vorteile allerdings sofort statt zum Periodenende. Der Kündigungsdialog nennt beide Varianten, bevor du bestätigst."
+  - q: "Endet mit Prime auch Prime Video?"
+    a: "Der Prime-Video-Zugang endet mit Prime, aber zugebuchte Channels sind eigene Abos und buchen weiter ab. Die kündigst du einzeln im Amazon-Konto unter Mitgliedschaften und Abonnements."
+  - q: "Kann ich Prime pausieren statt kündigen?"
+    a: "Eine Pause gibt es nicht. Möglich sind der Wechsel zwischen monatlicher und jährlicher Zahlung oder Kündigen und später zurückkommen; Bestellhistorie und Adressen bleiben im Konto erhalten."
+  - q: "Gilt das auch für Prime Student?"
+    a: "Ja, der Weg ist identisch: Konto, Prime-Mitgliedschaft, beenden. Der günstigere Tarif ändert weder die Schritte noch die Regeln zur Erstattung."
 ---
 
 Amazon Prime kündigst du in deinem Amazon-Konto, und Amazon gehört dabei zu den faireren Anbietern: Wer einen ungenutzten Zeitraum kündigt, bekommt oft Geld zurück.

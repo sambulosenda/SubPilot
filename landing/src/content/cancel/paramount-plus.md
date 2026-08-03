@@ -3,6 +3,15 @@ title: 'How to cancel Paramount+'
 description: 'Cancel Paramount+ on its website, in iPhone Settings, or inside Amazon if you subscribed as a Prime Video Channel. How to tell which applies.'
 pubDate: 2026-08-01
 service: 'Paramount+'
+faq:
+  - q: "Can I cancel during a free trial and keep it until it ends?"
+    a: "Yes. Cancelling stops the conversion to a paid plan and leaves access running for the rest of the trial, which is the safest moment to do it."
+  - q: "Do I get anything back if I cancel an annual plan early?"
+    a: "Generally not. An annual plan runs to the end of its term and simply stops renewing, so the practical move is a reminder a few days before the yearly date instead."
+  - q: "I subscribed through Roku or Walmart+, where do I cancel?"
+    a: "With whoever bills you. Roku channel subscriptions are managed in your Roku account, and a Paramount+ benefit that came with Walmart+ ends with that membership rather than on Paramount's site."
+  - q: "Does the Essential or Premium tier change how I cancel?"
+    a: "No, the path is the same for both. If price is the problem rather than the service, switching down to Essential from the same screen is the cheaper alternative to cancelling."
 ---
 
 Paramount+ is a textbook example of the modern cancellation problem: the same service can be billed by Paramount, by Apple, or by Amazon as a Prime Video Channel, and each biller has its own cancel button. People fail to cancel not because it's hard but because they're pressing the button in the wrong shop.

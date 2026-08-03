@@ -4,6 +4,15 @@ description: 'Audible kündigst du auf der Website. Gib vorher deine Guthaben au
 pubDate: 2026-08-01
 service: 'Audible'
 enSlug: 'audible'
+faq:
+  - q: "Behalte ich meine Hörbücher nach der Kündigung?"
+    a: "Mit Guthaben oder Geld gekaufte Titel bleiben dauerhaft in deiner Bibliothek. Alles, was du nur über den Abo-Katalog gehört hast, ist eine Lizenz und verschwindet mit dem Ende der Mitgliedschaft."
+  - q: "Was passiert mit ungenutzten Guthaben?"
+    a: "Sie verfallen üblicherweise mit dem Ende der Mitgliedschaft, weshalb Ausgeben der Schritt vor dem Kündigen ist. Unabhängig davon laufen Guthaben ohnehin nach etwa einem Jahr ab."
+  - q: "Wie lange kann ich pausieren?"
+    a: "Meist ein bis drei Monate, angeboten im Mitgliedschaftsbereich oder über den Support. Die Pause erhält Guthaben und Mitgliederpreise und läuft am Stichtag von selbst wieder an."
+  - q: "Kann ich in der iPhone-App kündigen?"
+    a: "Nein. Die Mitgliedschaft wird im Browser auf der Audible-Website verwaltet. Rechnet Apple ab, kündigst du stattdessen unter Einstellungen, dein Name, Abos."
 ---
 
 Bei Audible gibt es eine Regel, die über allen Kündigungsschritten steht: **Gib zuerst deine Guthaben aus.** Ungenutzte Guthaben verfallen üblicherweise mit dem Ende der Mitgliedschaft, und mit drei Guthaben zu kündigen heißt, drei Hörbücher liegen zu lassen.

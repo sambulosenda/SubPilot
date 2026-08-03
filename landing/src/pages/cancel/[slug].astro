@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import GuideLayout from '../../layouts/GuideLayout.astro';
+import { ringNeighbours } from '../../lib/related';
 
 export async function getStaticPaths() {
   const entries = await getCollection('cancel');
@@ -10,11 +11,15 @@ export async function getStaticPaths() {
     props: {
       entry,
       deSlug: german.find((g) => g.data.enSlug === entry.id)?.id ?? null,
+      related: ringNeighbours(entries, entry.id).map((sibling) => ({
+        title: sibling.data.title,
+        href: `/cancel/${sibling.id}/`,
+      })),
     },
   }));
 }
 
-const { entry, deSlug } = Astro.props;
+const { entry, deSlug, related } = Astro.props;
 const { Content } = await render(entry);
 
 // hreflang pair only when a German twin exists (Hulu and HBO Max have none).
@@ -31,6 +36,7 @@ const alternates = deSlug
   guide={entry}
   section={{ name: 'Cancel guides', href: '/cancel/' }}
   alternates={alternates}
+  related={related}
 >
   <Content />
 </GuideLayout>

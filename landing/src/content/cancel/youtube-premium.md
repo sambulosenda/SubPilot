@@ -3,6 +3,15 @@ title: 'How to cancel YouTube Premium'
 description: 'Cancel YouTube Premium on the paid memberships page, or in iPhone Settings if you subscribed through Apple, where it also costs more.'
 pubDate: 2026-08-01
 service: 'YouTube Premium'
+faq:
+  - q: "What happens to downloads and background play?"
+    a: "Both stop at the end of the billing period. Downloaded videos become unplayable offline and the ads return, but your playlists, subscriptions and history are untouched."
+  - q: "How long can I pause YouTube Premium?"
+    a: "Up to six months, from the same paid memberships page. Billing restarts automatically at the end of the pause, so note the date somewhere that will actually remind you."
+  - q: "Can I get a refund for the month I have just been charged for?"
+    a: "Google generally does not refund mid-period; Premium runs until the period ends. An Apple-billed subscription is Apple's decision instead, through reportaproblem.apple.com."
+  - q: "Does cancelling Premium also cancel YouTube Music?"
+    a: "Yes. YouTube Music Premium is part of the Premium plan, so it ends at the same time. If you are being charged for both separately, one of them is a duplicate and should go."
 ---
 
 YouTube Premium has two common billing homes: Google, if you subscribed on the web or an Android device, and Apple, if you subscribed inside the iOS app. They cancel in different places, and the Apple route has historically also been the more expensive way to pay for the same thing.

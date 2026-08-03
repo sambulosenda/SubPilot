@@ -4,6 +4,15 @@ description: 'Paramount+ kündigst du auf der Website, in den iPhone-Einstellung
 pubDate: 2026-08-01
 service: 'Paramount+'
 enSlug: 'paramount-plus'
+faq:
+  - q: "Kann ich in der Gratis-Testphase kündigen und bis zum Ende schauen?"
+    a: "Ja. Die Kündigung verhindert die Umwandlung in ein bezahltes Abo und lässt den Zugang bis zum Ende der Testphase laufen. Genau dann ist der sicherste Zeitpunkt dafür."
+  - q: "Bekomme ich beim Jahresabo etwas zurück?"
+    a: "In der Regel nicht. Ein Jahresabo läuft bis zum Ende der Laufzeit und verlängert sich dann einfach nicht mehr. Praktischer ist eine Erinnerung ein paar Tage vor dem Jahrestermin."
+  - q: "Ich habe über Sky oder Amazon abonniert, wo kündige ich?"
+    a: "Bei dem, der abrechnet. Ein über Amazon gebuchter Channel wird im Amazon-Konto gekündigt, ein Paramount+ Zugang aus einem Sky- oder WOW-Paket über den jeweiligen Vertrag."
+  - q: "Ändert der Tarif etwas an der Kündigung?"
+    a: "Nein, der Weg ist für alle Tarife gleich. Geht es ums Geld und nicht um den Dienst, ist der Wechsel in den günstigeren Tarif im selben Bildschirm die mildere Alternative."
 ---
 
 Paramount+ ist ein Lehrbuchbeispiel für das moderne Kündigungsproblem: Derselbe Dienst wird mal von Paramount, mal von Apple, mal von Amazon als Prime-Video-Channel abgerechnet, und jeder Abrechner hat seinen eigenen Kündigen-Button. Die meisten scheitern nicht am Kündigen, sondern daran, im falschen Laden auf den Button zu drücken.

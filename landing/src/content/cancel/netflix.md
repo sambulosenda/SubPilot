@@ -3,6 +3,15 @@ title: 'How to cancel Netflix'
 description: 'Netflix bills almost everyone directly, so the cancel button is on netflix.com, not in your iPhone settings. The exact path and the exceptions.'
 pubDate: 2026-08-01
 service: 'Netflix'
+faq:
+  - q: "Will I lose my profiles and viewing history?"
+    a: "Not straight away. Netflix keeps account details, profiles and viewing history for a limited period after cancellation, historically around ten months, so rejoining inside that window restores everything. Leave it longer and you start fresh."
+  - q: "Can I cancel Netflix from the iPhone app?"
+    a: "No. The Netflix app has no cancel button; it sends you to netflix.com in a browser. The only exception is an old Apple-billed membership, which cancels in Settings instead."
+  - q: "Do I get a refund for the rest of the month?"
+    a: "No. Netflix does not refund partial months. Your membership runs to the end of the period you have already paid for, so cancelling on day two costs the same as cancelling on day twenty-eight."
+  - q: "How do I remove an extra member instead of cancelling?"
+    a: "Extra member slots are managed separately on the Account page. Removing one ends that slot's charge and leaves your own membership running, which is worth checking before you cancel the whole thing."
 ---
 
 Netflix bills nearly all members directly, so for most people the cancel button is on **netflix.com**, not in your iPhone's subscription list. Netflix stopped signing people up through Apple's billing years ago, which is why it almost never appears in Settings.

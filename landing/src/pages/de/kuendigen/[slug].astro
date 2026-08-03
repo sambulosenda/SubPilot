@@ -2,16 +2,23 @@
 import { getCollection, render } from 'astro:content';
 import GuideLayout from '../../../layouts/GuideLayout.astro';
 import de from '../../../i18n/de';
+import { ringNeighbours } from '../../../lib/related';
 
 export async function getStaticPaths() {
   const entries = await getCollection('cancelDe');
   return entries.map((entry) => ({
     params: { slug: entry.id },
-    props: { entry },
+    props: {
+      entry,
+      related: ringNeighbours(entries, entry.id).map((sibling) => ({
+        title: sibling.data.title,
+        href: `/de/kuendigen/${sibling.id}/`,
+      })),
+    },
   }));
 }
 
-const { entry } = Astro.props;
+const { entry, related } = Astro.props;
 const { Content } = await render(entry);
 
 // Germany-only services (no enSlug) get no hreflang pair.
@@ -30,6 +37,7 @@ const alternates = entry.data.enSlug
   lang="de"
   strings={de}
   alternates={alternates}
+  related={related}
 >
   <Content />
 </GuideLayout>

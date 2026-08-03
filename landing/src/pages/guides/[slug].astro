@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import GuideLayout from '../../layouts/GuideLayout.astro';
+import { ringNeighbours } from '../../lib/related';
 
 export async function getStaticPaths() {
   const guides = await getCollection('guides');
@@ -10,11 +11,15 @@ export async function getStaticPaths() {
     props: {
       guide,
       deSlug: german.find((g) => g.data.enSlug === guide.id)?.id ?? null,
+      related: ringNeighbours(guides, guide.id).map((sibling) => ({
+        title: sibling.data.title,
+        href: `/guides/${sibling.id}/`,
+      })),
     },
   }));
 }
 
-const { guide, deSlug } = Astro.props;
+const { guide, deSlug, related } = Astro.props;
 const { Content } = await render(guide);
 
 // hreflang pair only when a German twin exists.
@@ -27,6 +32,6 @@ const alternates = deSlug
   : undefined;
 ---
 
-<GuideLayout guide={guide} alternates={alternates}>
+<GuideLayout guide={guide} alternates={alternates} related={related}>
   <Content />
 </GuideLayout>

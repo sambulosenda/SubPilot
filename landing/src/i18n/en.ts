@@ -176,6 +176,8 @@ export default {
     published: 'Published ',
     updated: 'Updated ',
     dateLocale: 'en-GB',
+    faqTitle: 'Common questions',
+    relatedTitle: 'Related guides',
     ctaTitle: 'Let the app do the remembering',
     ctaBody:
       'SubHelm keeps every subscription, trial and renewal in one place on your iPhone. No account, no bank connection, free to use.',

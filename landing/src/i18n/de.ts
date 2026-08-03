@@ -178,6 +178,8 @@ const de: typeof en = {
     published: 'Veröffentlicht am ',
     updated: 'Aktualisiert am ',
     dateLocale: 'de-DE',
+    faqTitle: 'Häufige Fragen',
+    relatedTitle: 'Weitere Guides',
     ctaTitle: 'Lass die App sich erinnern',
     ctaBody:
       'SubHelm behält jedes Abo, jede Testphase und jede Verlängerung auf deinem iPhone im Blick. Kein Konto, keine Bankverbindung, gratis nutzbar.',

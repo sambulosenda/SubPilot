@@ -7,7 +7,13 @@ import '../styles/global.css';
 
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE_NAME, APP_STORE_URL } from '../consts';
+import {
+  SITE_NAME,
+  APP_STORE_URL,
+  AUTHOR_NAME,
+  AUTHOR_SAME_AS,
+  SCHEMA_ID,
+} from '../consts';
 import en from '../i18n/en';
 
 interface Props {
@@ -21,6 +27,10 @@ interface Props {
   strings?: typeof en;
   /** hreflang alternates, for pages that exist in more than one language. */
   alternates?: { hreflang: string; href: string }[];
+  /** Root-relative path to a page-specific share card. */
+  ogImage?: string;
+  /** Alt text for the share card, for the handful of readers that use it. */
+  ogImageAlt?: string;
 }
 
 const {
@@ -30,10 +40,48 @@ const {
   lang = 'en',
   strings = en,
   alternates,
+  ogImage = '/assets/og-card.png',
+  ogImageAlt = `${SITE_NAME} — subscription tracker for iPhone`,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const ogImage = new URL('/assets/og-card.png', Astro.site).href;
+const ogImageUrl = new URL(ogImage, Astro.site).href;
+
+const absolute = (id: string) => new URL(id, Astro.site).href;
+
+// Emitted on every page, not just the home page: that's what lets the article
+// bylines, the app listing and the site itself resolve to one entity.
+const siteGraph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': absolute(SCHEMA_ID.organization),
+      name: SITE_NAME,
+      url: new URL('/', Astro.site).href,
+      logo: {
+        '@type': 'ImageObject',
+        url: new URL('/assets/icon.png', Astro.site).href,
+      },
+      founder: { '@id': absolute(SCHEMA_ID.author) },
+    },
+    {
+      '@type': 'Person',
+      '@id': absolute(SCHEMA_ID.author),
+      name: AUTHOR_NAME,
+      url: new URL('/', Astro.site).href,
+      ...(AUTHOR_SAME_AS.length > 0 && { sameAs: AUTHOR_SAME_AS }),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': absolute(SCHEMA_ID.website),
+      name: SITE_NAME,
+      url: new URL('/', Astro.site).href,
+      inLanguage: lang,
+      publisher: { '@id': absolute(SCHEMA_ID.organization) },
+    },
+  ],
+};
 
 const schema = {
   '@context': 'https://schema.org',
@@ -45,6 +93,7 @@ const schema = {
   installUrl: APP_STORE_URL,
   image: new URL('/assets/icon.png', Astro.site).href,
   description,
+  publisher: { '@id': absolute(SCHEMA_ID.organization) },
   offers: {
     '@type': 'Offer',
     price: '0',
@@ -59,10 +108,7 @@ const schema = {
     'Private iCloud sync, no account required',
     'Home Screen and Lock Screen widgets',
   ],
-  author: {
-    '@type': 'Person',
-    name: 'Sambulo Senda',
-  },
+  author: { '@id': absolute(SCHEMA_ID.author) },
 };
 ---
 
@@ -93,15 +139,22 @@ const schema = {
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_US'} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(siteGraph)} />
 
     {
       structuredData && (
