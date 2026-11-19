@@ -31,6 +31,7 @@ final class SubscriptionFormModel {
     var notes: String
     var linkURL: String
     var reminderLeadDays: Int
+    var noticePeriod: NoticePeriod?
     var isFreeTrial: Bool
     var trialEndDate: Date
 
@@ -53,6 +54,7 @@ final class SubscriptionFormModel {
         notes = source.notes
         linkURL = source.linkURL ?? ""
         reminderLeadDays = source.reminderLeadDays
+        noticePeriod = source.noticePeriod
         isFreeTrial = source.isFreeTrial
         trialEndDate = source.trialEndDate ?? source.nextRenewalDate
         symbolName = source.symbolName
@@ -113,6 +115,7 @@ final class SubscriptionFormModel {
         let trimmedLink = linkURL.trimmingCharacters(in: .whitespacesAndNewlines)
         subscription.linkURL = trimmedLink.isEmpty ? nil : trimmedLink
         subscription.reminderLeadDays = reminderLeadDays
+        subscription.noticePeriod = noticePeriod
         subscription.isFreeTrial = isFreeTrial
         subscription.trialEndDate = isFreeTrial ? trialEndDate : nil
         subscription.symbolName = symbolName

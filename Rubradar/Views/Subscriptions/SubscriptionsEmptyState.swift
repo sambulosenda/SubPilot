@@ -20,12 +20,16 @@ struct SubscriptionsEmptyState: View {
     /// so a blank screen settles in rather than snapping into place.
     @State private var appeared = false
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
-        VStack(spacing: Spacing.xl) {
-            header
-            actions
+        // Centred when it fits. At accessibility text sizes it doesn't: the
+        // description was cut off mid-sentence and the last button sat on the
+        // tab bar, so there the block scrolls instead.
+        ViewThatFits(in: .vertical) {
+            stack
+            ScrollView { stack.padding(.vertical, Spacing.lg) }
         }
-        .padding(.horizontal, Spacing.xl)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .opacity(appeared ? 1 : 0)
         .offset(y: (appeared || reduceMotion) ? 0 : 12)
@@ -34,6 +38,14 @@ struct SubscriptionsEmptyState: View {
                 appeared = true
             }
         }
+    }
+
+    private var stack: some View {
+        VStack(spacing: Spacing.xl) {
+            header
+            actions
+        }
+        .padding(.horizontal, dynamicTypeSize.isAccessibilitySize ? Spacing.lg : Spacing.xl)
     }
 
     private var header: some View {
@@ -45,10 +57,12 @@ struct SubscriptionsEmptyState: View {
             VStack(spacing: Spacing.sm) {
                 Text("No subscriptions yet")
                     .font(.title2.bold())
+                    .multilineTextAlignment(.center)
                 Text("Track everything you pay for in one place. Scan a receipt, pick from the catalogue, or add one yourself.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .accessibilityElement(children: .combine)
@@ -57,22 +71,32 @@ struct SubscriptionsEmptyState: View {
     private var actions: some View {
         GlassEffectContainer(spacing: Spacing.md) {
             VStack(spacing: Spacing.md) {
-                Button(action: onScan) {
+                // The catalogue leads: it is free, and the fastest way to a
+                // first subscription. Scanning and importing are Pro, so as the
+                // prominent button they sent a brand-new user's first tap
+                // straight to the paywall. Same order as `AddOptionsSheet`.
+                Button(action: onBrowseCatalogue) {
                     HStack(spacing: Spacing.xs) {
-                        Image(systemName: "doc.viewfinder")
+                        Image(systemName: "magnifyingglass")
                             .accessibilityHidden(true)
-                        Text("Scan a receipt")
+                        Text("Browse catalogue")
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
+                            .minimumScaleFactor(0.8)
                     }
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glassProminent)
                 .controlSize(.extraLarge)
 
-                Button(action: onBrowseCatalogue) {
+                Button(action: onScan) {
                     HStack(spacing: Spacing.xs) {
-                        Image(systemName: "magnifyingglass")
+                        Image(systemName: "doc.viewfinder")
                             .accessibilityHidden(true)
-                        Text("Browse catalogue")
+                        Text("Scan a receipt")
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
+                            .minimumScaleFactor(0.8)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -84,6 +108,9 @@ struct SubscriptionsEmptyState: View {
                         Image(systemName: "doc.badge.arrow.up")
                             .accessibilityHidden(true)
                         Text("Import bank statement")
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
+                            .minimumScaleFactor(0.8)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -91,9 +118,14 @@ struct SubscriptionsEmptyState: View {
                 .controlSize(.extraLarge)
 
                 Button("Add manually", systemImage: "square.and.pencil", action: onAddManually)
-                    .padding(.top, Spacing.xs)
+                    // A bare text button is ~21pt tall; give it a full 44pt
+                    // target across the column.
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .contentShape(.rect)
             }
-            .frame(maxWidth: 320)
+            // Full width at accessibility sizes: at 320pt "Import bank
+            // statement" truncated.
+            .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : 320)
         }
     }
 }

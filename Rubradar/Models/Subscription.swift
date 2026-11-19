@@ -56,6 +56,16 @@ final class Subscription {
     /// Days before the renewal/trial-end to remind. PRD default is 3.
     var reminderLeadDays: Int = 3
 
+    /// `NoticePeriod` raw value: how far ahead of a renewal a cancellation must
+    /// be given. Nil = cancel any time. Optional so existing stores
+    /// lightweight-migrate (CloudKit-safe).
+    var noticePeriodRaw: String?
+
+    /// Consecutive monthly check-ins in which the user said they didn't use
+    /// this (see `UsageCheckIn`); back to 0 as soon as they did. Defaulted so
+    /// existing stores lightweight-migrate (CloudKit-safe).
+    var unusedMonths: Int = 0
+
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
 
@@ -79,6 +89,7 @@ final class Subscription {
         brandColorHex: String? = nil,
         brandDomain: String? = nil,
         reminderLeadDays: Int = 3,
+        noticePeriod: NoticePeriod? = nil,
         createdAt: Date = Date()
     ) {
         self.id = id
@@ -100,6 +111,7 @@ final class Subscription {
         self.brandColorHex = brandColorHex
         self.brandDomain = brandDomain
         self.reminderLeadDays = reminderLeadDays
+        self.noticePeriodRaw = noticePeriod?.rawValue
         self.createdAt = createdAt
         self.updatedAt = createdAt
     }

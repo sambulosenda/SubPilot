@@ -51,6 +51,10 @@ struct BrandLogoView: View {
                     .overlay { content }
             }
         }
+        // A hairline edge in the foreground colour, so a black logo (Netflix,
+        // ChatGPT) doesn't vanish into a dark card, nor a white one (Notion)
+        // into a light card.
+        .overlay { shape.strokeBorder(.primary.opacity(0.14), lineWidth: 0.5) }
         .task(id: brandDomain) { await loadRemoteLogo() }
         .accessibilityHidden(true)
     }

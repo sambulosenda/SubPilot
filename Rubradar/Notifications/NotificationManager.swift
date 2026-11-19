@@ -153,6 +153,29 @@ final class NotificationManager: NSObject {
                 }
                 trialEndScheduled = trialEnd
             }
+            // A notice period moves the real decision point ahead of the
+            // renewal: remind before the last day to cancel, and again on it.
+            if !sub.isFreeTrial, let deadline = sub.cancelDeadline(asOf: now, calendar: calendar) {
+                let day = deadline.date.formatted(.dateTime.day().month())
+                schedule(
+                    id: "deadline-\(sub.id.uuidString)",
+                    title: String(localized: "\(sub.name) cancel deadline"),
+                    body: String(localized: "Cancel by \(day) or it renews at \(sub.formattedAmount)."),
+                    fireDate: Self.reminderFireDate(before: deadline.date, leadDays: sub.reminderLeadDays,
+                                                    now: now, calendar: calendar),
+                    subscriptionID: sub.id
+                )
+                if sub.reminderLeadDays != 0 {
+                    schedule(
+                        id: "deadline-day-\(sub.id.uuidString)",
+                        title: String(localized: "Last day to cancel \(sub.name)"),
+                        body: String(localized: "After today it renews at \(sub.formattedAmount)."),
+                        fireDate: Self.reminderFireDate(before: deadline.date, leadDays: 0,
+                                                        now: now, calendar: calendar),
+                        subscriptionID: sub.id
+                    )
+                }
+            }
             // Project the stored anchor forward — it is never advanced once a
             // charge passes, so reading it raw would schedule in the past.
             // Occurrences are computed from the anchor by index (see
@@ -248,6 +271,23 @@ final class NotificationManager: NSObject {
         guard calendar.startOfDay(for: renewal) >= calendar.startOfDay(for: now) else { return nil }
         return now.addingTimeInterval(2 * 60)
     }
+
+    #if DEBUG
+    /// Fires a real renewal-style local notification a few seconds out, so App
+    /// Store screenshot sessions can capture an authentic banner (the simulator's
+    /// `simctl push` path is unreliable on some runtimes). Uses the same copy and
+    /// `RENEWAL` category as production, so the captured banner is genuine.
+    func scheduleDemoRenewalBanner() async {
+        guard await requestAuthorization() else { return }
+        let content = UNMutableNotificationContent()
+        content.title = String(localized: "Netflix renews soon")
+        content.body = String(localized: "$17.99 will be charged on 8 Jul.")
+        content.sound = .default
+        content.categoryIdentifier = Self.renewalCategory
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 6, repeats: false)
+        try? await center.add(UNNotificationRequest(identifier: "demo-renewal-banner", content: content, trigger: trigger))
+    }
+    #endif
 
     private func schedule(id: String, title: String, body: String, fireDate: Date?, subscriptionID: UUID) {
         guard let fireDate, fireDate > Date() else { return }   // don't schedule in the past

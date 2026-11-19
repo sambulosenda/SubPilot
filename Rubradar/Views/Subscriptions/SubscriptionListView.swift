@@ -37,6 +37,7 @@ struct SubscriptionListView: View {
     @Query(animation: .default) private var subscriptions: [Subscription]
     @Query(sort: \Profile.sortIndex, animation: .default) private var profiles: [Profile]
     @Environment(CurrencyService.self) private var currency
+    @Environment(PurchaseManager.self) private var purchases
     @Environment(\.openURL) private var openURL
     @AppStorage("preferredCurrencyCode") private var preferredCurrency =
         Locale.current.currency?.identifier ?? "GBP"
@@ -47,11 +48,19 @@ struct SubscriptionListView: View {
     @AppStorage("subscriptionSortOption") private var sortOption: SortOption = .nextRenewal
     @State private var searchText = ""
     @State private var showManageProfiles = false
-    @State private var showInsights = false
+    @State private var showAssistant = false
+    @State private var showCutList = false
+    /// `dismissToken`s of attention items the user chose to keep
+    /// (comma-joined), so they stop asking for a decision.
+    @AppStorage("keptAttentionTokens") private var keptAttentionRaw = ""
+    /// `UsageCheckIn.monthKey` of the month the check-in was last done (or
+    /// skipped) in.
+    @AppStorage("lastUsageCheckInMonth") private var lastUsageCheckInMonth = ""
+    @State private var showUsageCheckIn = false
     @State private var path: [Subscription] = []
     /// Shared namespace so a tapped row zooms into its detail screen and back.
     @Namespace private var detailTransition
-    /// Drives the "Add a Subscription" chooser bottom sheet (CTA + toolbar `+`).
+    /// Drives the "Add a Subscription" chooser bottom sheet (toolbar `+`).
     @State private var showAddChooser = false
     /// Flow chosen in the chooser, presented once the chooser finishes dismissing
     /// so we never present a sheet from a sheet mid-dismiss.
@@ -65,6 +74,20 @@ struct SubscriptionListView: View {
 
     private var metrics: HomeMetrics {
         HomeMetrics.make(from: profileSubscriptions, preferred: preferredCurrency, rates: currency.rates)
+    }
+
+    private var keptAttentionTokens: Set<String> {
+        Set(keptAttentionRaw.split(separator: ",").map(String.init))
+    }
+
+    private func keep(_ token: String) {
+        // Carry over only tokens that could still be flagged, so this never
+        // grows past the handful of items inside their windows.
+        let live = Set(AttentionRadar.items(in: subscriptions).compactMap(\.dismissToken))
+        let kept = keptAttentionTokens.intersection(live).union([token])
+        withAnimation {
+            keptAttentionRaw = kept.sorted().joined(separator: ",")
+        }
     }
 
     private var visibleSubscriptions: [Subscription] {
@@ -112,6 +135,7 @@ struct SubscriptionListView: View {
                         onImportStatement: { presentAdd(.bankImport) },
                         onAddManually: { presentAdd(.manual) }
                     )
+                    .background(alignment: .top) { HomeAmbience() }
                 } else {
                     list
                 }
@@ -121,6 +145,19 @@ struct SubscriptionListView: View {
             // so we keep the bar inline rather than stranding a title above the content.
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { toolbarContent }
+            .sheet(isPresented: $showUsageCheckIn) {
+                let candidates = sorted(UsageCheckIn.candidates(in: profileSubscriptions))
+                UsageCheckInView(subscriptions: candidates,
+                                 month: UsageCheckIn.reviewedMonth()) { unused in
+                    if let unused {
+                        UsageCheckIn.record(unused: unused, among: candidates)
+                    }
+                    withAnimation { lastUsageCheckInMonth = UsageCheckIn.monthKey(for: Date()) }
+                }
+            }
+            .sheet(isPresented: $showAssistant) {
+                AssistantView(showsClose: true)
+            }
             .sheet(isPresented: $showManageProfiles) {
                 NavigationStack { ManageProfilesView() }
             }
@@ -154,6 +191,14 @@ struct SubscriptionListView: View {
                       }) else { return }
                 path = [sub]
             }
+            // `-StartTab assistant` predates the assistant leaving the tab bar;
+            // keep it working for the screenshot scripts.
+            .task {
+                let args = ProcessInfo.processInfo.arguments
+                if let i = args.firstIndex(of: "-StartTab"), i + 1 < args.count, args[i + 1] == "assistant" {
+                    showAssistant = true
+                }
+            }
             #endif
         }
     }
@@ -164,15 +209,28 @@ struct SubscriptionListView: View {
         return List {
             if searchText.isEmpty {
                 Section {
-                    DashboardHeader(metrics: metrics, onAdd: { showAddChooser = true })
+                    DashboardHeader(metrics: metrics,
+                                    onOpenCalendar: onViewAllRenewals,
+                                    onOpenCut: { showCutList = true })
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
                 }
 
-                let trials = TrialRadar.endingTrials(in: profileSubscriptions)
-                if !trials.isEmpty {
-                    TrialRadarSection(trials: trials)
+                if UsageCheckIn.isDue(lastDoneMonthKey: lastUsageCheckInMonth,
+                                      subscriptions: profileSubscriptions) {
+                    Section {
+                        Button { showUsageCheckIn = true } label: {
+                            UsageCheckInRow(month: UsageCheckIn.reviewedMonth())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
+                let attention = AttentionRadar.items(in: profileSubscriptions,
+                                                     dismissed: keptAttentionTokens)
+                if !attention.isEmpty {
+                    AttentionSection(items: attention, onKeep: keep)
                 }
             }
 
@@ -203,9 +261,15 @@ struct SubscriptionListView: View {
                                    transitionID: sub.id,
                                    transitionNamespace: detailTransition)
         }
-        .navigationDestination(isPresented: $showInsights) {
-            InsightsView()
+        .navigationDestination(isPresented: $showCutList) {
+            CutListView(subscriptions: sorted(profileSubscriptions.filter(\.isCancelled)),
+                        summary: metrics.cut)
         }
+        // A soft brand glow behind the total, the same light the onboarding
+        // and paywall sit in, so Home doesn't drop to a flat black after them.
+        .scrollContentBackground(.hidden)
+        .background(alignment: .top) { HomeAmbience() }
+        .background(Color.appBackground.ignoresSafeArea())
         .searchable(text: $searchText, prompt: "Search subscriptions")
         .searchToolbarBehavior(.minimize)
         .tabBarMinimizeBehavior(.onScrollDown)
@@ -220,9 +284,17 @@ struct SubscriptionListView: View {
         HStack {
             Text(listSectionTitle)
             Spacer()
-            Button("View all") { onViewAllRenewals() }
+            // Named for where it goes. It was "View all", which promised the
+            // full list and opened the Calendar tab.
+            Button("Calendar") { onViewAllRenewals() }
                 .font(.subheadline.weight(.semibold))
                 .textCase(nil)
+                // The text is ~18pt tall; pad the tappable area out to 44
+                // without letting it push the header's layout.
+                .padding(.vertical, 13)
+                .padding(.leading, Spacing.md)
+                .contentShape(.rect)
+                .padding(.vertical, -13)
         }
     }
 
@@ -256,8 +328,8 @@ struct SubscriptionListView: View {
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
-        // Trailing edge stays a two-pill capsule: a secondary overflow (Insights
-        // + Sort) and the primary Add. Folding Insights and Sort into one ⋯ menu
+        // Trailing edge stays a two-pill capsule: a secondary overflow (Assistant
+        // + Sort) and the primary Add. Folding both into one ⋯ menu
         // keeps the top from reading as a dense three-segment glass cluster.
         if !subscriptions.isEmpty {
             ToolbarItem(placement: .topBarLeading) { profileMenu }
@@ -273,11 +345,23 @@ struct SubscriptionListView: View {
         }
     }
 
-    /// Secondary, list-only actions: Insights (a push) and Sort (a rarely
+    /// The assistant is Pro-only. A free user goes straight to the paywall:
+    /// it is presented by the app shell, which can't show a sheet over one
+    /// already up from here, so the locked screen's own "Unlock" would do
+    /// nothing inside our sheet.
+    private func openAssistant() {
+        if purchases.isPro {
+            showAssistant = true
+        } else {
+            purchases.paywallContext = .assistant
+        }
+    }
+
+    /// Secondary, list-only actions: the Assistant (a sheet) and Sort (a rarely
     /// changed preference) live here rather than as standalone toolbar buttons.
     private var overflowMenu: some View {
         Menu {
-            Button("Insights", systemImage: "chart.pie.fill") { showInsights = true }
+            Button("Assistant", systemImage: "sparkles") { openAssistant() }
             Divider()
             Picker("Sort by", selection: $sortOption) {
                 ForEach(SortOption.allCases) { option in
@@ -287,6 +371,27 @@ struct SubscriptionListView: View {
         } label: {
             Label("More", systemImage: "ellipsis")
         }
+    }
+}
+
+/// Ambient backdrop for Home: a teal glow falling from the top-leading corner,
+/// where the monthly total sits. Decoration only, and fixed, so the list
+/// scrolls over it.
+private struct HomeAmbience: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        RadialGradient(
+            colors: [.brand.opacity(colorScheme == .dark ? 0.30 : 0.14), .brand.opacity(0)],
+            center: UnitPoint(x: 0.15, y: 0),
+            startRadius: 0,
+            endRadius: 420
+        )
+        .frame(height: 460)
+        .frame(maxWidth: .infinity)
+        .ignoresSafeArea(edges: .top)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 

@@ -6,11 +6,15 @@
 import SwiftUI
 import SwiftData
 
-/// The Assistant tab: an on-device chat that answers questions about the user's
+/// The Assistant, presented as a sheet from Home: an on-device chat that answers questions about the user's
 /// subscriptions and spending. Grounding data is scoped to the selected profile,
 /// matching the Home dashboard. Runs entirely via Apple Intelligence — private,
 /// offline, no account.
 struct AssistantView: View {
+    /// Adds a Close button — set when presented as a sheet.
+    var showsClose = false
+
+    @Environment(\.dismiss) private var dismiss
     @Query(animation: .default) private var subscriptions: [Subscription]
     @Query(sort: \Profile.sortIndex, animation: .default) private var profiles: [Profile]
     @Environment(CurrencyService.self) private var currency
@@ -86,6 +90,11 @@ struct AssistantView: View {
             }
             .navigationTitle("Assistant")
             .toolbar {
+                if showsClose {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close") { dismiss() }
+                    }
+                }
                 if !chat.messages.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("Clear", systemImage: "trash") { chat.reset() }

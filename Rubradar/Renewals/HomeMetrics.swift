@@ -14,9 +14,19 @@ struct HomeMetrics {
     let nextEvent: RenewalEvent?
     /// Share of the monthly spend still due before this calendar month ends (0...1).
     let dueThisMonthFraction: Double
-    /// Monthly spend split by category — drives the Home hero's breakdown bar.
-    /// Reconciles to `summary.monthlyTotal` by construction (same conversion).
-    let breakdown: SpendBreakdown
+    /// Charges landing within `upcomingWindowDays`, soonest first — drives the
+    /// Home strip that places each one on its day.
+    let upcoming: [UpcomingCharge]
+    /// Sum of `upcoming` in the preferred currency (unconvertible charges are
+    /// left out, as in `SpendSummary`).
+    let upcomingTotal: Decimal
+    let preferredCurrency: String
+
+    /// Yearly cost of what the user has cancelled — Home's savings pill.
+    let cut: CutSummary
+
+    /// How far ahead the Home strip looks.
+    static let upcomingWindowDays = 30
 
     /// Whole days from today until the next charge. `nil` when nothing is upcoming.
     let daysUntilNextCharge: Int?
@@ -54,12 +64,30 @@ struct HomeMetrics {
                                     to: calendar.startOfDay(for: event.date)).day ?? 0
         }
 
+        let today = calendar.startOfDay(for: now)
+        var upcoming: [UpcomingCharge] = []
+        var upcomingTotal: Decimal = 0
+        for event in events {
+            let away = calendar.dateComponents([.day], from: today,
+                                               to: calendar.startOfDay(for: event.date)).day ?? 0
+            // `events` is date-sorted, so the first one past the window ends it.
+            // Half-open (today ..< today + 30): an inclusive end would count a
+            // monthly charge that lands today twice.
+            guard away < upcomingWindowDays else { break }
+            upcoming.append(UpcomingCharge(event: event, daysAway: max(0, away)))
+            upcomingTotal += rates.convert(event.subscription.amount,
+                                           from: event.subscription.currencyCode, to: preferred) ?? 0
+        }
+
         return HomeMetrics(
             summary: summary,
             activeCount: activeCount,
             nextEvent: next,
             dueThisMonthFraction: fraction,
-            breakdown: SpendBreakdown.make(from: subscriptions, preferred: preferred, rates: rates),
+            upcoming: upcoming,
+            upcomingTotal: upcomingTotal,
+            preferredCurrency: preferred,
+            cut: CutSummary.make(from: subscriptions, preferred: preferred, rates: rates),
             daysUntilNextCharge: days
         )
     }
@@ -74,4 +102,27 @@ struct HomeMetrics {
         default: return String(localized: "\(days) days")
         }
     }
+
+    /// "Today" / "Tomorrow" / "in 5 days" — the sentence form of the countdown.
+    var nextChargeRelativeLabel: String? {
+        guard let days = daysUntilNextCharge else { return nil }
+        switch days {
+        case ...0: return String(localized: "Today")
+        case 1: return String(localized: "Tomorrow")
+        default: return String(localized: "in \(days) days")
+        }
+    }
+
+    var formattedUpcomingTotal: String {
+        upcomingTotal.formatted(.currency(code: preferredCurrency))
+    }
+}
+
+/// One projected charge inside the Home strip's window.
+struct UpcomingCharge: Identifiable {
+    let event: RenewalEvent
+    /// Whole days from today; 0 = today.
+    let daysAway: Int
+
+    var id: String { event.id }
 }

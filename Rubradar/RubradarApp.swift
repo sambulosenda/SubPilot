@@ -15,6 +15,16 @@ struct RubradarApp: App {
         #if DEBUG
         // One-shot CloudKit Development schema push (see the type's docs).
         CloudKitSchemaInitializer.runIfRequested()
+        // Screenshot demos skip onboarding (which normally asks), so request
+        // notification permission here — lets `simctl push` render real renewal
+        // banners for App Store captures. No-op once already granted.
+        if ProcessInfo.processInfo.arguments.contains("-DemoSeed") {
+            Task { @MainActor in _ = await NotificationManager.shared.requestAuthorization() }
+        }
+        // `-DemoNotify` fires a real renewal banner ~6s after launch for screenshots.
+        if ProcessInfo.processInfo.arguments.contains("-DemoNotify") {
+            Task { @MainActor in await NotificationManager.shared.scheduleDemoRenewalBanner() }
+        }
         if ProcessInfo.processInfo.arguments.contains("-UITestLocalStore") {
             // Deterministic first-run, non-Pro state for UI tests, via *real*
             // writes — not `-key value` launch args, which land in the argument
@@ -23,6 +33,10 @@ struct RubradarApp: App {
             // and PurchaseManager.isProDefaultsKey.
             UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
             UserDefaults.standard.set(false, forKey: "isProEntitlement")
+            // Home's per-device attention state, so each run starts with the
+            // monthly check-in due and nothing dismissed.
+            UserDefaults.standard.removeObject(forKey: "lastUsageCheckInMonth")
+            UserDefaults.standard.removeObject(forKey: "keptAttentionTokens")
             // Also clear the deferred-upsell arm, or a paywall left unconsumed by
             // a previous test run fires at launch and breaks determinism.
             UserDefaults.standard.set(false, forKey: "pendingOnboardingUpsell")

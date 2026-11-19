@@ -31,7 +31,7 @@ struct TrialBadge: View {
             .padding(.horizontal, Spacing.sm)
             .padding(.vertical, 2)
             .background(.orange.opacity(0.2), in: .capsule)
-            .foregroundStyle(.orange)
+            .foregroundStyle(Color.attention)
             .accessibilityLabel("Free trial")
             // Scale+fade in so a status change reads as a change, not a redraw,
             // when toggled inside an animated transaction.
