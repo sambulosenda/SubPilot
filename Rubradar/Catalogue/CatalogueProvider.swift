@@ -22,13 +22,19 @@ struct CatalogueProvider: Identifiable, Codable, Hashable {
     let cancelURL: String?
 
     /// Builds a draft subscription pre-filled from this provider for the add form.
-    func makeDraft(referenceDate: Date = Date()) -> Subscription {
-        Subscription(
+    /// Prefills the typical price of `plan` (or the provider's default plan) when
+    /// we have one in the device currency; otherwise the amount stays 0 for the
+    /// user to enter.
+    func makeDraft(plan: CataloguePlan? = nil, referenceDate: Date = Date()) -> Subscription {
+        let currencyCode = Locale.current.currency?.identifier ?? "GBP"
+        let plan = plan ?? CataloguePriceBook.defaultPlan(for: id, currencyCode: currencyCode)
+        let cycle = plan?.cycle ?? defaultCycle
+        return Subscription(
             name: name,
-            amount: 0,
-            currencyCode: Locale.current.currency?.identifier ?? "GBP",
-            billingCycle: defaultCycle,
-            nextRenewalDate: defaultCycle.nextDate(after: referenceDate),
+            amount: plan?.amount(in: currencyCode) ?? 0,
+            currencyCode: currencyCode,
+            billingCycle: cycle,
+            nextRenewalDate: cycle.nextDate(after: referenceDate),
             category: category,
             catalogueID: id,
             symbolName: symbolName,

@@ -96,6 +96,10 @@ struct SubscriptionFormView: View {
                         .onSubmit { focusedField = .website }
                         // Placeholder stops being announced once filled.
                         .accessibilityLabel("Name")
+                    ForEach(nameSuggestions) { provider in
+                        Button { pick(provider) } label: { suggestionRow(provider) }
+                            .tint(.primary)
+                    }
                     TextField("Website (optional)", text: $model.linkURL)
                         .keyboardType(.URL)
                         .textContentType(.URL)
@@ -234,6 +238,47 @@ struct SubscriptionFormView: View {
                 })
             }
         }
+    }
+
+    /// Known services matching what's typed so far, offered under the Name field
+    /// so a manual add can finish in one tap. Prefix matches rank first. Empty
+    /// once the name is an exact match — there's nothing left to suggest.
+    private var nameSuggestions: [CatalogueProvider] {
+        guard !mode.isEditing, focusedField == .name else { return [] }
+        let query = model.trimmedName.lowercased()
+        guard query.count >= 2 else { return [] }
+        let matches = catalogue.filter { $0.name.lowercased().contains(query) }
+        guard !matches.contains(where: { $0.name.lowercased() == query }) else { return [] }
+        let prefixed = matches.filter { $0.name.lowercased().hasPrefix(query) }
+        let rest = matches.filter { !$0.name.lowercased().hasPrefix(query) }
+        return Array((prefixed + rest).prefix(3))
+    }
+
+    private func suggestionRow(_ provider: CatalogueProvider) -> some View {
+        HStack(spacing: Spacing.md) {
+            BrandLogoView(
+                symbolName: provider.symbolName,
+                logoAssetName: provider.logoAssetName,
+                brandDomain: provider.domain,
+                tint: Color(hex: provider.brandColorHex ?? "") ?? provider.category.tint,
+                category: provider.category,
+                size: 28
+            )
+            Text(verbatim: provider.name)
+            Spacer()
+            Image(systemName: "arrow.up.left")
+                .font(.footnote)
+                .foregroundStyle(.tertiary)
+                .accessibilityHidden(true)
+        }
+        .contentShape(.rect)
+    }
+
+    /// Fills the form from a suggested service (name, branding, typical price),
+    /// then moves on: to Amount when there's no known price, else off the keyboard.
+    private func pick(_ provider: CatalogueProvider) {
+        model.fill(from: provider.makeDraft())
+        focusedField = model.amount == 0 ? .amount : nil
     }
 
     /// Profile a freshly-opened form should select: the edited sub's own profile,

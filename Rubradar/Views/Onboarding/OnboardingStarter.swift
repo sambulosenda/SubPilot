@@ -41,9 +41,15 @@ struct OnboardingStarter: Identifiable {
             CatalogueLoader.load().map { ($0.id, $0) },
             uniquingKeysWith: { first, _ in first }
         )
+        let currencyCode = Locale.current.currency?.identifier ?? "GBP"
         return curated.compactMap { entry in
             guard let provider = byID[entry.id] else { return nil }
-            return OnboardingStarter(provider: provider, monthlyPrice: Decimal(entry.cents) / 100)
+            // Prefer the price book's figure for the device currency — the
+            // curated cents are US prices, so "£15.99 Netflix" was wrong for a
+            // UK user. Currencies the book doesn't cover keep the old estimate.
+            let plan = CataloguePriceBook.defaultPlan(for: entry.id, currencyCode: currencyCode)
+            let local = plan?.cycle == .monthly ? plan?.amount(in: currencyCode) : nil
+            return OnboardingStarter(provider: provider, monthlyPrice: local ?? Decimal(entry.cents) / 100)
         }
     }
 }

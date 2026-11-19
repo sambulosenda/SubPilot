@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "plans": {
+    "netflix": [
+      {"name": "Standard", "cycle": "monthly", "amounts": {"USD": 1999, "GBP": 1399, "EUR": 1599}},
+      {"name": "Standard with ads", "cycle": "monthly", "amounts": {"USD": 899, "GBP": 799, "EUR": 699}},
+      {"name": "Premium", "cycle": "monthly", "amounts": {"USD": 2699, "GBP": 2099, "EUR": 2199}}
+    ],
+    "disney-plus": [
+      {"name": "With Ads", "cycle": "monthly", "amounts": {"USD": 1249, "GBP": 699, "EUR": 699}},
+      {"name": "Standard", "cycle": "monthly", "amounts": {"GBP": 1199, "EUR": 1099}},
+      {"name": "Premium", "cycle": "monthly", "amounts": {"USD": 2149, "GBP": 1599, "EUR": 1599}}
+    ],
+    "amazon-prime": [
+      {"name": "Annual", "cycle": "yearly", "amounts": {"USD": 13900, "GBP": 9500, "EUR": 8990}},
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 1499, "GBP": 899, "EUR": 899}}
+    ],
+    "apple-tv-plus": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 1499, "GBP": 999, "EUR": 999}}
+    ],
+    "youtube-premium": [
+      {"name": "Individual", "cycle": "monthly", "amounts": {"USD": 1599, "GBP": 1299, "EUR": 1499}},
+      {"name": "Family", "cycle": "monthly", "amounts": {"USD": 2699, "GBP": 1999, "EUR": 2799}}
+    ],
+    "spotify": [
+      {"name": "Individual", "cycle": "monthly", "amounts": {"USD": 1299, "GBP": 1299, "EUR": 1299}},
+      {"name": "Family", "cycle": "monthly", "amounts": {"USD": 2199, "GBP": 2199, "EUR": 2199}},
+      {"name": "Duo", "cycle": "monthly", "amounts": {"USD": 1899, "GBP": 1799, "EUR": 1799}}
+    ],
+    "apple-music": [
+      {"name": "Individual", "cycle": "monthly", "amounts": {"USD": 1199, "GBP": 1199, "EUR": 1199}},
+      {"name": "Family", "cycle": "monthly", "amounts": {"USD": 1999, "GBP": 1999, "EUR": 1999}},
+      {"name": "Student", "cycle": "monthly", "amounts": {"USD": 699, "GBP": 599, "EUR": 699}}
+    ],
+    "apple-one": [
+      {"name": "Individual", "cycle": "monthly", "amounts": {"USD": 2195, "GBP": 1895, "EUR": 1995}},
+      {"name": "Family", "cycle": "monthly", "amounts": {"USD": 2795, "GBP": 2495, "EUR": 2595}},
+      {"name": "Premier", "cycle": "monthly", "amounts": {"USD": 3995, "GBP": 3695, "EUR": 3495}}
+    ],
+    "icloud-plus": [
+      {"name": "50 GB", "cycle": "monthly", "amounts": {"USD": 99, "GBP": 99, "EUR": 99}},
+      {"name": "200 GB", "cycle": "monthly", "isDefault": true, "amounts": {"USD": 299, "GBP": 299, "EUR": 299}},
+      {"name": "2 TB", "cycle": "monthly", "amounts": {"USD": 999, "GBP": 899, "EUR": 999}}
+    ],
+    "apple-arcade": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 699, "GBP": 699, "EUR": 699}}
+    ],
+    "apple-fitness-plus": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 999, "GBP": 999, "EUR": 999}}
+    ],
+    "apple-news-plus": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 1299, "GBP": 1299}}
+    ],
+    "google-one": [
+      {"name": "100 GB", "cycle": "monthly", "amounts": {"USD": 199, "GBP": 159}},
+      {"name": "2 TB", "cycle": "monthly", "amounts": {"USD": 999, "GBP": 799, "EUR": 999}}
+    ],
+    "dropbox": [
+      {"name": "Plus", "cycle": "monthly", "amounts": {"USD": 1199, "GBP": 999}}
+    ],
+    "adobe-cc": [
+      {"name": "Creative Cloud Pro", "cycle": "monthly", "amounts": {"USD": 6999, "GBP": 6649, "EUR": 7799}}
+    ],
+    "microsoft-365": [
+      {"name": "Personal", "cycle": "yearly", "amounts": {"USD": 9999, "GBP": 8499, "EUR": 9900}},
+      {"name": "Family", "cycle": "yearly", "amounts": {"USD": 12999, "GBP": 10499, "EUR": 12900}}
+    ],
+    "notion": [
+      {"name": "Plus", "cycle": "monthly", "amounts": {"USD": 1200}}
+    ],
+    "chatgpt-plus": [
+      {"name": "Plus", "cycle": "monthly", "amounts": {"USD": 2000, "GBP": 2000, "EUR": 2300}}
+    ],
+    "claude-pro": [
+      {"name": "Pro", "cycle": "monthly", "amounts": {"USD": 2000, "GBP": 1800}}
+    ],
+    "github-copilot": [
+      {"name": "Pro", "cycle": "monthly", "amounts": {"USD": 1000}}
+    ],
+    "perplexity": [
+      {"name": "Pro", "cycle": "monthly", "amounts": {"USD": 2000}}
+    ],
+    "midjourney": [
+      {"name": "Basic", "cycle": "monthly", "amounts": {"USD": 1000}},
+      {"name": "Standard", "cycle": "monthly", "amounts": {"USD": 3000}}
+    ],
+    "gemini-advanced": [
+      {"name": "Google AI Pro", "cycle": "monthly", "amounts": {"USD": 1999, "GBP": 1899, "EUR": 2199}}
+    ],
+    "xbox-game-pass": [
+      {"name": "Ultimate", "cycle": "monthly", "amounts": {"USD": 2299, "GBP": 1699, "EUR": 2099}},
+      {"name": "Premium", "cycle": "monthly", "amounts": {"USD": 1499, "GBP": 1099, "EUR": 1299}},
+      {"name": "Essential", "cycle": "monthly", "amounts": {"USD": 999, "GBP": 699, "EUR": 899}},
+      {"name": "PC Game Pass", "cycle": "monthly", "amounts": {"USD": 1399, "GBP": 1099, "EUR": 1299}}
+    ],
+    "playstation-plus": [
+      {"name": "Essential", "cycle": "monthly", "amounts": {"USD": 1099, "GBP": 799, "EUR": 999}}
+    ],
+    "nintendo-switch-online": [
+      {"name": "Individual", "cycle": "yearly", "amounts": {"USD": 1999, "GBP": 1799, "EUR": 1999}},
+      {"name": "Expansion Pack", "cycle": "yearly", "amounts": {"USD": 4999, "GBP": 3499, "EUR": 3999}}
+    ],
+    "ea-play": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 599, "GBP": 599, "EUR": 599}},
+      {"name": "Annual", "cycle": "yearly", "amounts": {"USD": 3999, "GBP": 3599, "EUR": 3999}}
+    ],
+    "geforce-now": [
+      {"name": "Performance", "cycle": "monthly", "amounts": {"USD": 999, "GBP": 999, "EUR": 1099}},
+      {"name": "Ultimate", "cycle": "monthly", "amounts": {"USD": 1999, "GBP": 1999, "EUR": 2199}}
+    ],
+    "max": [
+      {"name": "Basic with Ads", "cycle": "monthly", "amounts": {"USD": 1099, "GBP": 499}},
+      {"name": "Standard", "cycle": "monthly", "amounts": {"USD": 1849, "GBP": 999}},
+      {"name": "Premium", "cycle": "monthly", "amounts": {"USD": 2299, "GBP": 1499}}
+    ],
+    "hulu": [
+      {"name": "With Ads", "cycle": "monthly", "amounts": {"USD": 1249}},
+      {"name": "No Ads", "cycle": "monthly", "amounts": {"USD": 2149}}
+    ],
+    "peacock": [
+      {"name": "Premium", "cycle": "monthly", "amounts": {"USD": 1299}},
+      {"name": "Premium Plus", "cycle": "monthly", "amounts": {"USD": 1999}},
+      {"name": "Select", "cycle": "monthly", "amounts": {"USD": 899}}
+    ],
+    "crunchyroll": [
+      {"name": "Fan", "cycle": "monthly", "amounts": {"USD": 999, "EUR": 899}},
+      {"name": "Mega Fan", "cycle": "monthly", "amounts": {"USD": 1399, "EUR": 1199}},
+      {"name": "Ultimate Fan", "cycle": "monthly", "amounts": {"USD": 1799}}
+    ],
+    "audible": [
+      {"name": "Premium Plus", "cycle": "monthly", "amounts": {"USD": 1495, "GBP": 899, "EUR": 995}},
+      {"name": "Standard", "cycle": "monthly", "amounts": {"USD": 899, "GBP": 599, "EUR": 699}}
+    ],
+    "kindle-unlimited": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 1199, "GBP": 949, "EUR": 1175}}
+    ],
+    "tidal": [
+      {"name": "Individual", "cycle": "monthly", "amounts": {"USD": 1199, "EUR": 1299}}
+    ],
+    "youtube-music": [
+      {"name": "Individual", "cycle": "monthly", "amounts": {"USD": 1199, "GBP": 1099, "EUR": 1199}}
+    ],
+    "amazon-music": [
+      {"name": "Unlimited", "cycle": "monthly", "amounts": {"USD": 1299, "GBP": 1299, "EUR": 1099}}
+    ],
+    "deezer": [
+      {"name": "Premium", "cycle": "monthly", "amounts": {"USD": 1199, "GBP": 1199, "EUR": 1199}}
+    ],
+    "strava": [
+      {"name": "Annual", "cycle": "yearly", "amounts": {"USD": 7999, "GBP": 5499, "EUR": 7499}},
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 1199, "GBP": 899, "EUR": 1099}}
+    ],
+    "headspace": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 1299, "GBP": 999, "EUR": 1299}},
+      {"name": "Annual", "cycle": "yearly", "amounts": {"USD": 6999, "GBP": 4999, "EUR": 5799}}
+    ],
+    "calm": [
+      {"name": "Annual", "cycle": "yearly", "amounts": {"USD": 7999}},
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 1699}}
+    ],
+    "canva": [
+      {"name": "Pro", "cycle": "yearly", "amounts": {"USD": 14400, "GBP": 10000, "EUR": 11000}}
+    ],
+    "discord-nitro": [
+      {"name": "Nitro", "cycle": "monthly", "amounts": {"USD": 999, "GBP": 999, "EUR": 999}}
+    ],
+    "twitch-turbo": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 1199}}
+    ],
+    "roblox-premium": [
+      {"name": "Premium 450", "cycle": "monthly", "amounts": {"USD": 499, "GBP": 499, "EUR": 599}}
+    ],
+    "medium": [
+      {"name": "Member", "cycle": "monthly", "amounts": {"USD": 500}}
+    ],
+    "uber-one": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 999, "GBP": 499}}
+    ],
+    "dashpass": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 999}}
+    ],
+    "costco": [
+      {"name": "Gold Star", "cycle": "yearly", "amounts": {"USD": 6500, "GBP": 4200}}
+    ],
+    "revolut-premium": [
+      {"name": "Premium", "cycle": "monthly", "amounts": {"GBP": 899, "EUR": 899}}
+    ],
+    "ynab": [
+      {"name": "Monthly", "cycle": "monthly", "amounts": {"USD": 1499}},
+      {"name": "Annual", "cycle": "yearly", "amounts": {"USD": 10900}}
+    ]
+  }
+}

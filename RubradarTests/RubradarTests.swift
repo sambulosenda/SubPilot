@@ -57,6 +57,68 @@ struct CatalogueTests {
         #expect(draft?.catalogueID == "netflix")
     }
 
+    /// A malformed price file decodes to an empty book and silently drops every
+    /// prefilled price, so the decode itself needs a guard.
+    @Test func priceBookDecodesAndOnlyReferencesKnownProviders() {
+        let book = CataloguePriceBook.load(bundle: .main)
+        let ids = Set(CatalogueLoader.load(bundle: .main).map(\.id))
+        #expect(!book.isEmpty)
+        #expect(book.keys.allSatisfy { ids.contains($0) })
+        #expect(book.values.allSatisfy { plans in
+            !plans.isEmpty && plans.allSatisfy { !$0.amounts.isEmpty && $0.amounts.values.allSatisfy { $0 > 0 } }
+        })
+        // Plan ids drive ForEach identity in the quick-add sheet.
+        #expect(book.values.allSatisfy { Set($0.map(\.id)).count == $0.count })
+    }
+
+    @Test func plansAreFilteredToTheRequestedCurrency() {
+        let book = ["svc": [
+            CataloguePlan(name: "US only", cycle: .monthly, amounts: ["USD": 999], isDefault: nil),
+            CataloguePlan(name: "Both", cycle: .yearly, amounts: ["USD": 1799, "GBP": 1299], isDefault: nil),
+        ]]
+        let gbp = CataloguePriceBook.plans(for: "svc", currencyCode: "GBP", in: book)
+        #expect(gbp.map(\.name) == ["Both"])
+        #expect(gbp.first?.amount(in: "GBP") == Decimal(string: "12.99"))
+        #expect(CataloguePriceBook.plans(for: "svc", currencyCode: "JPY", in: book).isEmpty)
+        #expect(CataloguePriceBook.defaultPlan(for: "missing", currencyCode: "USD", in: book) == nil)
+    }
+
+    @Test func defaultPlanPrefersTheFlaggedTier() {
+        let book = ["svc": [
+            CataloguePlan(name: "Small", cycle: .monthly, amounts: ["USD": 99], isDefault: nil),
+            CataloguePlan(name: "Medium", cycle: .monthly, amounts: ["USD": 299], isDefault: true),
+        ]]
+        #expect(CataloguePriceBook.defaultPlan(for: "svc", currencyCode: "USD", in: book)?.name == "Medium")
+        // The flag only wins where that tier is priced in the currency asked for.
+        let partial = ["svc": [
+            CataloguePlan(name: "Small", cycle: .monthly, amounts: ["GBP": 99], isDefault: nil),
+            CataloguePlan(name: "Medium", cycle: .monthly, amounts: ["USD": 299], isDefault: true),
+        ]]
+        #expect(CataloguePriceBook.defaultPlan(for: "svc", currencyCode: "GBP", in: partial)?.name == "Small")
+    }
+
+    /// Onboarding stamps a starter's monthly price onto a draft whose cycle comes
+    /// from the default plan — a yearly default would bill that price yearly.
+    @Test func onboardingStartersDefaultToMonthlyPlans() {
+        let book = CataloguePriceBook.load(bundle: .main)
+        for starter in OnboardingStarter.load() {
+            for currency in ["USD", "GBP", "EUR"] {
+                let plan = CataloguePriceBook.defaultPlan(for: starter.id, currencyCode: currency, in: book)
+                #expect(plan.map { $0.cycle == .monthly } ?? true, "\(starter.id) \(currency)")
+            }
+        }
+    }
+
+    @Test func draftUsesAnExplicitPlan() throws {
+        let netflix = try #require(CatalogueLoader.load(bundle: .main).first { $0.id == "netflix" })
+        let currency = Locale.current.currency?.identifier ?? "GBP"
+        let plan = CataloguePlan(name: "Test", cycle: .yearly, amounts: [currency: 4250], isDefault: nil)
+        let draft = netflix.makeDraft(plan: plan)
+        #expect(draft.amount == Decimal(string: "42.5"))
+        #expect(draft.billingCycle == .yearly)
+        #expect(draft.currencyCode == currency)
+    }
+
     /// Guards against a silent decode failure: CatalogueLoader returns [] if any
     /// row's category/cycle doesn't match the enums, which would empty the UI.
     @Test func catalogueDecodesFullyWithUniqueIDsAndDomains() {

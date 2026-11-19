@@ -6,8 +6,8 @@
 import SwiftUI
 import SwiftData
 
-/// Searchable catalogue of common providers. Tapping one opens a pre-filled
-/// add form (FR-01).
+/// Searchable catalogue of common providers. Tapping one opens the quick-add
+/// sheet, pre-filled with the provider's typical price (FR-01).
 struct CatalogueView: View {
     /// When set, tapping a provider hands it back to the caller (to fill an open
     /// form) instead of presenting a fresh pre-filled form. `nil` = standalone.
@@ -17,7 +17,7 @@ struct CatalogueView: View {
 
     @State private var providers: [CatalogueProvider] = []
     @State private var searchText = ""
-    @State private var draft: Subscription?
+    @State private var quickAdd: CatalogueProvider?
 
     private var grouped: [(category: SubscriptionCategory, items: [CatalogueProvider])] {
         let filtered = providers.filter { provider in
@@ -43,7 +43,7 @@ struct CatalogueView: View {
                                     onSelect(provider)
                                     dismiss()
                                 } else {
-                                    draft = provider.makeDraft()
+                                    quickAdd = provider
                                 }
                             } label: {
                                 row(provider)
@@ -66,8 +66,8 @@ struct CatalogueView: View {
                     Button("Cancel") { dismiss() }
                 }
             }
-            .sheet(item: $draft) { draft in
-                SubscriptionFormView(mode: .create(draft), addMethod: .catalogue, onSaved: { dismiss() })
+            .sheet(item: $quickAdd) { provider in
+                QuickAddSheet(provider: provider, onSaved: { dismiss() })
             }
         }
         .task {
