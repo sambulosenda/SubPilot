@@ -28,6 +28,8 @@ struct SubscriptionFormView: View {
     @State private var catalogue: [CatalogueProvider] = []
     /// Set when the user taps a category chip — freezes auto-detect from overriding it.
     @State private var categoryManuallySet = false
+    /// Whether the optional fields are showing. Starts open when editing.
+    @State private var showMore: Bool
 
     @Query(sort: \Profile.sortIndex) private var profiles: [Profile]
     @AppStorage("selectedProfileID") private var selectedProfileID = ""
@@ -45,6 +47,7 @@ struct SubscriptionFormView: View {
         self.mode = mode
         self.addMethod = addMethod
         self.onSaved = onSaved
+        _showMore = State(initialValue: mode.isEditing)
         switch mode {
         case .create(let draft):
             let model = SubscriptionFormModel(source: draft)
@@ -69,70 +72,18 @@ struct SubscriptionFormView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if !mode.isEditing {
-                    Section {
-                        Button {
-                            showCatalogue = true
-                        } label: {
-                            Label("Browse catalogue", systemImage: "magnifyingglass")
-                        }
-                        Button {
-                            showScan = true
-                        } label: {
-                            Label("Scan receipt", systemImage: "doc.viewfinder")
-                        }
-                    } header: {
-                        Text("Quick fill")
-                    } footer: {
-                        Text("Pick a known service or scan a receipt to fill the form for you.")
-                    }
-                }
-
-                Section {
+                Section("Details") {
                     TextField("Name", text: $model.name)
                         .textInputAutocapitalization(.words)
                         .focused($focusedField, equals: .name)
                         .submitLabel(.next)
-                        .onSubmit { focusedField = .website }
+                        .onSubmit { focusedField = .amount }
                         // Placeholder stops being announced once filled.
                         .accessibilityLabel("Name")
                     ForEach(nameSuggestions) { provider in
                         Button { pick(provider) } label: { suggestionRow(provider) }
                             .tint(.primary)
                     }
-                    TextField("Website (optional)", text: $model.linkURL)
-                        .keyboardType(.URL)
-                        .textContentType(.URL)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .focused($focusedField, equals: .website)
-                        .submitLabel(.done)
-                        .onSubmit { focusedField = nil }
-                        .accessibilityLabel("Website")
-                } header: {
-                    Text("Details")
-                } footer: {
-                    Text("Used by “Open website” on the subscription. Known services open their site automatically even without a link.")
-                }
-
-                if profiles.count > 1 {
-                    Section("Profile") {
-                        Picker("Profile", selection: $formProfileID) {
-                            ForEach(profiles) { profile in
-                                Label(profile.name, systemImage: profile.symbolName)
-                                    .tag(profile.id.uuidString)
-                            }
-                        }
-                    }
-                }
-
-                Section("Category") {
-                    CategoryChipPicker(selection: model.category) { picked in
-                        categoryManuallySet = true
-                        model.category = picked
-                    }
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
                 }
 
                 Section("Cost") {
@@ -165,25 +116,34 @@ struct SubscriptionFormView: View {
 
                 Section("Renewal") {
                     DatePicker("Next renewal", selection: $model.nextRenewalDate, displayedComponents: .date)
-                    Picker("Remind me", selection: $model.reminderLeadDays) {
-                        ForEach(ReminderLead.options, id: \.days) { option in
-                            Text(option.label).tag(option.days)
+                }
+
+                // Name, cost and date are all a subscription needs, and they
+                // now fit one screen. Everything else has a sensible default
+                // (the category is picked from the name) and waits behind this
+                // row. Editing opens with it expanded: someone editing came to
+                // change a detail.
+                Section {
+                    Button {
+                        withAnimation(.snappy) { showMore.toggle() }
+                    } label: {
+                        HStack {
+                            Text("More options")
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.tertiary)
+                                .rotationEffect(.degrees(showMore ? 180 : 0))
+                                .accessibilityHidden(true)
                         }
+                        .contentShape(.rect)
                     }
+                    .tint(.primary)
+                    .accessibilityAddTraits(showMore ? [.isSelected] : [])
                 }
 
-                Section("Free trial") {
-                    Toggle("This is a free trial", isOn: $model.isFreeTrial)
-                    if model.isFreeTrial {
-                        DatePicker("Trial ends", selection: $model.trialEndDate, displayedComponents: .date)
-                    }
-                }
-
-                Section("Notes") {
-                    TextField("Notes", text: $model.notes, axis: .vertical)
-                        .lineLimit(3...6)
-                        .focused($focusedField, equals: .notes)
-                        .accessibilityLabel("Notes")
+                if showMore {
+                    moreOptions
                 }
             }
             .navigationTitle(mode.isEditing ? "Edit Subscription" : "New Subscription")
@@ -236,6 +196,97 @@ struct SubscriptionFormView: View {
                 ImportView(onParsed: { draft in
                     model.fill(from: draft)
                 })
+            }
+        }
+    }
+
+    /// The optional fields behind "More options".
+    @ViewBuilder
+    private var moreOptions: some View {
+        Section("Category") {
+            CategoryChipPicker(selection: model.category) { picked in
+                categoryManuallySet = true
+                model.category = picked
+            }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+        }
+
+        if profiles.count > 1 {
+            Section("Profile") {
+                Picker("Profile", selection: $formProfileID) {
+                    ForEach(profiles) { profile in
+                        Label(profile.name, systemImage: profile.symbolName)
+                            .tag(profile.id.uuidString)
+                    }
+                }
+            }
+        }
+
+        Section {
+            Picker("Remind me", selection: $model.reminderLeadDays) {
+                ForEach(ReminderLead.options, id: \.days) { option in
+                    Text(option.label).tag(option.days)
+                }
+            }
+            Picker("Notice period", selection: $model.noticePeriod) {
+                Text("None").tag(NoticePeriod?.none)
+                ForEach(NoticePeriod.allCases) { period in
+                    Text(period.label).tag(NoticePeriod?.some(period))
+                }
+            }
+        } header: {
+            Text("Reminders")
+        } footer: {
+            Text("If cancelling needs notice, you'll be reminded before the last day to cancel.")
+        }
+
+        Section("Free trial") {
+            Toggle("This is a free trial", isOn: $model.isFreeTrial)
+            if model.isFreeTrial {
+                DatePicker("Trial ends", selection: $model.trialEndDate, displayedComponents: .date)
+            }
+        }
+
+        Section {
+            TextField("Website (optional)", text: $model.linkURL)
+                .keyboardType(.URL)
+                .textContentType(.URL)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .focused($focusedField, equals: .website)
+                .submitLabel(.done)
+                .onSubmit { focusedField = nil }
+                .accessibilityLabel("Website")
+        } footer: {
+            Text("Used by “Open website” on the subscription. Known services open their site automatically even without a link.")
+        }
+
+        Section("Notes") {
+            TextField("Notes", text: $model.notes, axis: .vertical)
+                .lineLimit(3...6)
+                .focused($focusedField, equals: .notes)
+                .accessibilityLabel("Notes")
+        }
+
+        // Manual adds only. A form opened from the catalogue or a scan is
+        // already filled, and the add chooser offered both a tap earlier.
+        if !mode.isEditing, addMethod == .manual {
+            Section {
+                Button {
+                    showCatalogue = true
+                } label: {
+                    Label("Browse catalogue", systemImage: "magnifyingglass")
+                }
+                Button {
+                    showScan = true
+                } label: {
+                    Label("Scan receipt", systemImage: "doc.viewfinder")
+                }
+            } header: {
+                Text("Quick fill")
+            } footer: {
+                Text("Pick a known service or scan a receipt to fill the form for you.")
             }
         }
     }
