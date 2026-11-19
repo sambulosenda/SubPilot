@@ -42,7 +42,13 @@ struct OnboardingStarter: Identifiable {
             uniquingKeysWith: { first, _ in first }
         )
         let currencyCode = Locale.current.currency?.identifier ?? "GBP"
-        return curated.compactMap { entry in
+        // Hulu only sells in the US; anywhere else its tile is a service the
+        // user can't have, priced in a currency it doesn't charge. Apple TV+
+        // takes the slot so the grid stays a full 12.
+        let entries = currencyCode == "USD"
+            ? curated
+            : curated.map { $0.id == "hulu" ? (id: "apple-tv-plus", cents: 999) : $0 }
+        return entries.compactMap { entry in
             guard let provider = byID[entry.id] else { return nil }
             // Prefer the price book's figure for the device currency — the
             // curated cents are US prices, so "£15.99 Netflix" was wrong for a

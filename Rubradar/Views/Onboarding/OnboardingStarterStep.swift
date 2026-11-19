@@ -25,7 +25,13 @@ struct OnboardingStarterStep: View {
         items.reduce(0) { $0 + (selected.contains($1.id) ? $1.monthlyPrice : 0) }
     }
 
-    private let columns = [GridItem(.adaptive(minimum: 104), spacing: Spacing.sm)]
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    /// Three across normally; two at accessibility text sizes, where a third
+    /// of the width broke names mid-word ("ChatG-PT Plus").
+    private var columns: [GridItem] {
+        [GridItem(.adaptive(minimum: dynamicTypeSize.isAccessibilitySize ? 150 : 104), spacing: Spacing.sm)]
+    }
 
     var body: some View {
         ScrollView {
@@ -68,45 +74,63 @@ struct OnboardingStarterStep: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+            // The privacy page's promise, kept as one line now that this step
+            // opens the flow: picking your subscriptions is the moment people
+            // wonder where the list goes.
+            Label("Private by default", systemImage: "lock.fill")
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.secondary)
+                .padding(.top, 2)
         }
         .padding(.top, Spacing.sm)
         .accessibilityElement(children: .combine)
     }
 
-    /// One container across both states, so the first tap *grows* a bare hint
-    /// line into the running total instead of swapping one element for another —
-    /// the moment the screen exists for should feel like a reveal, not a redraw.
-    /// Empty gets no card: a full-width blank surface reads as a broken element
-    /// and steals a chip row's worth of height.
+    /// The running total. The card is the same size whether or not anything is
+    /// selected: it used to grow from a one-line hint on the first tap, which
+    /// pushed the whole grid down under a finger already heading for a second
+    /// tile, so quick taps landed on the wrong service. Empty, it shows the
+    /// hint over a dimmed zero that the first tap counts up from.
     private var total: some View {
         VStack(spacing: 2) {
-            if selected.isEmpty {
-                Text("Tap a few to see your monthly spend")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            } else {
-                Text("You're tracking")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(monthlyText)
-                    .font(.largeTitle.bold())
-                    .contentTransition(.numericText(value: monthlyDouble))
-                Text(yearlyText)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+            Group {
+                if selected.isEmpty {
+                    Text("Tap a few to see your monthly spend")
+                } else {
+                    Text("You're tracking")
+                }
             }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            // One line in both states so the card never changes height; it
+            // shrinks rather than truncating at large text sizes.
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            Text(monthlyText)
+                .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                .foregroundStyle(selected.isEmpty ? .tertiary : .primary)
+                .contentTransition(.numericText(value: monthlyDouble))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+            Text(yearlyText)
+                .font(.subheadline)
+                .foregroundStyle(selected.isEmpty ? .tertiary : .secondary)
+                .contentTransition(.numericText(value: monthlyDouble))
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, selected.isEmpty ? Spacing.sm : Spacing.md)
+        .padding(.vertical, Spacing.md)
+        .padding(.horizontal, Spacing.md)
         .background {
             RoundedRectangle(cornerRadius: Radius.card)
                 .fill(Color.cardBackground)
                 .overlay {
                     // Ring lights up once there's a number worth reading.
                     RoundedRectangle(cornerRadius: Radius.card)
-                        .strokeBorder(Color.brand.opacity(0.35), lineWidth: 1)
+                        .strokeBorder(
+                            selected.isEmpty ? Color.primary.opacity(0.07) : Color.brand.opacity(0.45),
+                            lineWidth: 1
+                        )
                 }
-                .opacity(selected.isEmpty ? 0 : 1)
         }
         .animation(.snappy, value: monthlyDouble)
         .animation(.snappy, value: selected.isEmpty)
@@ -151,13 +175,16 @@ private struct StarterChip: View {
                     brandDomain: item.provider.domain,
                     tint: Color(hex: item.provider.brandColorHex ?? "") ?? item.provider.category.tint,
                     category: item.provider.category,
-                    size: 40
+                    size: 36
                 )
                 Text(item.provider.name)
                     .font(.caption.weight(.medium))
                     // Two lines so accessibility sizes truncate long names
                     // ("YouTube Premium") rather than clipping them to "YouTu…".
-                    .lineLimit(2)
+                    // The space is reserved either way, so one-line and
+                    // two-line names give tiles of the same height and the
+                    // grid's rows stay level.
+                    .lineLimit(2, reservesSpace: true)
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.8)
                     .foregroundStyle(.primary)
@@ -166,7 +193,7 @@ private struct StarterChip: View {
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.md)
+            .padding(.vertical, 12)
             .padding(.horizontal, Spacing.sm)
             .background {
                 RoundedRectangle(cornerRadius: Radius.card)

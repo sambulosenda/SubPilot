@@ -80,15 +80,8 @@ final class RubradarUITests: XCTestCase {
         app.launchArguments = ["-UITestLocalStore"]
         app.launch()
 
-        // welcome → privacy → starter step (two Continues).
-        let cont = app.buttons["Continue"]
-        XCTAssertTrue(cont.waitForExistence(timeout: 15), "Onboarding 'Continue' did not appear")
-        cont.tap()
-        XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 5))
-        app.buttons["Continue"].tap()
-
-        // Starter step is up.
-        XCTAssertTrue(app.staticTexts["What are you paying for?"].waitForExistence(timeout: 5),
+        // Onboarding opens straight on the starter step.
+        XCTAssertTrue(app.staticTexts["What are you paying for?"].waitForExistence(timeout: 15),
                       "Starter step did not appear")
 
         // Tap a provider chip; the live total should appear.

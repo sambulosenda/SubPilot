@@ -22,9 +22,13 @@ struct OnboardingView: View {
 
     // `fileprivate` so the page's content lives in one extension at the bottom
     // of this file rather than bloating the view body.
-    fileprivate enum Page: Int, CaseIterable { case welcome, privacy, add, reminders }
+    /// Two pages. The flow used to open on two explanation pages (what the app
+    /// does, that it's private) before the user could do anything; it now opens
+    /// on the starter step, which shows both by letting them use it. The
+    /// privacy promise rides along as a line on that step.
+    fileprivate enum Page: Int, CaseIterable { case add, reminders }
 
-    @State private var page: Page = .welcome
+    @State private var page: Page = .add
     @State private var isRequesting = false
 
     @Environment(\.modelContext) private var modelContext
@@ -67,8 +71,7 @@ struct OnboardingView: View {
                 infoPage
             }
         }
-        // `.welcome`, `.privacy` and `.reminders` share one branch, so identity
-        // has to be pinned to the page for the transition to fire between them.
+        // Identity is pinned to the page so the transition fires between them.
         .id(page)
         .transition(pageTransition)
     }
@@ -92,6 +95,11 @@ struct OnboardingView: View {
                             // Long localisations (de/pt-BR) otherwise run to
                             // three lines and crowd the message.
                             .minimumScaleFactor(0.8)
+                            // Already display-sized: past this, a long word no
+                            // longer fits one line and breaks mid-word
+                            // ("subscrip-tion"). The message below still scales
+                            // all the way.
+                            .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                         Text(page.message)
                             .font(.body)
                             .foregroundStyle(.secondary)
@@ -107,7 +115,11 @@ struct OnboardingView: View {
                 .padding(.bottom, bottomBias)
                 .accessibilityElement(children: .combine)
             }
-            .scrollIndicators(.hidden)
+            // At accessibility sizes the copy runs under the bottom bar, so say
+            // so: show the indicator and flash it, rather than leave the user to
+            // guess there is more.
+            .scrollIndicators(dynamicTypeSize.isAccessibilitySize ? .visible : .hidden)
+            .scrollIndicatorsFlash(onAppear: dynamicTypeSize.isAccessibilitySize)
             .scrollBounceBehavior(.basedOnSize)
         }
     }
@@ -141,6 +153,15 @@ struct OnboardingView: View {
                 Button("Skip", action: onFinish)
                     .buttonStyle(.glass)
                     .controlSize(.small)
+                    // The pill stays small; the clear square behind it takes
+                    // taps that land just outside, for a 44pt target.
+                    .background {
+                        Color.clear
+                            .frame(minWidth: 60, minHeight: 44)
+                            .contentShape(.rect)
+                            .onTapGesture(perform: onFinish)
+                            .accessibilityHidden(true)
+                    }
             }
         }
         .padding(.horizontal, Spacing.lg)
@@ -173,6 +194,9 @@ struct OnboardingView: View {
 
                     Button("Not now", action: onFinish)
                         .controlSize(.large)
+                        // ~20pt of text otherwise, under the main button.
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .contentShape(.rect)
                         .disabled(isRequesting)
                 } else {
                     Button(action: advance) {
@@ -251,8 +275,6 @@ struct OnboardingView: View {
 private extension OnboardingView.Page {
     var tint: Color {
         switch self {
-        case .welcome: return .accentColor
-        case .privacy: return .green
         case .add: return .accentColor
         case .reminders: return .orange
         }
@@ -260,8 +282,6 @@ private extension OnboardingView.Page {
 
     var hero: OnboardingHero.Kind {
         switch self {
-        case .welcome: return .brandMark
-        case .privacy: return .symbol("lock.shield.fill")
         case .add: return .brandMark          // unused — the starter step draws its own
         case .reminders: return .symbol("bell.badge.fill")
         }
@@ -269,8 +289,6 @@ private extension OnboardingView.Page {
 
     var title: String {
         switch self {
-        case .welcome: return String(localized: "Track every subscription")
-        case .privacy: return String(localized: "Private by default")
         case .add: return ""
         case .reminders: return String(localized: "Never miss a renewal")
         }
@@ -278,10 +296,6 @@ private extension OnboardingView.Page {
 
     var message: String {
         switch self {
-        case .welcome:
-            return String(localized: "Keep all your recurring payments in one place and always know what's coming out next.")
-        case .privacy:
-            return String(localized: "Your subscriptions stay on your device. No account, no sign-up, and no sharing your bank.")
         case .add:
             return ""
         case .reminders:

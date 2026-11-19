@@ -6,8 +6,10 @@
 import SwiftUI
 import SwiftData
 
-/// Top-level container that shows the branded `SplashView` on cold start, holds
-/// it briefly so the mark reads, then cross-fades into the main `RootView`.
+/// Top-level container that shows the branded `SplashView` on cold start, just
+/// long enough for the mark to finish drawing, then cross-fades into the main
+/// `RootView`. Kept short on purpose: every extra beat here is time the user
+/// spends waiting on the app they just opened.
 ///
 /// `RootView` is mounted only once the splash is dismissed. That keeps its
 /// first-run onboarding cover from racing the splash — the cover presents
@@ -42,8 +44,9 @@ struct AppRootView: View {
             }
         }
         .task {
-            try? await Task.sleep(for: .seconds(1.6))
-            withAnimation(.easeInOut(duration: 0.45)) { phase = .ready }
+            // The mark's own entrance takes 0.55s; hand off right after it.
+            try? await Task.sleep(for: .seconds(0.7))
+            withAnimation(.easeInOut(duration: 0.3)) { phase = .ready }
         }
     }
 }
