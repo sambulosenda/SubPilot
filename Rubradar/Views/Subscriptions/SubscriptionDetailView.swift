@@ -5,6 +5,7 @@
 
 import SwiftUI
 import SwiftData
+import StoreKit
 
 struct SubscriptionDetailView: View {
     @Bindable var subscription: Subscription
@@ -16,11 +17,30 @@ struct SubscriptionDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+    @Environment(\.requestReview) private var requestReview
+    @Environment(CurrencyService.self) private var currency
+    @AppStorage("preferredCurrencyCode") private var preferredCurrency =
+        Locale.current.currency?.identifier ?? "GBP"
+
+    /// The monthly cost, in the preferred currency when a rate is known.
+    /// `nil` when it would only repeat the Amount row.
+    private var perMonthText: String? {
+        let native = subscription.currencyCode
+        if native != preferredCurrency,
+           let converted = currency.rates.convert(subscription.monthlyEquivalent,
+                                                  from: native, to: preferredCurrency) {
+            return converted.formatted(.currency(code: preferredCurrency))
+        }
+        guard subscription.billingCycle != .monthly else { return nil }
+        return subscription.monthlyEquivalent.formatted(.currency(code: native))
+    }
 
     @State private var showEdit = false
     @State private var showDeleteConfirm = false
     @State private var showCancelHelper = false
     @State private var stateChanged = false
+    /// Drives the "Saved £X a year" moment after a guided cancel.
+    @State private var savedMessage: String?
 
     var body: some View {
         // A ScrollView (not a List) so the teal hero can be a real scrolling
@@ -41,12 +61,9 @@ struct SubscriptionDetailView: View {
         .scrollBounceBehavior(.basedOnSize)
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        // Opaque brand-teal bar: the hero tucks cleanly *under the bar* as it
-        // scrolls (standard scroll-under-navbar) instead of overflowing a
-        // transparent bar. Dark scheme keeps back + Edit white on teal.
-        .toolbarBackground(Color.brand, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarColorScheme(.dark, for: .navigationBar)
+        // No bar background: Back and Edit are glass buttons floating over the
+        // hero and then over the content, as on every other iOS 26 screen. The
+        // old opaque teal bar was the one painted toolbar in the app.
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Edit") { showEdit = true }
@@ -62,8 +79,23 @@ struct SubscriptionDetailView: View {
                 stateChanged.toggle()
                 reschedule()
                 WidgetSync.refresh(modelContext: modelContext)
+                // In the preferred currency when a rate is known, so it
+                // matches the "You've cut" total this adds to on Home.
+                let nativeYearly = subscription.monthlyEquivalent * 12
+                let yearly: String
+                if subscription.currencyCode != preferredCurrency,
+                   let converted = currency.rates.convert(nativeYearly,
+                                                          from: subscription.currencyCode,
+                                                          to: preferredCurrency) {
+                    yearly = converted.formatted(.currency(code: preferredCurrency))
+                } else {
+                    yearly = nativeYearly.formatted(.currency(code: subscription.currencyCode))
+                }
+                withAnimation(.snappy) { savedMessage = String(localized: "Saved \(yearly) a year") }
+                requestReviewAfterSaving()
             }
         }
+        .successHUD($savedMessage)
         .confirmationDialog("Delete this subscription?", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
             Button("Delete", role: .destructive) { delete() }
         } message: {
@@ -81,7 +113,7 @@ struct SubscriptionDetailView: View {
     /// background, and scrolls *with* the hero so there's no parallax.
     private var hero: some View {
         VStack(spacing: Spacing.sm) {
-            BrandLogoView(subscription: subscription, size: 76)
+            BrandLogoView(subscription: subscription, size: 60)
                 .shadow(color: .black.opacity(0.18), radius: 10, y: 4)
             VStack(spacing: Spacing.xs) {
                 Text(subscription.name)
@@ -99,8 +131,10 @@ struct SubscriptionDetailView: View {
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity)
         .padding(.horizontal, Spacing.md)
-        .padding(.top, Spacing.lg)
-        .padding(.bottom, Spacing.lg)
+        // A band, not a third of the screen: the first card of facts should
+        // sit well above the fold.
+        .padding(.top, Spacing.sm)
+        .padding(.bottom, Spacing.md)
         // Layer 1 (front): a vertical brand gradient, sized to the hero band.
         // Top edge stays pure `.brand` so it meets Layer 2's solid fill with no
         // seam; it just deepens gently downward (a diagonal angle made the top
@@ -151,9 +185,14 @@ struct SubscriptionDetailView: View {
                 detailRow("Billing", subscription.billingCycle == .custom
                           ? "Every \(subscription.customCycleDays ?? 30) days"
                           : subscription.billingCycle.label)
-                rowDivider
-                detailRow("Per month (approx.)",
-                          subscription.monthlyEquivalent.formatted(.currency(code: subscription.currencyCode)))
+                // Only when it says something the Amount row doesn't: a
+                // monthly subscription in the user's own currency had the
+                // same figure twice. In another currency it shows the
+                // converted cost, the number Home's total is built from.
+                if let perMonth = perMonthText {
+                    rowDivider
+                    detailRow("Per month (approx.)", perMonth)
+                }
             }
 
             if !subscription.priceHistory.isEmpty {
@@ -173,6 +212,10 @@ struct SubscriptionDetailView: View {
                     rowDivider
                     detailRow("Trial ends", end.formatted(.dateTime.day().month().year()))
                 }
+                if let deadline = subscription.cancelDeadline() {
+                    rowDivider
+                    detailRow("Cancel by", deadline.date.formatted(.dateTime.day().month().year()))
+                }
             }
 
             if !subscription.notes.isEmpty {
@@ -185,6 +228,14 @@ struct SubscriptionDetailView: View {
             }
 
             card { statusActions }
+
+            // On its own, below everything: the one action that can't be
+            // undone shouldn't share a card with "Mark as free trial".
+            card {
+                actionRow("Delete", systemImage: "trash", role: .destructive) {
+                    showDeleteConfirm = true
+                }
+            }
         }
         .padding(.horizontal, Spacing.md)
         .padding(.top, Spacing.lg)
@@ -265,10 +316,6 @@ struct SubscriptionDetailView: View {
                 stateChanged.toggle()
                 reschedule()
             }
-            rowDivider
-            actionRow("Delete", systemImage: "trash", role: .destructive) {
-                showDeleteConfirm = true
-            }
         }
     }
 
@@ -331,6 +378,19 @@ struct SubscriptionDetailView: View {
         reschedule()
         WidgetSync.refresh(modelContext: modelContext)
         dismiss()
+    }
+
+    /// The app just saved the user money — the best moment it has to ask for
+    /// a rating. Waits for the HUD to clear; `ReviewPrompter` applies the same
+    /// gates and 120-day spacing as the post-add prompt, so the two never
+    /// stack. Counts every tracked subscription: the one just cancelled still
+    /// shows the user is invested.
+    private func requestReviewAfterSaving() {
+        let tracked = (try? modelContext.fetchCount(FetchDescriptor<Subscription>())) ?? 0
+        Task {
+            try? await Task.sleep(for: .seconds(2))
+            ReviewPrompter.maybePrompt(activeCount: tracked) { requestReview() }
+        }
     }
 
     private func reschedule() {

@@ -80,7 +80,11 @@ extension View {
                 SuccessHUD(message: text)
                     .transition(.scale(scale: 0.9).combined(with: .opacity))
                     .task {
-                        try? await Task.sleep(for: .seconds(1.4))
+                        // Long enough to read a figure ("Saved £182.52 a
+                        // year"), not just register a tick: at 1.4s it was
+                        // already fading as the sheet above it finished
+                        // closing.
+                        try? await Task.sleep(for: .seconds(2.2))
                         withAnimation(.easeOut(duration: 0.25)) { message.wrappedValue = nil }
                     }
             }
