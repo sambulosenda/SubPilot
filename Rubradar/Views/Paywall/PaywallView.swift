@@ -45,14 +45,19 @@ struct PaywallView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: Spacing.xl) {
+                // Kept tight on purpose: at the old spacing only the Annual
+                // plan cleared the purchase bar, so Monthly and Lifetime
+                // looked like they didn't exist. Now the next plan shows
+                // above the bar and reads as a list that scrolls.
+                VStack(spacing: Spacing.lg) {
                     hero.appearEntrance(0)
                     benefitList.appearEntrance(1)
                     productSection.appearEntrance(2)
                     legal.appearEntrance(3)
                 }
                 .padding(.horizontal, Spacing.lg)
-                .padding(.vertical, Spacing.lg)
+                .padding(.top, Spacing.xs)
+                .padding(.bottom, Spacing.lg)
             }
             .background(alignment: .top) { heroAmbience }
             .background(Color.appBackground)
@@ -122,9 +127,9 @@ struct PaywallView: View {
         let pitch = onboardingPitch   // computed once per render
         return VStack(spacing: Spacing.md) {
             Image(systemName: "crown.fill")
-                .font(.system(size: 32, weight: .semibold))
+                .font(.system(size: 26, weight: .semibold))
                 .foregroundStyle(.white)
-                .frame(width: 76, height: 76)
+                .frame(width: 60, height: 60)
                 .background(
                     LinearGradient(
                         colors: [.brand, .brandDeep],
@@ -154,7 +159,7 @@ struct PaywallView: View {
     // MARK: - Benefits
 
     private var benefitList: some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
+        VStack(alignment: .leading, spacing: 12) {
             ForEach(benefits, id: \.symbol) { benefit in
                 HStack(spacing: Spacing.md) {
                     Image(systemName: benefit.symbol)
@@ -163,7 +168,7 @@ struct PaywallView: View {
                         .frame(width: 28)
                         .accessibilityHidden(true)
                     Text(benefit.text)
-                        .font(.body)
+                        .font(.subheadline)
                     Spacer(minLength: 0)
                 }
             }
@@ -190,7 +195,7 @@ struct PaywallView: View {
                 .padding(.vertical, Spacing.lg)
             }
         } else {
-            VStack(spacing: Spacing.md) {
+            VStack(spacing: 12) {
                 ForEach(purchases.products, id: \.id) { product in
                     ProductOptionRow(
                         tier: tierName(product),
@@ -254,6 +259,12 @@ struct PaywallView: View {
                     .font(.subheadline)
                     .controlSize(.large)
                     .padding(.top, 2)
+                    // The way out must be easy to hit: the text alone is
+                    // ~18pt tall. Padded to 44 without growing the bar.
+                    .padding(.vertical, 13)
+                    .padding(.horizontal, Spacing.lg)
+                    .contentShape(.rect)
+                    .padding(.vertical, -13)
             }
         }
         .padding(.horizontal, Spacing.lg)
