@@ -9,18 +9,20 @@ import CoreData
 import StoreKit
 
 enum AppTab: Hashable {
-    case subscriptions, calendar, assistant, settings
+    case subscriptions, calendar, insights, settings
 
     /// Tab the shell opens on. Normally Home; overridable in DEBUG via the
-    /// `-StartTab <calendar|assistant|settings>` launch argument so App Store
+    /// `-StartTab <calendar|insights|settings>` launch argument so App Store
     /// screenshots of each tab can be captured by relaunching, no UI taps needed.
+    /// (`-StartTab assistant` still works: the assistant is no longer a tab, so
+    /// Home opens and presents it — see `SubscriptionListView`.)
     static var launchSelection: AppTab {
         #if DEBUG
         let args = ProcessInfo.processInfo.arguments
         if let i = args.firstIndex(of: "-StartTab"), i + 1 < args.count {
             switch args[i + 1] {
             case "calendar": return .calendar
-            case "assistant": return .assistant
+            case "insights": return .insights
             case "settings": return .settings
             default: break
             }
@@ -101,11 +103,14 @@ struct RootView: View {
             }
 
             Tab("Calendar", systemImage: "calendar", value: AppTab.calendar) {
-                RenewalCalendarView()
+                RenewalCalendarView(onAdd: { requestAdd(.catalogue) })
             }
 
-            Tab("Assistant", systemImage: "sparkles", value: AppTab.assistant) {
-                AssistantView()
+            // Insights is a tab; the assistant is reached from Home's toolbar.
+            // Where the money goes is something every user looks at, while the
+            // chat is a Pro extra that needs Apple Intelligence.
+            Tab("Insights", systemImage: "chart.pie.fill", value: AppTab.insights) {
+                NavigationStack { InsightsView(onAdd: { requestAdd(.catalogue) }) }
             }
 
             Tab("Settings", systemImage: "gearshape.fill", value: AppTab.settings) {

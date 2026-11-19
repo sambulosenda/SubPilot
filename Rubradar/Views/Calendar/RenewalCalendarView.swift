@@ -29,6 +29,9 @@ struct RenewalCalendarView: View {
         var label: LocalizedStringKey { self == .month ? "Month" : "Upcoming" }
     }
 
+    /// Starts an add from the empty state (routed through the shell's gates).
+    var onAdd: () -> Void = {}
+
     @State private var mode: Mode = .month
     @State private var displayedMonth = MonthLayout.startOfMonth(Date())
     @State private var selectedDate = Calendar.current.startOfDay(for: Date())
@@ -45,11 +48,17 @@ struct RenewalCalendarView: View {
         NavigationStack {
             Group {
                 if data.isEmpty {
-                    ContentUnavailableView(
-                        "No upcoming renewals",
-                        systemImage: "calendar",
-                        description: Text("Add a subscription to see when it renews.")
-                    )
+                    // With a way forward: the copy said "add a subscription"
+                    // and the screen offered nothing to add one with.
+                    ContentUnavailableView {
+                        Label("No upcoming renewals", systemImage: "calendar")
+                    } description: {
+                        Text("Add a subscription to see when it renews.")
+                    } actions: {
+                        Button("Add a subscription", action: onAdd)
+                            .buttonStyle(.glassProminent)
+                            .controlSize(.large)
+                    }
                 } else if mode == .month {
                     monthMode(data)
                 } else {
@@ -380,11 +389,13 @@ private struct RenewalEventRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(sub.name)
                     .font(.headline)
-                    .lineLimit(1)
+                    // Shrinks a little before truncating, as on Home's rows:
+                    // at full size "Adobe Creative Cloud" lost its last word.
+                    .rowTitle()
                 if event.isTrialEnd {
                     Text("Trial ends")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(Color.attention)
                 } else {
                     Text(sub.category.label)
                         .font(.caption)
@@ -399,6 +410,7 @@ private struct RenewalEventRow: View {
                     .font(.subheadline.weight(.semibold))
                     .monospacedDigit()
                     .lineLimit(1)
+                    .fixedSize()
                 if let nativeSubtitle {
                     Text(nativeSubtitle)
                         .font(.caption2)
@@ -519,6 +531,11 @@ private struct StepperButton: View {
                 .frame(width: 32, height: 32)
                 .background(Color(.tertiarySystemFill), in: .circle)
                 .foregroundStyle(enabled ? Color.brand : Color.secondary)
+                // Drawn at 32pt, tappable at 44. The negative padding keeps
+                // the two arrows the same distance apart as before.
+                .padding(6)
+                .contentShape(.rect)
+                .padding(-6)
         }
         .buttonStyle(.plain)
         .disabled(!enabled)
