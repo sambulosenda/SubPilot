@@ -104,9 +104,20 @@ struct SettingsView: View {
                     }
                 }
 
-                Section {
-                    Toggle("Renewal reminders", isOn: $remindersEnabled)
-                    if remindersEnabled {
+                // No footers on the plain sections: the labels say what the
+                // controls do. Exchange rates are gone from here altogether;
+                // they refresh on their own and were never the user's job.
+                Section("Reminders") {
+                    // The problem leads when iOS is blocking notifications,
+                    // and the switches show what is actually happening: they
+                    // used to sit green above a small note saying nothing
+                    // would arrive.
+                    if notificationsBlocked {
+                        reminderRecovery
+                    }
+                    Toggle("Renewal reminders", isOn: effective($remindersEnabled))
+                        .disabled(notificationsBlocked)
+                    if remindersEnabled && !notificationsBlocked {
                         Picker("Default reminder", selection: $defaultReminderLeadDays) {
                             ForEach(ReminderLead.options, id: \.days) { option in
                                 Text(option.label).tag(option.days)
@@ -114,44 +125,11 @@ struct SettingsView: View {
                         }
                         reminderRecovery
                     }
-                    Toggle("Monthly spending recap", isOn: $monthlyRecapEnabled)
-                } header: {
-                    Text("Reminders")
-                } footer: {
-                    Text("Get a local notification at 9 AM before each subscription renews. New subscriptions use the default timing above; change it per subscription when editing. The monthly recap sums what you're spending on the 1st of each month.")
+                    Toggle("Monthly spending recap", isOn: effective($monthlyRecapEnabled))
+                        .disabled(notificationsBlocked)
                 }
 
-                Section {
-                    LabeledContent("Rates updated", value: ratesUpdatedText)
-                    Button {
-                        Task { await currency.refresh() }
-                    } label: {
-                        if currency.isRefreshing {
-                            ProgressView()
-                        } else {
-                            Text("Refresh rates now")
-                        }
-                    }
-                    .disabled(currency.isRefreshing)
-                } header: {
-                    Text("Exchange rates")
-                } footer: {
-                    Text("Rates from frankfurter.app, refreshed daily. A bundled set is used offline.")
-                }
-
-                Section {
-                    Button {
-                        Task { await openAppStoreSubscriptions() }
-                    } label: {
-                        Label("App Store Subscriptions", systemImage: "list.bullet.rectangle.portrait")
-                    }
-                } header: {
-                    Text("Find subscriptions")
-                } footer: {
-                    Text("Open Apple's subscription list to see what you pay for through the App Store, then add them here. Apple doesn't let apps import this list automatically.")
-                }
-
-                Section {
+                Section("Data") {
                     ShareLink(
                         item: SubscriptionCSVExport.make(from: subscriptions),
                         preview: SharePreview("SubHelm Subscriptions", image: Image(systemName: "tablecells"))
@@ -159,10 +137,6 @@ struct SettingsView: View {
                         Label("Export to CSV", systemImage: "square.and.arrow.up")
                     }
                     .disabled(subscriptions.isEmpty)
-                } header: {
-                    Text("Data")
-                } footer: {
-                    Text("Export every subscription as a CSV spreadsheet you can open, back up, or move to another app. Your data is always yours.")
                 }
 
                 Section {
@@ -208,6 +182,18 @@ struct SettingsView: View {
         }
     }
 
+    private var notificationsBlocked: Bool { notificationStatus == .denied }
+
+    /// A switch that reads off while iOS is blocking notifications, without
+    /// touching the stored preference, so it comes back as the user left it
+    /// once notifications are allowed again.
+    private func effective(_ stored: Binding<Bool>) -> Binding<Bool> {
+        Binding(
+            get: { stored.wrappedValue && !notificationsBlocked },
+            set: { stored.wrappedValue = $0 }
+        )
+    }
+
     /// Recovery path (FR-21) shown only when reminders are on in-app but the
     /// system permission is missing — so reminders would silently never fire.
     @ViewBuilder
@@ -235,24 +221,6 @@ struct SettingsView: View {
         }
     }
 
-    /// Opens Apple's system subscription-management sheet (all the user's App
-    /// Store subscriptions). Apple exposes no API to read this list, so we can
-    /// only surface it for the user to view; falls back to the account URL.
-    private func openAppStoreSubscriptions() async {
-        if let scene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-            do {
-                try await AppStore.showManageSubscriptions(in: scene)
-                return
-            } catch {
-                // Fall through to the deep link below.
-            }
-        }
-        if let url = URL(string: "itms-apps://apps.apple.com/account/subscriptions") {
-            openURL(url)
-        }
-    }
-
     private func refreshNotificationStatus() async {
         notificationStatus = await NotificationManager.shared.authorizationStatus
     }
@@ -275,11 +243,6 @@ struct SettingsView: View {
 
     private var iCloudStatusSymbol: String {
         iCloudStatus == .available ? "checkmark.icloud.fill" : "icloud.slash"
-    }
-
-    private var ratesUpdatedText: String {
-        if currency.lastUpdated == Date(timeIntervalSince1970: 0) { return "Offline set" }
-        return currency.lastUpdated.formatted(.dateTime.day().month().year())
     }
 }
 
