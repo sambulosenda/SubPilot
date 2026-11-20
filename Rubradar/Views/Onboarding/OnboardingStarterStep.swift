@@ -146,11 +146,11 @@ struct OnboardingStarterStep: View {
     // Hoisted out of the view body: `Decimal.formatted(...) + String` inside a
     // container is a type-checker sinkhole (SourceKit times out on it inline).
     private var monthlyText: String {
-        monthlyTotal.formatted(.currency(code: currencyCode)) + " / mo"
+        monthlyTotal.formatted(.currency(code: currencyCode)) + " / " + BillingCycle.monthly.shortLabel
     }
 
     private var yearlyText: String {
-        (monthlyTotal * 12).formatted(.currency(code: currencyCode)) + " / yr"
+        (monthlyTotal * 12).formatted(.currency(code: currencyCode)) + " / " + BillingCycle.yearly.shortLabel
     }
 
     private func toggle(_ id: String) {
@@ -188,7 +188,9 @@ private struct StarterChip: View {
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.8)
                     .foregroundStyle(.primary)
-                Text(item.monthlyPrice.formatted(.currency(code: currencyCode)) + " / mo")
+                // "≈": these are typical prices, not the user's own. The
+                // subtitle says so, but the number itself should too.
+                Text("≈ " + item.monthlyPrice.formatted(.currency(code: currencyCode)) + " / " + BillingCycle.monthly.shortLabel)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }

@@ -165,7 +165,7 @@ private struct UnusedRow: View {
             VStack(alignment: .trailing, spacing: 2) {
                 Text(yearly)
                     .font(.subheadline.weight(.semibold))
-                Text("/year")
+                Text(verbatim: "/ \(BillingCycle.yearly.shortLabel)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
