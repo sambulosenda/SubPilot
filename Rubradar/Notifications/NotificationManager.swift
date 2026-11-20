@@ -329,6 +329,7 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
         let descriptor = FetchDescriptor<Subscription>(predicate: #Predicate { $0.id == id })
         if let sub = try? context.fetch(descriptor).first {
             sub.isCancelled = true
+            sub.cancelledAt = Date()
             sub.updatedAt = Date()
             try? context.save()
             // Drop the cancelled sub's other pending reminders and get the

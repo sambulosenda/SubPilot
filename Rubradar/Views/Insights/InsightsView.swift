@@ -34,6 +34,10 @@ struct InsightsView: View {
         SpendBreakdown.make(from: profileSubscriptions, preferred: preferredCurrency, rates: currency.rates)
     }
 
+    private var history: SpendHistory {
+        SpendHistory.make(from: profileSubscriptions, preferred: preferredCurrency, rates: currency.rates)
+    }
+
     private var upcomingMonths: [RenewalMonth] {
         let events = RenewalProjector.events(for: profileSubscriptions, horizonMonths: 6)
         return Array(RenewalMonth.group(events, preferred: preferredCurrency, rates: currency.rates).prefix(6))
@@ -56,6 +60,9 @@ struct InsightsView: View {
                 VStack(spacing: Spacing.md) {
                     statTiles
                         .appearEntrance(0)
+                    if history.hasTrend {
+                        trendCard
+                    }
                     categoryCard
                         .appearEntrance(1)
                     if !ranked.isEmpty {
@@ -139,6 +146,35 @@ struct InsightsView: View {
                                        : 0)
                 }
             }
+        }
+    }
+
+    // MARK: - Spend over time
+
+    /// Monthly spend for the months SubHelm has been tracking, with the change
+    /// across them up top. Hidden until there are two months to compare.
+    private var trendCard: some View {
+        let history = history
+        return InsightCard(title: "Monthly Spend") {
+            if let change = history.change, let range = history.rangeLabel {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: Spacing.xs) {
+                        Image(systemName: change > 0 ? "arrow.up.right"
+                              : change < 0 ? "arrow.down.right" : "equal")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                            .accessibilityHidden(true)
+                        Text(verbatim: history.formattedChange)
+                            .font(.system(.title2, design: .rounded, weight: .bold))
+                            .monospacedDigit()
+                    }
+                    Text(verbatim: range)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .accessibilityElement(children: .combine)
+            }
+            SpendTrendChart(history: history)
         }
     }
 
@@ -313,6 +349,71 @@ private struct CategoryLegendRow: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(slice.category.label), \(breakdown.format(slice.monthlyAmount)), \(slice.fraction.formatted(.percent.precision(.fractionLength(0)))) of spend")
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+    }
+}
+
+// MARK: - Spend trend chart
+
+/// Monthly spend across the tracked months. Scrub to read a month's total.
+private struct SpendTrendChart: View {
+    let history: SpendHistory
+    @State private var selectedLabel: String?
+
+    /// Category axis, as in the forecast chart, so months sit at even gaps.
+    private func label(_ point: SpendHistoryPoint) -> String {
+        point.month.formatted(.dateTime.month(.abbreviated))
+    }
+
+    private func total(_ point: SpendHistoryPoint) -> Double {
+        NSDecimalNumber(decimal: point.total).doubleValue
+    }
+
+    var body: some View {
+        Chart(history.points) { point in
+            let name = label(point)
+            AreaMark(x: .value("Month", name), y: .value("Spend", total(point)))
+                .interpolationMethod(.monotone)
+                .foregroundStyle(
+                    LinearGradient(colors: [.brand.opacity(0.3), .brand.opacity(0)],
+                                   startPoint: .top, endPoint: .bottom)
+                )
+            LineMark(x: .value("Month", name), y: .value("Spend", total(point)))
+                .interpolationMethod(.monotone)
+                .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                .foregroundStyle(Color.brand)
+            PointMark(x: .value("Month", name), y: .value("Spend", total(point)))
+                .symbolSize(selectedLabel == name ? 90 : 36)
+                .foregroundStyle(Color.brand)
+                .annotation(position: .top, spacing: 4) {
+                    if selectedLabel == name {
+                        Text(verbatim: history.format(point.total))
+                            .font(.caption2.weight(.semibold))
+                            .monospacedDigit()
+                    }
+                }
+                .accessibilityLabel(point.month.formatted(.dateTime.month(.wide).year()))
+                .accessibilityValue(history.format(point.total))
+        }
+        .chartXSelection(value: $selectedLabel)
+        .chartXAxis {
+            AxisMarks { _ in
+                AxisValueLabel()
+            }
+        }
+        .chartYAxis {
+            AxisMarks { value in
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                    .foregroundStyle(.quaternary)
+                AxisValueLabel {
+                    if let amount = value.as(Double.self) {
+                        Text(amount.formatted(.number.notation(.compactName)))
+                    }
+                }
+            }
+        }
+        .frame(height: 160)
+        .animation(.easeInOut(duration: 0.2), value: selectedLabel)
+        .accessibilityLabel("Monthly Spend")
     }
 }
 

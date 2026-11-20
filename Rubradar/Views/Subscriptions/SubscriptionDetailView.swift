@@ -75,6 +75,7 @@ struct SubscriptionDetailView: View {
         .sheet(isPresented: $showCancelHelper) {
             CancelHelperView(subscription: subscription) {
                 withAnimation(.snappy) { subscription.isCancelled = true }
+                subscription.cancelledAt = Date()
                 subscription.updatedAt = Date()
                 stateChanged.toggle()
                 reschedule()
@@ -291,6 +292,7 @@ struct SubscriptionDetailView: View {
                     // Animate so the header badge and this label's icon morph
                     // rather than snap; the model write itself is non-visual.
                     withAnimation(.snappy) { subscription.isCancelled = false }
+                    subscription.cancelledAt = nil
                     subscription.updatedAt = Date()
                     stateChanged.toggle()
                     reschedule()

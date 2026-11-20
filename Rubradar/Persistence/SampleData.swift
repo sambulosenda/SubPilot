@@ -42,6 +42,29 @@ enum SampleData {
             let twoMonthsAgo = Date(timeIntervalSinceNow: -60 * 86_400)
             samples.forEach { $0.createdAt = twoMonthsAgo }
         }
+
+        // `-DemoHistory` backdates the seed so Insights has a spend trend:
+        // subscriptions added over five months, one price rise, one cancelled.
+        if ProcessInfo.processInfo.arguments.contains("-DemoHistory") {
+            let cal = Calendar.current
+            func monthsAgo(_ n: Int) -> Date { cal.date(byAdding: .month, value: -n, to: Date()) ?? Date() }
+            for (index, sub) in samples.enumerated() {
+                sub.createdAt = monthsAgo(5 - min(index / 2, 4))
+            }
+            if let netflix = samples.first(where: { $0.name == "Netflix" }) {
+                let rise = PriceChange(oldAmount: 15.49, newAmount: netflix.amount,
+                                       currencyCode: netflix.currencyCode, source: .manual,
+                                       changedAt: monthsAgo(2))
+                rise.subscription = netflix
+                context.insert(rise)
+            }
+            let dropped = Subscription(name: "Hulu", amount: 17.99, currencyCode: "USD",
+                                       category: .streaming, isCancelled: true,
+                                       catalogueID: "hulu", createdAt: monthsAgo(5))
+            dropped.cancelledAt = monthsAgo(1)
+            dropped.profile = personal
+            context.insert(dropped)
+        }
     }
 
     static func makeSamples(referenceDate: Date = Date()) -> [Subscription] {
