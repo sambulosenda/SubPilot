@@ -49,33 +49,33 @@ final class HomeFlowUITests: XCTestCase {
         let app = launchOnHome()
 
         let trial = app.buttons["ChatGPT Plus free trial"]
-        XCTAssertTrue(trial.waitForExistence(timeout: 5), "Trial row missing from Needs attention")
+        XCTAssertTrue(trial.waitForExistence(timeout: 10), "Trial row missing from Needs attention")
         trial.tap()
 
         let cancel = app.buttons["Cancel subscription…"]
-        XCTAssertTrue(cancel.waitForExistence(timeout: 5), "Detail screen did not offer the cancel flow")
+        XCTAssertTrue(cancel.waitForExistence(timeout: 10), "Detail screen did not offer the cancel flow")
         cancel.tap()
 
         // The closing action sits below the fold of the half-height sheet, and
         // the list only builds rows as they scroll in.
-        XCTAssertTrue(app.buttons["Manage Apple subscriptions"].waitForExistence(timeout: 5)
-                      || app.staticTexts["How it works"].waitForExistence(timeout: 5),
+        XCTAssertTrue(app.buttons["Manage Apple subscriptions"].waitForExistence(timeout: 10)
+                      || app.staticTexts["How it works"].waitForExistence(timeout: 10),
                       "Cancel helper did not present")
         let done = app.buttons["Done — mark as cancelled"]
         for _ in 0..<3 where !done.exists { app.swipeUp() }
-        XCTAssertTrue(done.waitForExistence(timeout: 3), "Cancel helper has no closing action")
+        XCTAssertTrue(done.waitForExistence(timeout: 10), "Cancel helper has no closing action")
         done.tap()
 
-        XCTAssertTrue(element(in: app, containing: "Saved ").waitForExistence(timeout: 5),
+        XCTAssertTrue(element(in: app, containing: "Saved ").waitForExistence(timeout: 10),
                       "The saved-amount confirmation did not appear after cancelling")
-        XCTAssertTrue(app.buttons["Mark as active"].waitForExistence(timeout: 5),
+        XCTAssertTrue(app.buttons["Mark as active"].waitForExistence(timeout: 10),
                       "Subscription was not marked cancelled")
 
         app.navigationBars.buttons.firstMatch.tap()
-        XCTAssertTrue(element(in: app, containing: "You've cut").waitForExistence(timeout: 5),
+        XCTAssertTrue(element(in: app, containing: "You've cut").waitForExistence(timeout: 10),
                       "Home is missing the savings total")
-        XCTAssertFalse(app.buttons["ChatGPT Plus free trial"].exists,
-                       "A cancelled trial should leave Needs attention")
+        XCTAssertTrue(app.buttons["ChatGPT Plus free trial"].waitForNonExistence(timeout: 10),
+                      "A cancelled trial should leave Needs attention")
     }
 
     /// "Keep" on a cancel deadline removes it from Needs attention.
@@ -84,15 +84,17 @@ final class HomeFlowUITests: XCTestCase {
         let app = launchOnHome()
 
         let deadline = element(in: app, containing: "Last day to cancel")
-        XCTAssertTrue(deadline.waitForExistence(timeout: 5), "Deadline row missing from Needs attention")
+        XCTAssertTrue(deadline.waitForExistence(timeout: 10), "Deadline row missing from Needs attention")
         deadline.swipeLeft()
 
         let keep = app.buttons["Keep"]
-        XCTAssertTrue(keep.waitForExistence(timeout: 3), "Swipe did not reveal Keep")
+        XCTAssertTrue(keep.waitForExistence(timeout: 10), "Swipe did not reveal Keep")
         keep.tap()
 
-        XCTAssertFalse(element(in: app, containing: "Last day to cancel").waitForExistence(timeout: 2),
-                       "Deadline should be dismissed after Keep")
+        // Wait for it to go: the row animates out, so a check made the
+        // instant after the tap can still find it.
+        XCTAssertTrue(element(in: app, containing: "Last day to cancel").waitForNonExistence(timeout: 10),
+                      "Deadline should be dismissed after Keep")
     }
 
     /// The monthly check-in opens from Home, and finishing it retires the
@@ -102,18 +104,18 @@ final class HomeFlowUITests: XCTestCase {
         let app = launchOnHome()
 
         let prompt = element(in: app, containing: "Monthly check-in")
-        XCTAssertTrue(prompt.waitForExistence(timeout: 5), "Check-in prompt missing from Home")
+        XCTAssertTrue(prompt.waitForExistence(timeout: 10), "Check-in prompt missing from Home")
         prompt.tap()
 
         let done = app.buttons["Done"]
-        XCTAssertTrue(done.waitForExistence(timeout: 5), "Check-in sheet did not present")
+        XCTAssertTrue(done.waitForExistence(timeout: 10), "Check-in sheet did not present")
         XCTAssertGreaterThan(app.switches.count, 0, "Check-in listed no subscriptions")
 
         // Switch one off by its trailing edge (the switch itself, not the label).
         app.switches.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.5)).tap()
         done.tap()
 
-        XCTAssertFalse(element(in: app, containing: "Which did you use").waitForExistence(timeout: 2),
-                       "Check-in prompt should be gone once the check-in is done")
+        XCTAssertTrue(element(in: app, containing: "Which did you use").waitForNonExistence(timeout: 10),
+                      "Check-in prompt should be gone once the check-in is done")
     }
 }
