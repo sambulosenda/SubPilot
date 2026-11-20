@@ -324,6 +324,7 @@ private struct MentionChips: View {
 
 private struct TypingIndicator: View {
     @State private var animating = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 4) {
@@ -331,9 +332,11 @@ private struct TypingIndicator: View {
                 Circle()
                     .frame(width: 7, height: 7)
                     .foregroundStyle(.secondary)
-                    .opacity(animating ? 1 : 0.3)
+                    // Reduce Motion: three still dots instead of an endless pulse.
+                    .opacity(animating || reduceMotion ? 1 : 0.3)
                     .animation(
-                        .easeInOut(duration: 0.6).repeatForever().delay(Double(index) * 0.2),
+                        reduceMotion ? nil
+                            : .easeInOut(duration: 0.6).repeatForever().delay(Double(index) * 0.2),
                         value: animating
                     )
             }

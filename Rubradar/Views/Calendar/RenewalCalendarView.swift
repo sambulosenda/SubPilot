@@ -701,7 +701,9 @@ private struct DayCell: View {
             .frame(width: Self.numberSize, height: Self.numberSize)
             .background {
                 if isToday {
-                    Circle().fill(Color.brand)
+                    // The deeper teal: white on `brand` is 3.75:1, under the
+                    // 4.5:1 a footnote-size number needs.
+                    Circle().fill(Color.brandDeep)
                 } else if isSelected {
                     // Outline, not a solid fill. A filled neutral circle was
                     // fine among the old grey tiles; on the cleared-out grid it
