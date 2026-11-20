@@ -5,34 +5,37 @@
 
 import SwiftUI
 
-/// The Home screen's header: the monthly total, then the next 30 days of
-/// charges laid out on a strip. One number, one strip — everything else on
-/// Home is the list below.
+/// The Home screen's header: the monthly total and, once something has been
+/// cancelled, what that saved. The one headline on the screen.
 struct DashboardHeader: View {
     let metrics: HomeMetrics
-    /// Switches to the Calendar tab (the strip is its preview).
-    var onOpenCalendar: () -> Void
     /// Opens the list of cancelled subscriptions behind the savings pill.
     var onOpenCut: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.lg) {
-            VStack(alignment: .leading, spacing: Spacing.md) {
-                HeroSpend(metrics: metrics)
-                if metrics.cut.yearlyTotal > 0 {
-                    CutPill(summary: metrics.cut, action: onOpenCut)
-                        .padding(.horizontal, heroInset)
-                        .transition(.scale(scale: 0.9, anchor: .leading).combined(with: .opacity))
-                }
-            }
-            .appearEntrance(0)
-
-            if metrics.nextEvent != nil {
-                RenewalStripCard(metrics: metrics, onOpen: onOpenCalendar)
-                    .appearEntrance(1)
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            HeroSpend(metrics: metrics)
+            if metrics.cut.yearlyTotal > 0 {
+                CutPill(summary: metrics.cut, action: onOpenCut)
+                    .padding(.horizontal, heroInset)
+                    .transition(.scale(scale: 0.9, anchor: .leading).combined(with: .opacity))
             }
         }
+        .appearEntrance(0)
         .padding(.top, Spacing.sm)
+    }
+}
+
+/// The next 30 days of charges on a strip. Sits below anything that needs a
+/// decision: it is a preview of the Calendar, not something to act on.
+struct DashboardStrip: View {
+    let metrics: HomeMetrics
+    /// Switches to the Calendar tab (the strip is its preview).
+    var onOpenCalendar: () -> Void
+
+    var body: some View {
+        RenewalStripCard(metrics: metrics, onOpen: onOpenCalendar)
+            .appearEntrance(1)
     }
 }
 
@@ -62,7 +65,9 @@ private struct HeroSpend: View {
                 .contentTransition(.numericText())
 
             HStack(spacing: Spacing.xs) {
-                Text("\(metrics.summary.formattedYearly) / year")
+                // Same compact unit as every row ("/ mo", "/ yr"); this was
+                // the one place that spelled it "/ year".
+                Text(verbatim: "\(metrics.summary.formattedYearly) / \(BillingCycle.yearly.shortLabel)")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 if metrics.summary.hasUnconvertible {
@@ -480,7 +485,8 @@ private struct StripLayout: Layout {
     let subs = SampleData.makeSamples()
     let metrics = HomeMetrics.make(from: subs, preferred: "GBP", rates: .fallback)
     return ScrollView {
-        DashboardHeader(metrics: metrics, onOpenCalendar: {}, onOpenCut: {})
+        DashboardHeader(metrics: metrics, onOpenCut: {})
+        DashboardStrip(metrics: metrics, onOpenCalendar: {})
             .padding(.horizontal, Spacing.md)
     }
 }
