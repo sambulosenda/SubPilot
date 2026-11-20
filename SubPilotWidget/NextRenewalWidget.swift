@@ -400,7 +400,7 @@ private extension NextRenewalView {
 
 // MARK: - Hex colour (widget-local; the app defines its own in Subscription.swift)
 
-private extension Color {
+extension Color {
     init?(hex: String) {
         var string = hex.trimmingCharacters(in: .whitespacesAndNewlines)
         if string.hasPrefix("#") { string.removeFirst() }

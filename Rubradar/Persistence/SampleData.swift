@@ -43,6 +43,14 @@ enum SampleData {
             samples.forEach { $0.createdAt = twoMonthsAgo }
         }
 
+        // `-DemoLiveActivity` ends the ChatGPT Plus trial today, so the
+        // trial-ending Live Activity starts on launch.
+        if ProcessInfo.processInfo.arguments.contains("-DemoLiveActivity"),
+           let trial = samples.first(where: { $0.name == "ChatGPT Plus" }) {
+            trial.isFreeTrial = true
+            trial.trialEndDate = Date()
+        }
+
         // `-DemoHistory` backdates the seed so Insights has a spend trend:
         // subscriptions added over five months, one price rise, one cancelled.
         if ProcessInfo.processInfo.arguments.contains("-DemoHistory") {

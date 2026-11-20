@@ -96,6 +96,7 @@ final class NotificationManager: NSObject {
     func rescheduleAll(modelContext: ModelContext) async {
         let subs = (try? modelContext.fetch(FetchDescriptor<Subscription>())) ?? []
         await reschedule(for: subs, enabled: remindersEnabled)
+        await TrialLiveActivity.sync(subscriptions: subs, enabled: remindersEnabled)
         // Added after `reschedule` clears all pending requests, so it survives.
         await scheduleMonthlyRecap(for: subs)
     }
