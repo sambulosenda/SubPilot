@@ -39,6 +39,20 @@ struct TrialBadge: View {
     }
 }
 
+/// Marks a Pro-only option before it is tapped, so the paywall behind it is
+/// never a surprise. "PRO" is the product name, not copy, so it isn't localised.
+struct ProBadge: View {
+    var body: some View {
+        Text(verbatim: "PRO")
+            .font(.caption2.weight(.bold))
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.brand.opacity(0.18), in: .capsule)
+            .foregroundStyle(Color.brand)
+            .accessibilityLabel("SubHelm Pro")
+    }
+}
+
 struct CancelledBadge: View {
     var body: some View {
         Text("Cancelled")

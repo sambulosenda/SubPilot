@@ -72,6 +72,8 @@ struct RootView: View {
     @Environment(\.requestReview) private var requestReview
     @State private var selection: AppTab = .launchSelection
     @State private var presentedSheet: AddSheet?
+    /// A flow picked inside the add screen, presented once that sheet closes.
+    @State private var addAfterDismiss: AddSheet?
     /// Active-subscription count when an add sheet was presented, so dismissal
     /// can tell "added something" (rating-prompt moment) from "cancelled".
     @State private var activeCountBeforeAdd: Int?
@@ -117,12 +119,24 @@ struct RootView: View {
                 SettingsView()
             }
         }
-        .sheet(item: $presentedSheet, onDismiss: maybeRequestReview) { sheet in
+        .sheet(item: $presentedSheet, onDismiss: {
+            maybeRequestReview()
+            // The add screen handed off to another flow (scan, import, manual):
+            // present it now that the first sheet has finished closing, through
+            // the same gates as any other add.
+            if let next = addAfterDismiss {
+                addAfterDismiss = nil
+                requestAdd(next)
+            }
+        }) { sheet in
             switch sheet {
             case .manual:
                 SubscriptionFormView(mode: .create(Subscription()))
             case .catalogue:
-                CatalogueView()
+                CatalogueView(onOtherFlow: { flow in
+                    addAfterDismiss = flow
+                    presentedSheet = nil
+                })
             case .scan:
                 ImportView()
             case .bankImport:
@@ -169,12 +183,10 @@ struct RootView: View {
             // the user glances at the Home/Lock Screen.
             if phase == .background { WidgetSync.refresh(modelContext: modelContext) }
         }
-        .onChange(of: selection) {
-            // First tab switch after onboarding = the user has seen their populated
-            // dashboard and is exploring. Surface the deferred upsell now — the ask
-            // lands after the value, not before it.
-            presentDeferredUpsellIfReady()
-        }
+        // Not on a tab switch. It used to fire there too, which meant the first
+        // tap on Calendar or Insights was answered with a sales sheet instead
+        // of the tab. Coming back to the app, or the next launch, are moments
+        // between tasks; a navigation tap is the middle of one.
         .onChange(of: selectedProfileID) {
             // The widget renders the selected profile's totals + renewals.
             WidgetSync.refresh(modelContext: modelContext)
@@ -235,7 +247,7 @@ struct RootView: View {
     /// the paywall the instant onboarding closed — before the user had seen their
     /// populated dashboard or felt any value — read as a wall and converted
     /// poorly on day one. We now defer it to the first real engagement signal
-    /// (tab switch, warm return, or next launch). Soft + non-Pro only; the
+    /// (a warm return or the next launch). Soft + non-Pro only; the
     /// cover only ever closes on first launch, so this arms exactly once.
     private func armOnboardingUpsell() {
         guard !purchases.isPro else { return }
