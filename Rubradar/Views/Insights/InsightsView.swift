@@ -411,6 +411,10 @@ private struct SpendTrendChart: View {
                 }
             }
         }
+        // Six month labels share one fixed-width axis; past this size they
+        // ran into each other. The figures stay full size in the card above
+        // and are read out by VoiceOver.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .frame(height: 160)
         .animation(.easeInOut(duration: 0.2), value: selectedLabel)
         .accessibilityLabel("Monthly Spend")
@@ -472,6 +476,10 @@ private struct UpcomingChargesChart: View {
                 }
             }
         }
+        // Six month labels share one fixed-width axis; past this size they
+        // ran into each other. The figures stay full size in the card above
+        // and are read out by VoiceOver.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .frame(height: 180)
         .animation(.easeInOut(duration: 0.2), value: selectedLabel)
         .accessibilityLabel("Projected charges per month")

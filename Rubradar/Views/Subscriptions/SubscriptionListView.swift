@@ -265,6 +265,8 @@ struct SubscriptionListView: View {
             CutListView(subscriptions: sorted(profileSubscriptions.filter(\.isCancelled)),
                         summary: metrics.cut)
         }
+        // Keeping an attention item answers its question; confirm the tap.
+        .sensoryFeedback(.selection, trigger: keptAttentionRaw)
         .scrollContentBackground(.hidden)
         .background(Color.appBackground.ignoresSafeArea())
         .searchable(text: $searchText, prompt: "Search subscriptions")
