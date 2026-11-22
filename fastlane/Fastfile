@@ -72,4 +72,30 @@ platform :ios do
       submit_for_review: false
     )
   end
+
+  # Push App Store screenshots for all localizations under fastlane/screenshots.
+  # Screenshots only — no binary, no metadata text.
+  #
+  # Slot mapping: this fastlane has no APP_IPHONE_69 display type; 1290x2796
+  # and 1320x2868 both belong to APP_IPHONE_67, which is the set App Store
+  # Connect now presents as the 6.9-inch display. So 1290x2796 files land in
+  # 6.9 automatically. Keep 1284x2778 / 1242x2688 images OUT of these folders
+  # or deliver will also create a 6.5-inch set.
+  #   bundle exec fastlane screenshots
+  desc "Push App Store screenshots for all localizations (no binary, no metadata)"
+  lane :screenshots do
+    deliver(
+      api_key: asc_api_key,
+      app_identifier: APP_ID,
+      app_version: ENV["APP_VERSION"],
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: false,
+      # Replace whatever is already in the slot rather than appending.
+      overwrite_screenshots: true,
+      run_precheck_before_submit: false,
+      force: true,
+      submit_for_review: false
+    )
+  end
 end

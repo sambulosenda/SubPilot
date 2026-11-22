@@ -9,8 +9,11 @@ import XCTest
 
 final class RubradarUITestsLaunchTests: XCTestCase {
 
+    /// One launch, not one per UI configuration: with eight languages,
+    /// both appearances and every orientation that was 129 launches, long
+    /// enough that the test was always skipped.
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
-        true
+        false
     }
 
     override func setUpWithError() throws {
@@ -20,6 +23,7 @@ final class RubradarUITestsLaunchTests: XCTestCase {
     @MainActor
     func testLaunch() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["-DemoSeed", "-UITestLocalStore"]
         app.launch()
 
         // Insert steps here to perform after app launch but before taking a screenshot,

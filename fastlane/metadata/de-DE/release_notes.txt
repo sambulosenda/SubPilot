@@ -1,8 +1,14 @@
-SubHelm behält dein Geld jetzt noch genauer im Blick:
+SubHelm zeigt dir jetzt, wo du entscheiden musst – nicht nur, was du zahlst:
 
-• Preisänderungen im Blick — jede Preiserhöhung landet in der Historie des Abos, und beim erneuten Kontoauszug-Import aktualisierst du neue Beträge mit einem Tipp
-• Testphasen enden bald — neuer Bereich auf dem Startbildschirm plus zusätzliche Erinnerungen am Vortag und am Tag selbst, damit kein Gratis-Test still kostenpflichtig wird
-• Geführtes Kündigen — „Abo kündigen" führt dich Schritt für Schritt zur Kündigungsseite des Anbieters oder zu deinen Apple-Abos
-• Dein Monatsrückblick zeigt jetzt aktuelle Preiserhöhungen
+• Handlungsbedarf — der Startbildschirm zeigt zuerst Testphasen, die bald kostenpflichtig werden, Kündigungsfristen, Preiserhöhungen und Abos, die du zwei Monate am Stück nicht genutzt hast – du entscheidest jeweils: behalten oder kündigen
+• Kündigungsfristen — hinterlege die Kündigungsfrist eines Abos oder Vertrags, und SubHelm erinnert dich vor dem letzten Tag, an dem du noch kündigen kannst
+• Nächste 30 Tage — jede anstehende Abbuchung an ihrem Tag, dazu wie viel du pro Jahr durch Kündigungen eingespart hast
+• Testphase endet heute — am letzten Tag einer kostenlosen Testphase erscheinen sie und der fällige Betrag auf dem Sperrbildschirm und in der Dynamic Island
+• Schneller hinzufügen — wähle einen bekannten Dienst und der übliche Preis ist schon eingetragen, oder lege dein eigenes Abo mit nur Name, Preis und Datum an
+• Alles zum Hinzufügen an einem Ort: Anbieter suchen, von Hand eintragen, Beleg scannen, Kontoauszug importieren oder deine App-Store-Abos übernehmen
+• Auswertungen zeigen deine monatlichen Ausgaben über bis zu sechs Monate, deine Jahressumme und deine fünf teuersten Abos
+• Tippe auf ein Abo, das der Assistent erwähnt, um es zu öffnen
+• Kürzerer Einstieg, der direkt mit der Auswahl deiner Dienste beginnt
+• Bessere Bedienungshilfen: Unterstützung für „Kontrast erhöhen“, Layouts, die auch bei den größten Textgrößen halten, größere Tippflächen und Rücksicht auf „Bewegung reduzieren“
 
 Danke, dass du SubHelm nutzt – wir freuen uns über dein Feedback!

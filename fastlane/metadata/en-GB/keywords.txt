@@ -1,1 +1,1 @@
-reminder,renewal,payment,budget,spending,organiser,receipt,scanner,trial,forgotten,direct debit
+manager,reminder,expiry,outgoings,planner,renewal,trial,find,finder,sub,stopper,unused,free

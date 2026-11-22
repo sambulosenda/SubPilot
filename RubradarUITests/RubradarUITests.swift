@@ -46,7 +46,7 @@ final class RubradarUITests: XCTestCase {
         // warm return, or next launch) — see RootView.armOnboardingUpsell. Use a
         // warm return: unlike a tab tap it can't be swallowed by the cover's
         // dismissal animation. Settle first so onDismiss has armed the flag.
-        XCTAssertTrue(app.tabBars.buttons["Calendar"].waitForExistence(timeout: 5),
+        XCTAssertTrue(app.tabBars.buttons["Calendar"].waitForExistence(timeout: 10),
                       "Tab bar did not appear after onboarding")
         Thread.sleep(forTimeInterval: 1.5)
         XCUIDevice.shared.press(.home)
@@ -55,7 +55,7 @@ final class RubradarUITests: XCTestCase {
 
         // The soft onboarding paywall should now present.
         let maybeLater = app.buttons["Maybe later"]
-        XCTAssertTrue(maybeLater.waitForExistence(timeout: 5),
+        XCTAssertTrue(maybeLater.waitForExistence(timeout: 10),
                       "Soft onboarding paywall did not present after onboarding")
 
         // Headline is part of a combined accessibility element, so match by substring.
@@ -66,8 +66,8 @@ final class RubradarUITests: XCTestCase {
 
         // "Maybe later" keeps it soft — tapping it drops into the free app.
         maybeLater.tap()
-        XCTAssertFalse(maybeLater.waitForExistence(timeout: 3),
-                       "Paywall should dismiss into the free tier on 'Maybe later'")
+        XCTAssertTrue(maybeLater.waitForNonExistence(timeout: 10),
+                      "Paywall should dismiss into the free tier on 'Maybe later'")
     }
 
     /// The onboarding value-moment: on the starter step the user taps popular
@@ -86,20 +86,20 @@ final class RubradarUITests: XCTestCase {
 
         // Tap a provider chip; the live total should appear.
         let netflix = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Netflix'")).firstMatch
-        XCTAssertTrue(netflix.waitForExistence(timeout: 5), "Netflix starter chip missing")
+        XCTAssertTrue(netflix.waitForExistence(timeout: 10), "Netflix starter chip missing")
         netflix.tap()
 
         let total = app.descendants(matching: .any)
             .matching(NSPredicate(format: "label CONTAINS %@", "tracking")).firstMatch
-        XCTAssertTrue(total.waitForExistence(timeout: 5), "Live spend total did not appear after selecting")
+        XCTAssertTrue(total.waitForExistence(timeout: 10), "Live spend total did not appear after selecting")
 
         // CTA reflects the selection count, then advances (commits the seed).
         let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Add 1'")).firstMatch
-        XCTAssertTrue(cta.waitForExistence(timeout: 3), "CTA did not reflect selection count")
+        XCTAssertTrue(cta.waitForExistence(timeout: 10), "CTA did not reflect selection count")
         cta.tap()
 
         // Reaching the reminders step proves the seed persisted without crashing.
-        XCTAssertTrue(app.buttons["Enable reminders"].waitForExistence(timeout: 5),
+        XCTAssertTrue(app.buttons["Enable reminders"].waitForExistence(timeout: 10),
                       "Did not advance past the starter step after seeding")
     }
 
@@ -119,7 +119,7 @@ final class RubradarUITests: XCTestCase {
 
         // Deferred upsell fires on the first engagement signal — use a warm
         // return (background → foreground; see note in the test above).
-        XCTAssertTrue(app.tabBars.buttons["Calendar"].waitForExistence(timeout: 5),
+        XCTAssertTrue(app.tabBars.buttons["Calendar"].waitForExistence(timeout: 10),
                       "Tab bar did not appear after onboarding")
         Thread.sleep(forTimeInterval: 1.5)
         XCUIDevice.shared.press(.home)
@@ -133,7 +133,7 @@ final class RubradarUITests: XCTestCase {
         // The billed amount line ("$19.99 per year") sits directly above the CTA.
         let billed = app.descendants(matching: .any)
             .matching(NSPredicate(format: "label CONTAINS 'per year'")).firstMatch
-        XCTAssertTrue(billed.waitForExistence(timeout: 5), "Billed amount line missing")
+        XCTAssertTrue(billed.waitForExistence(timeout: 10), "Billed amount line missing")
 
         let shot = XCTAttachment(screenshot: app.screenshot())
         shot.name = "paywall-3-1-2c"

@@ -96,6 +96,7 @@ final class NotificationManager: NSObject {
     func rescheduleAll(modelContext: ModelContext) async {
         let subs = (try? modelContext.fetch(FetchDescriptor<Subscription>())) ?? []
         await reschedule(for: subs, enabled: remindersEnabled)
+        await TrialLiveActivity.sync(subscriptions: subs, enabled: remindersEnabled)
         // Added after `reschedule` clears all pending requests, so it survives.
         await scheduleMonthlyRecap(for: subs)
     }
@@ -155,7 +156,10 @@ final class NotificationManager: NSObject {
             }
             // A notice period moves the real decision point ahead of the
             // renewal: remind before the last day to cancel, and again on it.
-            if !sub.isFreeTrial, let deadline = sub.cancelDeadline(asOf: now, calendar: calendar) {
+            // A cancel-any-time deadline is just the day before the charge,
+            // which the renewal reminder below already covers.
+            if !sub.isFreeTrial, let deadline = sub.cancelDeadline(asOf: now, calendar: calendar),
+               deadline.needsNotice {
                 let day = deadline.date.formatted(.dateTime.day().month())
                 schedule(
                     id: "deadline-\(sub.id.uuidString)",
@@ -329,6 +333,7 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
         let descriptor = FetchDescriptor<Subscription>(predicate: #Predicate { $0.id == id })
         if let sub = try? context.fetch(descriptor).first {
             sub.isCancelled = true
+            sub.cancelledAt = Date()
             sub.updatedAt = Date()
             try? context.save()
             // Drop the cancelled sub's other pending reminders and get the

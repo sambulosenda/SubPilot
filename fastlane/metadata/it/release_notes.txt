@@ -1,8 +1,14 @@
-SubHelm tiene d'occhio i tuoi soldi ancora meglio:
+SubHelm ora ti mostra cosa richiede una decisione, non solo quanto paghi:
 
-• Variazioni di prezzo — ogni aumento finisce nella cronologia dell'abbonamento, e reimportando un estratto conto aggiorni il nuovo importo con un tocco
-• Prove in scadenza — nuova sezione nella Home e promemoria extra il giorno prima e il giorno stesso, così nessuna prova gratuita diventa a pagamento in silenzio
-• Disdetta guidata — «Annulla abbonamento» ti accompagna passo passo, con link diretto alla pagina di disdetta del fornitore o ai tuoi abbonamenti Apple
-• Il riepilogo mensile ora segnala gli aumenti di prezzo recenti
+• Da controllare — la Home parte dalle prove che stanno per diventare a pagamento, dalle scadenze di disdetta, dagli aumenti di prezzo e dagli abbonamenti che non usi da due mesi, così decidi se tenerli o disdirli
+• Scadenze di disdetta — imposta il preavviso di un abbonamento e SubHelm ti avvisa prima dell'ultimo giorno utile per disdire
+• Prossimi 30 giorni — ogni addebito in arrivo nel suo giorno, insieme a quanto risparmi all'anno con le disdette
+• La prova finisce oggi — l'ultimo giorno di una prova gratuita, la prova e l'importo che verrà addebitato compaiono sulla schermata di blocco e nella Dynamic Island
+• Aggiunta più rapida — scegli un servizio noto e il prezzo abituale è già inserito, oppure aggiungi il tuo con solo nome, prezzo e data
+• Un unico posto per aggiungere: cerca i servizi, inserisci a mano, scansiona una ricevuta, importa un estratto conto o porta qui i tuoi abbonamenti App Store
+• Analisi mostra le tue spese mensili fino a sei mesi, il totale annuale e i cinque abbonamenti più cari
+• Tocca un abbonamento citato dall'Assistente per aprirlo
+• Primo avvio più breve, che parte subito dalla scelta dei tuoi servizi
+• Accessibilità migliorata: supporto per «Aumenta contrasto», layout che reggono le dimensioni del testo più grandi, aree di tocco più ampie e rispetto per «Riduci movimento»
 
 Grazie per usare SubHelm — il tuo feedback è prezioso!

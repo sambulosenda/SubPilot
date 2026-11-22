@@ -30,10 +30,10 @@ struct AppRootView: View {
                     .transition(.opacity)
             }
         }
-        // App-wide typography: SF Rounded. Set once at the root so every text
-        // style (.headline/.body/.caption…) and presented sheet inherits it,
-        // matching the rounded splash + brand mark.
-        .fontDesign(.rounded)
+        // No app-wide font design: text is standard SF. Rounded is kept for
+        // the places that ask for it by name (the big money figures and the
+        // splash wordmark), where it reads as the brand rather than as the
+        // whole app speaking in a softer voice.
         // Widget deep links land here — the only view mounted from the very
         // first frame. During the splash hold `RootView` doesn't exist yet, so
         // handling URLs there would drop cold-launch taps; buffering through

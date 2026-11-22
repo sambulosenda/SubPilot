@@ -13,6 +13,10 @@ import SwiftData
 struct AssistantView: View {
     /// Adds a Close button — set when presented as a sheet.
     var showsClose = false
+    /// Opens a subscription the assistant mentioned. When set, each answer
+    /// lists the subscriptions it names as tappable chips, so advice like
+    /// "cancel X before it renews" leads somewhere instead of ending in text.
+    var onOpen: ((Subscription) -> Void)?
 
     @Environment(\.dismiss) private var dismiss
     @Query(animation: .default) private var subscriptions: [Subscription]
@@ -27,6 +31,7 @@ struct AssistantView: View {
 
     @State private var chat = AssistantChat()
     @State private var input = ""
+    @State private var confirmClear = false
     /// Cached availability so the view reacts when the user enables Apple
     /// Intelligence or the model finishes downloading (re-checked on foreground).
     @State private var availability = AssistantChat.availability
@@ -97,9 +102,13 @@ struct AssistantView: View {
                 }
                 if !chat.messages.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("Clear", systemImage: "trash") { chat.reset() }
+                        Button("Clear", systemImage: "trash") { confirmClear = true }
                     }
                 }
+            }
+            // One tap on a bin used to wipe the whole conversation.
+            .confirmationDialog("Clear", isPresented: $confirmClear) {
+                Button("Clear", role: .destructive) { chat.reset() }
             }
         }
         .onAppear {
@@ -140,6 +149,9 @@ struct AssistantView: View {
                         ForEach(chat.messages) { message in
                             MessageBubble(message: message)
                                 .id(message.id)
+                            if message.role != .user, let onOpen {
+                                MentionChips(subscriptions: mentioned(in: message.text), onOpen: onOpen)
+                            }
                         }
                     }
                     if chat.isResponding {
@@ -217,6 +229,14 @@ struct AssistantView: View {
 
     private let bottomID = "chat-bottom"
 
+    /// Subscriptions an answer names, in the order they're listed on Home.
+    /// Matched on the name alone, so it works on whatever the model wrote.
+    private func mentioned(in text: String) -> [Subscription] {
+        Array(subscriptions
+            .filter { !$0.name.isEmpty && text.localizedCaseInsensitiveContains($0.name) }
+            .prefix(4))
+    }
+
     private func scrollToEnd(_ proxy: ScrollViewProxy) {
         withAnimation(.easeOut(duration: 0.2)) {
             proxy.scrollTo(bottomID, anchor: .bottom)
@@ -268,8 +288,43 @@ private struct MessageBubble: View {
 
 // MARK: - Typing indicator
 
+/// The subscriptions an answer mentions, as buttons to their detail screens.
+private struct MentionChips: View {
+    let subscriptions: [Subscription]
+    let onOpen: (Subscription) -> Void
+
+    var body: some View {
+        if !subscriptions.isEmpty {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                ForEach(subscriptions) { sub in
+                    Button { onOpen(sub) } label: {
+                        HStack(spacing: Spacing.sm) {
+                            BrandLogoView(subscription: sub, size: 24)
+                                .accessibilityHidden(true)
+                            Text(verbatim: sub.name)
+                                .font(.subheadline.weight(.medium))
+                                .lineLimit(1)
+                            Image(systemName: "chevron.forward")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.tertiary)
+                                .accessibilityHidden(true)
+                        }
+                        .padding(.horizontal, 12)
+                        .frame(minHeight: 44)
+                        .background(Color.cardBackground, in: .capsule)
+                        .contentShape(.capsule)
+                    }
+                    .buttonStyle(.pressable)
+                    .foregroundStyle(.primary)
+                }
+            }
+        }
+    }
+}
+
 private struct TypingIndicator: View {
     @State private var animating = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 4) {
@@ -277,9 +332,11 @@ private struct TypingIndicator: View {
                 Circle()
                     .frame(width: 7, height: 7)
                     .foregroundStyle(.secondary)
-                    .opacity(animating ? 1 : 0.3)
+                    // Reduce Motion: three still dots instead of an endless pulse.
+                    .opacity(animating || reduceMotion ? 1 : 0.3)
                     .animation(
-                        .easeInOut(duration: 0.6).repeatForever().delay(Double(index) * 0.2),
+                        reduceMotion ? nil
+                            : .easeInOut(duration: 0.6).repeatForever().delay(Double(index) * 0.2),
                         value: animating
                     )
             }

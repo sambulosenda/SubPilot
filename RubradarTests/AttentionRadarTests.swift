@@ -106,12 +106,32 @@ struct CancelDeadlineTests {
                 == date(2026, 3, 17))
     }
 
-    @Test func noDeadlineWithoutNoticeOrWhenCancelled() {
-        let plain = Subscription(name: "Netflix", amount: 10, nextRenewalDate: date(2026, 6, 1))
+    @Test func noDeadlineOnceCancelledOrForATrialWithoutNotice() {
         let gone = Subscription(name: "Gym", amount: 40, nextRenewalDate: date(2026, 6, 1),
                                 isCancelled: true, noticePeriod: .oneMonth)
-        #expect(plain.cancelDeadline(asOf: date(2026, 5, 1), calendar: calendar) == nil)
+        // A trial's end date is the decision point; `TrialRadar` owns it.
+        let trial = Subscription(name: "Max", amount: 10, nextRenewalDate: date(2026, 6, 1),
+                                 isFreeTrial: true, trialEndDate: date(2026, 5, 10))
         #expect(gone.cancelDeadline(asOf: date(2026, 5, 1), calendar: calendar) == nil)
+        #expect(trial.cancelDeadline(asOf: date(2026, 5, 1), calendar: calendar) == nil)
+    }
+
+    @Test func withoutNoticeTheDeadlineIsTheDayBeforeRenewal() throws {
+        let plain = Subscription(name: "Netflix", amount: 10, nextRenewalDate: date(2026, 6, 1))
+        let deadline = try #require(plain.cancelDeadline(asOf: date(2026, 5, 20), calendar: calendar))
+        #expect(deadline.date == date(2026, 5, 31))
+        #expect(deadline.renewal == date(2026, 6, 1))
+        #expect(deadline.daysLeft == 11)
+        #expect(!deadline.needsNotice)
+    }
+
+    @Test func aCancelAnyTimeChargeLandingTodayIsLockedIn() throws {
+        // On the renewal day yesterday was the last chance, so the next
+        // decision is the day before the following charge.
+        let plain = Subscription(name: "Netflix", amount: 10, nextRenewalDate: date(2026, 6, 1))
+        let deadline = try #require(plain.cancelDeadline(asOf: date(2026, 6, 1), calendar: calendar))
+        #expect(deadline.date == date(2026, 6, 30))
+        #expect(deadline.renewal == date(2026, 7, 1))
     }
 
     @Test func deadlineIsNoticeBeforeNextRenewal() throws {
@@ -121,6 +141,7 @@ struct CancelDeadlineTests {
         #expect(deadline.date == date(2026, 8, 1))
         #expect(deadline.renewal == date(2026, 9, 1))
         #expect(deadline.daysLeft == 12)
+        #expect(deadline.needsNotice)
     }
 
     @Test func lastDayItselfStillCounts() throws {
@@ -153,6 +174,17 @@ struct CancelDeadlineTests {
         #expect(token != nil)
         #expect(AttentionRadar.items(in: [soon, far], dismissed: Set([token].compactMap { $0 }),
                                      now: now, calendar: calendar).isEmpty)
+    }
+
+    @Test func attentionSkipsCancelAnyTimeMonthliesButFlagsYearlies() {
+        // Both renew in five days. Only the yearly one is worth a row: a
+        // monthly renewal is routine, another year is not.
+        let now = date(2026, 7, 20)
+        let monthly = Subscription(name: "Netflix", amount: 10, nextRenewalDate: date(2026, 7, 25))
+        let yearly = Subscription(name: "Disney+", amount: 90, billingCycle: .yearly,
+                                  nextRenewalDate: date(2026, 7, 25))
+        let items = AttentionRadar.items(in: [monthly, yearly], now: now, calendar: calendar)
+        #expect(items.map(\.subscription.name) == ["Disney+"])
     }
 }
 
@@ -234,5 +266,42 @@ struct CutSummaryTests {
                                   preferred: "GBP", rates: .fallback)
         #expect(cut.count == 0)
         #expect(cut.yearlyTotal == 0)
+        #expect(cut.savedSoFar == 0)
+    }
+
+    private let calendar = Calendar(identifier: .gregorian)
+
+    private func date(_ y: Int, _ m: Int, _ d: Int) -> Date {
+        DateComponents(calendar: calendar, year: y, month: m, day: d).date!
+    }
+
+    @Test func savedSoFarCountsOnlyChargesThatNeverHappened() {
+        // Bills on the 20th, cancelled 5 Sep: by 22 Nov the September,
+        // October and November charges were avoided.
+        let gym = Subscription(name: "Gym", amount: 40, currencyCode: "GBP",
+                               nextRenewalDate: date(2026, 1, 20), isCancelled: true)
+        gym.cancelledAt = date(2026, 9, 5)
+        // Yearly and not due until March: nothing saved yet, whatever the
+        // yearly rate says.
+        let mag = Subscription(name: "Mag", amount: 120, currencyCode: "GBP", billingCycle: .yearly,
+                               nextRenewalDate: date(2027, 3, 1), isCancelled: true)
+        mag.cancelledAt = date(2026, 9, 5)
+
+        let cut = CutSummary.make(from: [gym, mag], preferred: "GBP", rates: .fallback,
+                                  now: date(2026, 11, 22), calendar: calendar)
+        #expect(cut.savedSoFar == 120)
+        #expect(cut.yearlyTotal == 600)
+        #expect(gym.chargesAvoided(asOf: date(2026, 9, 19), calendar: calendar) == 0)
+        #expect(gym.chargesAvoided(asOf: date(2026, 9, 20), calendar: calendar) == 1)
+        #expect(mag.chargesAvoided(asOf: date(2026, 11, 22), calendar: calendar) == 0)
+    }
+
+    @Test func aChargeOnTheDayOfCancellingIsNotCountedAsSaved() {
+        let gym = Subscription(name: "Gym", amount: 40, currencyCode: "GBP",
+                               nextRenewalDate: date(2026, 9, 20), isCancelled: true)
+        gym.cancelledAt = date(2026, 9, 20)
+        #expect(gym.chargesAvoided(asOf: date(2026, 9, 20), calendar: calendar) == 0)
+        #expect(gym.chargesAvoided(asOf: date(2026, 10, 20), calendar: calendar) == 1)
+        #expect(Subscription(name: "Netflix", amount: 10).chargesAvoided() == 0)
     }
 }

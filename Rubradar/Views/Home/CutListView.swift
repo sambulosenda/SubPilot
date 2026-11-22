@@ -18,16 +18,23 @@ struct CutListView: View {
     var body: some View {
         List {
             Section {
-                HStack(alignment: .firstTextBaseline, spacing: Spacing.xs) {
-                    Text(summary.formattedYearly)
-                        .font(.system(size: amountSize, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color.brand)
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
-                        .contentTransition(.numericText())
-                    Text("/year")
-                        .font(.title3.weight(.medium))
-                        .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: Spacing.xs) {
+                    HStack(alignment: .firstTextBaseline, spacing: Spacing.xs) {
+                        Text(summary.formattedYearly)
+                            .font(.system(size: amountSize, weight: .bold, design: .rounded))
+                            .foregroundStyle(Color.brand)
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(1)
+                            .contentTransition(.numericText())
+                        Text("/year")
+                            .font(.title3.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    if summary.savedSoFar > 0 {
+                        Text("Saved \(summary.formattedSavedSoFar) so far")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 .padding(.horizontal, 20)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -35,6 +42,9 @@ struct CutListView: View {
                 .listRowBackground(Color.clear)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("You've cut \(summary.formattedYearly) a year")
+                .accessibilityValue(summary.savedSoFar > 0
+                                    ? Text("Saved \(summary.formattedSavedSoFar) so far")
+                                    : Text(verbatim: ""))
             }
 
             Section {

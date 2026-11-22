@@ -16,6 +16,7 @@ struct SubscriptionsEmptyState: View {
     var onAddManually: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(PurchaseManager.self) private var purchases
     /// Drives a one-shot fade+rise entrance (and the icon bounce) on first show,
     /// so a blank screen settles in rather than snapping into place.
     @State private var appeared = false
@@ -74,7 +75,7 @@ struct SubscriptionsEmptyState: View {
                 // The catalogue leads: it is free, and the fastest way to a
                 // first subscription. Scanning and importing are Pro, so as the
                 // prominent button they sent a brand-new user's first tap
-                // straight to the paywall. Same order as `AddOptionsSheet`.
+                // straight to the paywall. Same order as the add screen.
                 Button(action: onBrowseCatalogue) {
                     HStack(spacing: Spacing.xs) {
                         Image(systemName: "magnifyingglass")
@@ -97,6 +98,7 @@ struct SubscriptionsEmptyState: View {
                             .lineLimit(2)
                             .multilineTextAlignment(.center)
                             .minimumScaleFactor(0.8)
+                        if !purchases.isPro { ProBadge() }
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -111,6 +113,7 @@ struct SubscriptionsEmptyState: View {
                             .lineLimit(2)
                             .multilineTextAlignment(.center)
                             .minimumScaleFactor(0.8)
+                        if !purchases.isPro { ProBadge() }
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -132,4 +135,5 @@ struct SubscriptionsEmptyState: View {
 
 #Preview {
     SubscriptionsEmptyState(onScan: {}, onBrowseCatalogue: {}, onImportStatement: {}, onAddManually: {})
+        .environment(PurchaseManager.preview(isPro: false))
 }

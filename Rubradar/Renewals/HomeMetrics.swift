@@ -87,7 +87,8 @@ struct HomeMetrics {
             upcoming: upcoming,
             upcomingTotal: upcomingTotal,
             preferredCurrency: preferred,
-            cut: CutSummary.make(from: subscriptions, preferred: preferred, rates: rates),
+            cut: CutSummary.make(from: subscriptions, preferred: preferred, rates: rates,
+                                 now: now, calendar: calendar),
             daysUntilNextCharge: days
         )
     }

@@ -1,1 +1,1 @@
-SubHelm: Abonnement Tracker
+SubHelm: Abonnements verwalten

@@ -91,6 +91,10 @@ enum AttentionRadar {
     static let priceRiseWindowDays = 30
     /// How far ahead a cancel deadline starts asking for a decision.
     static let deadlineWindowDays = 14
+    /// A cancel-any-time subscription only earns a row once missing the day
+    /// commits this many months: flagging every monthly renewal would bury the
+    /// decisions that matter.
+    static let anyTimeDeadlineMinMonths: Decimal = 12
 
     /// Dated items first, soonest first (trials and cancel deadlines), then
     /// subscriptions that keep going unused (costliest first), then price
@@ -119,7 +123,9 @@ enum AttentionRadar {
         }
     }
 
-    /// Active subscriptions whose last day to cancel falls inside the window.
+    /// Active subscriptions whose last day to cancel falls inside the window:
+    /// every one with a notice period, and cancel-any-time ones only when the
+    /// renewal is a long commitment (see `anyTimeDeadlineMinMonths`).
     /// A trial is left to `TrialRadar` — its end date is the decision point.
     static func upcomingDeadlines(
         in subscriptions: [Subscription],
@@ -129,7 +135,10 @@ enum AttentionRadar {
         subscriptions.compactMap { sub -> UpcomingDeadline? in
             guard !sub.isFreeTrial,
                   let deadline = sub.cancelDeadline(asOf: now, calendar: calendar),
-                  deadline.daysLeft <= deadlineWindowDays else { return nil }
+                  deadline.daysLeft <= deadlineWindowDays,
+                  deadline.needsNotice
+                    || sub.billingCycle.monthsPerCycle(customDays: sub.customCycleDays) >= anyTimeDeadlineMinMonths
+            else { return nil }
             return UpcomingDeadline(subscription: sub, deadline: deadline)
         }
     }
@@ -157,28 +166,59 @@ enum AttentionRadar {
     }
 }
 
+extension Subscription {
+    /// How many charges would have landed since this was cancelled: what
+    /// cancelling has actually saved, as opposed to the yearly rate. A charge
+    /// on the day of cancelling is assumed to have gone through. 0 while
+    /// active. Subscriptions cancelled before `cancelledAt` existed fall back
+    /// to `updatedAt`, as in `SpendHistory`.
+    func chargesAvoided(asOf now: Date = Date(), calendar: Calendar = .current) -> Int {
+        guard isCancelled else { return 0 }
+        let cancelDay = calendar.startOfDay(for: cancelledAt ?? updatedAt)
+        let today = calendar.startOfDay(for: now)
+        guard let afterCancel = calendar.date(byAdding: .day, value: 1, to: cancelDay),
+              let tomorrow = calendar.date(byAdding: .day, value: 1, to: today),
+              afterCancel < tomorrow else { return 0 }
+        let anchor = (isFreeTrial && trialEndDate != nil) ? trialEndDate! : nextRenewalDate
+        let first = billingCycle.firstOccurrence(onOrAfter: afterCancel, anchor: anchor,
+                                                 customDays: customCycleDays, calendar: calendar).index
+        let next = billingCycle.firstOccurrence(onOrAfter: tomorrow, anchor: anchor,
+                                                customDays: customCycleDays, calendar: calendar).index
+        return max(0, next - first)
+    }
+}
+
 /// What the user has stopped paying for: the yearly cost of their cancelled
-/// subscriptions. Derived from the same records as the spend totals, so there
-/// is nothing extra to store or sync.
+/// subscriptions, and what that has saved so far. Derived from the same
+/// records as the spend totals, so there is nothing extra to store or sync.
 struct CutSummary {
     let preferredCurrency: String
     let yearlyTotal: Decimal
+    /// The charges that never happened since each cancellation. 0 until the
+    /// first one would have landed, then grows on its own.
+    let savedSoFar: Decimal
     let count: Int
 
     var formattedYearly: String { yearlyTotal.formatted(.currency(code: preferredCurrency)) }
+    var formattedSavedSoFar: String { savedSoFar.formatted(.currency(code: preferredCurrency)) }
 
     static func make(
         from subscriptions: [Subscription],
         preferred: String,
-        rates: ExchangeRates
+        rates: ExchangeRates,
+        now: Date = Date(),
+        calendar: Calendar = .current
     ) -> CutSummary {
         var yearly: Decimal = 0
+        var saved: Decimal = 0
         var count = 0
         for sub in subscriptions where sub.isCancelled {
             count += 1
             // Unconvertible currencies are left out, as in `SpendSummary`.
             yearly += (rates.convert(sub.monthlyEquivalent, from: sub.currencyCode, to: preferred) ?? 0) * 12
+            let avoided = Decimal(sub.chargesAvoided(asOf: now, calendar: calendar))
+            saved += (rates.convert(sub.amount, from: sub.currencyCode, to: preferred) ?? 0) * avoided
         }
-        return CutSummary(preferredCurrency: preferred, yearlyTotal: yearly, count: count)
+        return CutSummary(preferredCurrency: preferred, yearlyTotal: yearly, savedSoFar: saved, count: count)
     }
 }

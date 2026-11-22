@@ -391,7 +391,10 @@ private struct RenewalEventRow: View {
                     .font(.headline)
                     // Shrinks a little before truncating, as on Home's rows:
                     // at full size "Adobe Creative Cloud" lost its last word.
-                    .rowTitle()
+                    // With the date badge there is less room still, so the
+                    // timeline lets a long name take a second line.
+                    .lineLimit(showsDate ? 2 : 1)
+                    .minimumScaleFactor(0.8)
                 if event.isTrialEnd {
                     Text("Trial ends")
                         .font(.caption.weight(.semibold))
@@ -698,7 +701,9 @@ private struct DayCell: View {
             .frame(width: Self.numberSize, height: Self.numberSize)
             .background {
                 if isToday {
-                    Circle().fill(Color.brand)
+                    // The deeper teal: white on `brand` is 3.75:1, under the
+                    // 4.5:1 a footnote-size number needs.
+                    Circle().fill(Color.brandDeep)
                 } else if isSelected {
                     // Outline, not a solid fill. A filled neutral circle was
                     // fine among the old grey tiles; on the cleared-out grid it
@@ -721,6 +726,12 @@ private struct DayCell: View {
         if let first = events.first {
             HStack(spacing: 2) {
                 BrandLogoView(subscription: first.subscription, size: Self.markerSize)
+                    // At 18pt the logo's own hairline is too faint to hold a
+                    // black mark (ChatGPT, Netflix) against a dark tile.
+                    .overlay {
+                        RoundedRectangle(cornerRadius: Self.markerSize * 0.24, style: .continuous)
+                            .strokeBorder(Color.primary.opacity(0.4), lineWidth: 0.75)
+                    }
                 if events.count > 1 {
                     Text("+\(events.count - 1)")
                         .font(.system(size: 10, weight: .bold))

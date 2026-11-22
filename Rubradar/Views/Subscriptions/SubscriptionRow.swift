@@ -21,8 +21,18 @@ struct SubscriptionRow: View {
         subscription.priceLabel(in: preferredCurrency, rates: currency.rates)
     }
 
-    private var renewalText: String {
-        subscription.projectedNextRenewal().formatted(.dateTime.day().month(.abbreviated))
+    /// "Cancel by 3 Nov" when cancelling needs notice: the date that matters
+    /// is then weeks ahead of the charge. Otherwise "Renews 4 Dec". For a
+    /// cancel-any-time subscription the two are a day apart, and the longer
+    /// label widened this column until "Adobe Creative Cloud" truncated (far
+    /// worse in Spanish and Italian); its cancel-by date is on the detail
+    /// screen.
+    private var scheduleText: String {
+        let format = Date.FormatStyle.dateTime.day().month(.abbreviated)
+        if let deadline = subscription.cancelDeadline(), deadline.needsNotice {
+            return String(localized: "Cancel by \(deadline.date.formatted(format))")
+        }
+        return String(localized: "Renews \(subscription.projectedNextRenewal().formatted(format))")
     }
 
     var body: some View {
@@ -65,7 +75,7 @@ struct SubscriptionRow: View {
                     .font(.subheadline.weight(.semibold))
                     .monospacedDigit()
                     .rowValue()
-                Text("Renews \(renewalText)")
+                Text(scheduleText)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .rowValue()
@@ -82,7 +92,7 @@ struct SubscriptionRow: View {
         var parts = [subscription.name, subscription.category.label, priceText]
         if subscription.isFreeTrial { parts.append("free trial") }
         if subscription.isCancelled { parts.append("cancelled") }
-        parts.append("renews \(renewalText)")
+        parts.append(scheduleText)
         return parts.joined(separator: ", ")
     }
 }

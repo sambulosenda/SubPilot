@@ -33,6 +33,11 @@ final class Subscription {
 
     // State
     var isCancelled: Bool = false
+    /// When the user marked this cancelled; nil while active, and on
+    /// subscriptions cancelled before this field existed (spend history falls
+    /// back to `updatedAt` for those). Optional so existing stores
+    /// lightweight-migrate (CloudKit-safe).
+    var cancelledAt: Date?
     var isFreeTrial: Bool = false
     var trialEndDate: Date?
 

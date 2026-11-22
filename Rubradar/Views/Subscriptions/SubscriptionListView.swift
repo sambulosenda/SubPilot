@@ -60,11 +60,6 @@ struct SubscriptionListView: View {
     @State private var path: [Subscription] = []
     /// Shared namespace so a tapped row zooms into its detail screen and back.
     @Namespace private var detailTransition
-    /// Drives the "Add a Subscription" chooser bottom sheet (toolbar `+`).
-    @State private var showAddChooser = false
-    /// Flow chosen in the chooser, presented once the chooser finishes dismissing
-    /// so we never present a sheet from a sheet mid-dismiss.
-    @State private var pendingAdd: AddSheet?
 
     /// Subscriptions in the selected profile ("" = All), before search/cancel
     /// filtering. Drives the dashboard totals so they scope to the profile.
@@ -135,7 +130,6 @@ struct SubscriptionListView: View {
                         onImportStatement: { presentAdd(.bankImport) },
                         onAddManually: { presentAdd(.manual) }
                     )
-                    .background(alignment: .top) { HomeAmbience() }
                 } else {
                     list
                 }
@@ -156,21 +150,14 @@ struct SubscriptionListView: View {
                 }
             }
             .sheet(isPresented: $showAssistant) {
-                AssistantView(showsClose: true)
+                AssistantView(showsClose: true, onOpen: { sub in
+                    // Close the chat, then land on the subscription it named.
+                    showAssistant = false
+                    path = [sub]
+                })
             }
             .sheet(isPresented: $showManageProfiles) {
                 NavigationStack { ManageProfilesView() }
-            }
-            .sheet(isPresented: $showAddChooser, onDismiss: {
-                if let pendingAdd {
-                    self.pendingAdd = nil
-                    presentAdd(pendingAdd)
-                }
-            }) {
-                AddOptionsSheet { choice in
-                    pendingAdd = choice
-                    showAddChooser = false
-                }
             }
             .onChange(of: profiles.map(\.id)) {
                 // A deleted selected profile would otherwise filter to nothing.
@@ -205,13 +192,19 @@ struct SubscriptionListView: View {
 
     private var list: some View {
         // Filter+sort once per body pass; reused by the rows and the empty overlay.
-        let visible = visibleSubscriptions
+        let attention = searchText.isEmpty
+            ? AttentionRadar.items(in: profileSubscriptions, dismissed: keptAttentionTokens)
+            : []
+        // "Up next" skips whatever "Needs attention" already shows right
+        // above it. Any other sort is the full inventory, so nothing is
+        // left out there.
+        let flagged = sortOption == .nextRenewal ? Set(attention.map(\.subscription.id)) : []
+        let visible = visibleSubscriptions.filter { !flagged.contains($0.id) }
+        let metrics = metrics
         return List {
             if searchText.isEmpty {
                 Section {
-                    DashboardHeader(metrics: metrics,
-                                    onOpenCalendar: onViewAllRenewals,
-                                    onOpenCut: { showCutList = true })
+                    DashboardHeader(metrics: metrics, onOpenCut: { showCutList = true })
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
@@ -227,10 +220,17 @@ struct SubscriptionListView: View {
                     }
                 }
 
-                let attention = AttentionRadar.items(in: profileSubscriptions,
-                                                     dismissed: keptAttentionTokens)
                 if !attention.isEmpty {
                     AttentionSection(items: attention, onKeep: keep)
+                }
+
+                if metrics.nextEvent != nil {
+                    Section {
+                        DashboardStrip(metrics: metrics, onOpenCalendar: onViewAllRenewals)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                    }
                 }
             }
 
@@ -265,10 +265,9 @@ struct SubscriptionListView: View {
             CutListView(subscriptions: sorted(profileSubscriptions.filter(\.isCancelled)),
                         summary: metrics.cut)
         }
-        // A soft brand glow behind the total, the same light the onboarding
-        // and paywall sit in, so Home doesn't drop to a flat black after them.
+        // Keeping an attention item answers its question; confirm the tap.
+        .sensoryFeedback(.selection, trigger: keptAttentionRaw)
         .scrollContentBackground(.hidden)
-        .background(alignment: .top) { HomeAmbience() }
         .background(Color.appBackground.ignoresSafeArea())
         .searchable(text: $searchText, prompt: "Search subscriptions")
         .searchToolbarBehavior(.minimize)
@@ -280,15 +279,36 @@ struct SubscriptionListView: View {
         }
     }
 
+    /// The list's title doubles as its sort control, where the thing it
+    /// changes is. Sort used to live in a "…" menu in the toolbar, two taps
+    /// from the list and one more button in an already full bar.
     private var sectionHeader: some View {
         HStack {
-            Text(listSectionTitle)
+            Menu {
+                Picker("Sort by", selection: $sortOption) {
+                    ForEach(SortOption.allCases) { option in
+                        Label(option.label, systemImage: option.symbol).tag(option)
+                    }
+                }
+            } label: {
+                HStack(spacing: Spacing.xs) {
+                    Text(listSectionTitle)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption2.weight(.semibold))
+                        .accessibilityHidden(true)
+                }
+                .padding(.vertical, 13)
+                .contentShape(.rect)
+                .padding(.vertical, -13)
+            }
+            .foregroundStyle(.secondary)
+            .accessibilityLabel("Sort by")
+            .accessibilityValue(sortOption.label)
             Spacer()
             // Named for where it goes. It was "View all", which promised the
             // full list and opened the Calendar tab.
             Button("Calendar") { onViewAllRenewals() }
                 .font(.subheadline.weight(.semibold))
-                .textCase(nil)
                 // The text is ~18pt tall; pad the tappable area out to 44
                 // without letting it push the header's layout.
                 .padding(.vertical, 13)
@@ -296,6 +316,7 @@ struct SubscriptionListView: View {
                 .contentShape(.rect)
                 .padding(.vertical, -13)
         }
+        .textCase(nil)
     }
 
     private var currentProfileName: String {
@@ -328,19 +349,25 @@ struct SubscriptionListView: View {
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
-        // Trailing edge stays a two-pill capsule: a secondary overflow (Assistant
-        // + Sort) and the primary Add. Folding both into one ⋯ menu
-        // keeps the top from reading as a dense three-segment glass cluster.
+        // Three controls at most. The profile switcher shows only once there
+        // is a second profile to switch to (profiles are still managed in
+        // Settings); the Assistant has its own button instead of hiding in a
+        // "…" menu; Sort moved to the list's header.
         if !subscriptions.isEmpty {
-            ToolbarItem(placement: .topBarLeading) { profileMenu }
-            ToolbarItem(placement: .topBarTrailing) { overflowMenu }
+            if profiles.count > 1 {
+                ToolbarItem(placement: .topBarLeading) { profileMenu }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Assistant", systemImage: "sparkles") { openAssistant() }
+            }
         }
         ToolbarItem(placement: .topBarTrailing) { addMenu }
     }
 
-    /// Primary action — one tap opens the add chooser (a bottom sheet).
+    /// Primary action: one tap opens the add screen (the searchable catalogue,
+    /// with manual, scan and import offered at the top).
     private var addMenu: some View {
-        Button { showAddChooser = true } label: {
+        Button { presentAdd(.catalogue) } label: {
             Label("Add subscription", systemImage: "plus")
         }
     }
@@ -355,43 +382,6 @@ struct SubscriptionListView: View {
         } else {
             purchases.paywallContext = .assistant
         }
-    }
-
-    /// Secondary, list-only actions: the Assistant (a sheet) and Sort (a rarely
-    /// changed preference) live here rather than as standalone toolbar buttons.
-    private var overflowMenu: some View {
-        Menu {
-            Button("Assistant", systemImage: "sparkles") { openAssistant() }
-            Divider()
-            Picker("Sort by", selection: $sortOption) {
-                ForEach(SortOption.allCases) { option in
-                    Label(option.label, systemImage: option.symbol).tag(option)
-                }
-            }
-        } label: {
-            Label("More", systemImage: "ellipsis")
-        }
-    }
-}
-
-/// Ambient backdrop for Home: a teal glow falling from the top-leading corner,
-/// where the monthly total sits. Decoration only, and fixed, so the list
-/// scrolls over it.
-private struct HomeAmbience: View {
-    @Environment(\.colorScheme) private var colorScheme
-
-    var body: some View {
-        RadialGradient(
-            colors: [.brand.opacity(colorScheme == .dark ? 0.30 : 0.14), .brand.opacity(0)],
-            center: UnitPoint(x: 0.15, y: 0),
-            startRadius: 0,
-            endRadius: 420
-        )
-        .frame(height: 460)
-        .frame(maxWidth: .infinity)
-        .ignoresSafeArea(edges: .top)
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
     }
 }
 

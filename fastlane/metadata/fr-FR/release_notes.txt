@@ -1,8 +1,14 @@
-SubHelm surveille votre argent de plus près :
+SubHelm vous montre désormais ce qui demande une décision, pas seulement ce que vous payez :
 
-• Suivi des changements de prix — chaque hausse apparaît dans l'historique de l'abonnement, et un relevé réimporté propose la mise à jour du nouveau montant en un geste
-• Essais bientôt terminés — nouvelle section sur l'accueil et rappels supplémentaires la veille et le jour même, pour qu'aucun essai gratuit ne devienne payant en silence
-• Résiliation guidée — « Résilier l'abonnement » vous accompagne pas à pas, avec un lien direct vers la page de résiliation du fournisseur ou vos abonnements Apple
-• Votre récap mensuel signale désormais les hausses de prix récentes
+• À surveiller — l'accueil commence par les essais sur le point de devenir payants, les échéances de résiliation, les hausses de prix et les abonnements inutilisés depuis deux mois, à garder ou à résilier
+• Échéances de résiliation — indiquez le préavis d'un abonnement et SubHelm vous prévient avant le dernier jour où vous pouvez encore résilier
+• 30 prochains jours — chaque prélèvement à venir placé sur son jour, avec ce que vous économisez par an grâce à vos résiliations
+• L'essai se termine aujourd'hui — le dernier jour d'un essai gratuit, l'essai et le montant qui sera prélevé s'affichent sur l'écran verrouillé et dans la Dynamic Island
+• Ajout plus rapide — choisissez un service connu et son prix habituel est déjà rempli, ou ajoutez le vôtre avec juste un nom, un prix et une date
+• Un seul endroit pour ajouter : rechercher un service, saisir à la main, scanner un reçu, importer un relevé bancaire ou reprendre vos abonnements App Store
+• Les analyses montrent vos dépenses mensuelles sur six mois maximum, votre total annuel et vos cinq abonnements les plus chers
+• Touchez un abonnement cité par l'Assistant pour l'ouvrir
+• Une première ouverture plus courte, qui commence directement par le choix de vos services
+• Meilleure accessibilité : prise en charge de « Augmenter le contraste », mise en page qui tient aux plus grandes tailles de texte, zones tactiles plus grandes et respect de « Réduire les animations »
 
 Merci d'utiliser SubHelm — votre avis nous intéresse !
