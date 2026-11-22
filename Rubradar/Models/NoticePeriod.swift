@@ -48,6 +48,10 @@ struct CancelDeadline: Equatable {
     let renewal: Date
     /// Whole days from today; 0 = today is the last day.
     let daysLeft: Int
+    /// True when the provider needs notice, so the deadline sits well ahead of
+    /// the renewal. False for a cancel-any-time subscription, where it is just
+    /// the day before the charge.
+    let needsNotice: Bool
 }
 
 extension Subscription {
@@ -56,12 +60,16 @@ extension Subscription {
         set { noticePeriodRaw = newValue?.rawValue }
     }
 
-    /// The next cancel-by date that hasn't passed. Nil without a notice period
-    /// or once cancelled. When the deadline for the upcoming renewal is already
+    /// The next cancel-by date that hasn't passed. Without a notice period
+    /// that is the day before the renewal. Nil once cancelled, and for a trial
+    /// with no notice period: its end date is the decision point (see
+    /// `TrialRadar`). When the deadline for the upcoming renewal is already
     /// gone, that renewal is locked in, so this returns the deadline for the
     /// one after — the next decision the user can actually make.
     func cancelDeadline(asOf now: Date = Date(), calendar: Calendar = .current) -> CancelDeadline? {
-        guard let notice = noticePeriod, !isCancelled else { return nil }
+        guard !isCancelled else { return nil }
+        let notice = noticePeriod
+        if notice == nil, isFreeTrial { return nil }
         let today = calendar.startOfDay(for: now)
         let anchor = (isFreeTrial && trialEndDate != nil) ? trialEndDate! : nextRenewalDate
         let first = billingCycle.firstOccurrence(
@@ -72,10 +80,14 @@ extension Subscription {
         for n in first..<(first + 400) {
             let renewal = billingCycle.date(byAddingCycles: n, to: anchor,
                                             customDays: customCycleDays, calendar: calendar)
-            let deadline = notice.lastDayToCancel(before: renewal, calendar: calendar)
+            let renewalDay = calendar.startOfDay(for: renewal)
+            let deadline = notice?.lastDayToCancel(before: renewal, calendar: calendar)
+                ?? calendar.date(byAdding: .day, value: -1, to: renewalDay)
+                ?? renewalDay
             guard deadline >= today else { continue }
             let days = calendar.dateComponents([.day], from: today, to: deadline).day ?? 0
-            return CancelDeadline(date: deadline, renewal: renewal, daysLeft: days)
+            return CancelDeadline(date: deadline, renewal: renewal, daysLeft: days,
+                                  needsNotice: notice != nil)
         }
         return nil
     }

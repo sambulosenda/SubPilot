@@ -156,7 +156,10 @@ final class NotificationManager: NSObject {
             }
             // A notice period moves the real decision point ahead of the
             // renewal: remind before the last day to cancel, and again on it.
-            if !sub.isFreeTrial, let deadline = sub.cancelDeadline(asOf: now, calendar: calendar) {
+            // A cancel-any-time deadline is just the day before the charge,
+            // which the renewal reminder below already covers.
+            if !sub.isFreeTrial, let deadline = sub.cancelDeadline(asOf: now, calendar: calendar),
+               deadline.needsNotice {
                 let day = deadline.date.formatted(.dateTime.day().month())
                 schedule(
                     id: "deadline-\(sub.id.uuidString)",

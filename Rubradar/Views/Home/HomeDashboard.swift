@@ -107,8 +107,16 @@ private struct CutPill: View {
                     Image(systemName: "scissors")
                         .accessibilityHidden(true)
                 }
-                Text("You've cut \(summary.formattedYearly) a year")
-                    .contentTransition(.numericText())
+                // Once a charge has actually been avoided, lead with that:
+                // money kept is the proof, the yearly rate is the promise.
+                Group {
+                    if summary.savedSoFar > 0 {
+                        Text("\(summary.formattedSavedSoFar) saved · \(summary.formattedYearly) a year")
+                    } else {
+                        Text("You've cut \(summary.formattedYearly) a year")
+                    }
+                }
+                .contentTransition(.numericText())
                 if !dynamicTypeSize.isAccessibilitySize {
                     Image(systemName: "chevron.right")
                         .font(.caption2.weight(.bold))
