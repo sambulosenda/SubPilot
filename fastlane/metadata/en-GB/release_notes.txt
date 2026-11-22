@@ -1,12 +1,14 @@
-SubHelm now watches your money even more closely:
+SubHelm now shows what needs a decision, not just what you pay:
 
-• Price-change tracking — see every price rise on a subscription's history, and get one-tap updates when a re-imported statement shows a new amount
-• Trials ending soon — a new Home section and extra day-before and day-of reminders so a free trial never quietly converts
-• Guided cancellation — "Cancel subscription" now walks you through it, with a direct link to the provider's cancel page or your Apple subscriptions
-• Your monthly recap now calls out recent price rises
-• Home shows where the money goes: a spend-by-category breakdown inside the total card
-• The calendar now highlights the days that actually have renewals, instead of every empty square
-• Adding a subscription is smoother — the chooser fits every option at any text size, and the form moves through its fields from the keyboard
-• A clearer, more legible first run
+• Needs attention — Home now leads with trials about to convert, cancel deadlines, price rises and subscriptions you haven't used two months running, so you can keep or cancel each one
+• Cancel deadlines — set a notice period on a subscription or contract and SubHelm reminds you before the last day you can still cancel
+• Next 30 days — every upcoming charge placed on its day, plus how much a year you've cut by cancelling
+• Trial ends today — on a free trial's last day, the trial and what it will charge appear on your Lock Screen and in the Dynamic Island
+• Faster adding — pick a popular service and its typical price is filled in for you, or add your own with just a name, price and date
+• One place to add a subscription: search services, enter one by hand, scan a receipt, import a bank statement or bring in your App Store subscriptions
+• Insights shows your monthly spend for up to six months, your yearly total and your five most expensive subscriptions
+• Tap any subscription the Assistant mentions to open it
+• A shorter first run that starts straight on picking your services
+• Better accessibility: Increase Contrast support, layouts that hold at the largest text sizes, larger tap targets and respect for Reduce Motion
 
 Thanks for using SubHelm — we'd love your feedback!

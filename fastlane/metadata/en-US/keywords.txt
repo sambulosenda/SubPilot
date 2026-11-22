@@ -1,1 +1,1 @@
-reminder,renewal,payment,budget,spending,organizer,receipt,scanner,trial,widget,forgotten,recurrent
+reminder,find,finder,planner,manager,organizer,trial,payment,renewal,monthly,sub,stopper,unused

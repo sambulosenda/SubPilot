@@ -1,1 +1,1 @@
-kosten,kündigen,vertrag,erinnerung,manager,übersicht,probeabo,monatlich,budget,sparen,abrechnung
+abo,kündigen,kündigung,überblick,übersicht,kontrolle,vertrag,vertragsmanager,erinnerung,probeabo

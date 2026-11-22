@@ -1,8 +1,14 @@
-SubHelm vigila tu dinero aún más de cerca:
+SubHelm ahora te muestra lo que necesita una decisión, no solo lo que pagas:
 
-• Seguimiento de cambios de precio — cada subida queda en el historial de la suscripción, y al reimportar un extracto puedes actualizar el nuevo importe con un toque
-• Pruebas a punto de terminar — nueva sección en Inicio y recordatorios extra el día antes y el mismo día, para que ninguna prueba gratuita se convierta en pago sin avisar
-• Cancelación guiada — «Cancelar suscripción» te guía paso a paso, con enlace directo a la página de cancelación del proveedor o a tus suscripciones de Apple
-• Tu resumen mensual ahora destaca las subidas de precio recientes
+• Requiere atención — Inicio empieza por las pruebas a punto de pasar a pago, los plazos para cancelar, las subidas de precio y las suscripciones que llevas dos meses sin usar, para que decidas si conservarlas o cancelarlas
+• Plazos para cancelar — indica el plazo de preaviso de una suscripción y SubHelm te avisa antes del último día en que aún puedes cancelar
+• Próximos 30 días — cada cargo pendiente en su día, junto a lo que ahorras al año con lo que has cancelado
+• La prueba termina hoy — el último día de una prueba gratis, la prueba y el importe que se cobrará aparecen en la pantalla de bloqueo y en la Dynamic Island
+• Añadir más rápido — elige un servicio conocido y su precio habitual ya aparece, o añade el tuyo con solo nombre, precio y fecha
+• Todo para añadir en un solo sitio: buscar servicios, introducirlo a mano, escanear un recibo, importar un extracto bancario o traer tus suscripciones de la App Store
+• Análisis muestra tus gastos mensuales de hasta seis meses, tu total anual y tus cinco suscripciones más caras
+• Toca cualquier suscripción que mencione el Asistente para abrirla
+• Un primer inicio más corto, que empieza directamente eligiendo tus servicios
+• Mejor accesibilidad: compatibilidad con «Aumentar contraste», diseños que aguantan los tamaños de texto más grandes, zonas táctiles más amplias y respeto por «Reducir movimiento»
 
 ¡Gracias por usar SubHelm! Nos encantaría conocer tu opinión.
