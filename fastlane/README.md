@@ -39,6 +39,14 @@ Preview metadata (authenticates, no upload)
 
 Push App Store metadata for all localizations (no binary, no screenshots)
 
+### ios screenshots
+
+```sh
+[bundle exec] fastlane ios screenshots
+```
+
+Push App Store screenshots for all localizations (no binary, no metadata)
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
