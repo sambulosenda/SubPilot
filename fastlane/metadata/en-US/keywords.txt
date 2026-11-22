@@ -1,1 +1,1 @@
-reminder,find,finder,planner,manager,organizer,trial,payment,renewal,monthly,sub,stopper,unused
+find,finder,planner,manager,organizer,trial,payment,renewal,monthly,sub,stopper,unused,free

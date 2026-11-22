@@ -1,1 +1,1 @@
-manager,organiser,reminder,expiry,outgoings,planner,renewal,trial,find,finder,sub,stopper,unused
+manager,reminder,expiry,outgoings,planner,renewal,trial,find,finder,sub,stopper,unused,free

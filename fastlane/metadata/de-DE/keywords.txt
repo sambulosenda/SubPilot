@@ -1,1 +1,1 @@
-abo,kündigen,kündigung,überblick,übersicht,kontrolle,vertrag,vertragsmanager,erinnerung,probeabo
+abo,tracker,kündigung,überblick,übersicht,kontrolle,vertrag,vertragsmanager,erinnerung,probeabo
