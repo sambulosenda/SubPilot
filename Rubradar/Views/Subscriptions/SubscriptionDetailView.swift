@@ -22,18 +22,8 @@ struct SubscriptionDetailView: View {
     @AppStorage("preferredCurrencyCode") private var preferredCurrency =
         Locale.current.currency?.identifier ?? "GBP"
 
-    /// The monthly cost, in the preferred currency when a rate is known.
-    /// `nil` when it would only repeat the Amount row.
-    private var perMonthText: String? {
-        let native = subscription.currencyCode
-        if native != preferredCurrency,
-           let converted = currency.rates.convert(subscription.monthlyEquivalent,
-                                                  from: native, to: preferredCurrency) {
-            return converted.formatted(.currency(code: preferredCurrency))
-        }
-        guard subscription.billingCycle != .monthly else { return nil }
-        return subscription.monthlyEquivalent.formatted(.currency(code: native))
-    }
+    /// The headline figure scales with Dynamic Type from a 52pt base.
+    @ScaledMetric(relativeTo: .largeTitle) private var figureSize: CGFloat = 52
 
     @State private var showEdit = false
     @State private var showDeleteConfirm = false
@@ -43,30 +33,64 @@ struct SubscriptionDetailView: View {
     @State private var savedMessage: String?
 
     var body: some View {
-        // A ScrollView (not a List) so the teal hero can be a real scrolling
-        // header that bleeds under the bar and *stretches* on overscroll. A List
-        // clips its rows at the safe area, which is what forced every earlier
-        // workaround (parallax slab / pinned header / overscroll gap). The grouped
-        // info cards below are hand-built to match the system inset-grouped look.
         ScrollView {
-            VStack(spacing: 0) {
-                hero
-                content
+            VStack(spacing: Spacing.md) {
+                header
+                verdictCard
+                costCard
+                if !subscription.priceHistory.isEmpty {
+                    card("Price history") {
+                        let history = subscription.priceHistory
+                        ForEach(Array(history.enumerated()), id: \.element.id) { index, change in
+                            priceChangeRow(change)
+                            if index < history.count - 1 { rowDivider }
+                        }
+                    }
+                }
+                remindersCard
+                if !subscription.notes.isEmpty {
+                    card("Notes") {
+                        Text(subscription.notes)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, Spacing.md)
+                            .padding(.vertical, 14)
+                    }
+                }
             }
+            .padding(.horizontal, Spacing.md)
+            .padding(.top, Spacing.sm)
+            .padding(.bottom, Spacing.lg)
         }
         .background(Color.appBackground.ignoresSafeArea())
-        // Only bounce when content genuinely overflows — short subscriptions that
-        // fit the screen shouldn't rubber-band. When it does bounce, the hero's
-        // upward teal fill keeps the overscroll on-brand (no grey gap).
         .scrollBounceBehavior(.basedOnSize)
+        // The one decision this screen exists for sits under the thumb, always
+        // visible, instead of a teal row at the bottom of a scroll.
+        .safeAreaInset(edge: .bottom) { actionBar }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        // No bar background: Back and Edit are glass buttons floating over the
-        // hero and then over the content, as on every other iOS 26 screen. The
-        // old opaque teal bar was the one painted toolbar in the app.
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Edit") { showEdit = true }
+            }
+            // Rare actions live here so the screen only shows the common ones.
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button {
+                        toggleFreeTrial()
+                    } label: {
+                        Label(subscription.isFreeTrial ? "Not a free trial" : "Mark as free trial",
+                              systemImage: "gift")
+                    }
+                    Divider()
+                    Button(role: .destructive) {
+                        showDeleteConfirm = true
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
+                .accessibilityLabel("More")
             }
         }
         .sheet(isPresented: $showEdit) {
@@ -80,19 +104,7 @@ struct SubscriptionDetailView: View {
                 stateChanged.toggle()
                 reschedule()
                 WidgetSync.refresh(modelContext: modelContext)
-                // In the preferred currency when a rate is known, so it
-                // matches the "You've cut" total this adds to on Home.
-                let nativeYearly = subscription.monthlyEquivalent * 12
-                let yearly: String
-                if subscription.currencyCode != preferredCurrency,
-                   let converted = currency.rates.convert(nativeYearly,
-                                                          from: subscription.currencyCode,
-                                                          to: preferredCurrency) {
-                    yearly = converted.formatted(.currency(code: preferredCurrency))
-                } else {
-                    yearly = nativeYearly.formatted(.currency(code: subscription.currencyCode))
-                }
-                withAnimation(.snappy) { savedMessage = String(localized: "Saved \(yearly) a year") }
+                withAnimation(.snappy) { savedMessage = String(localized: "Saved \(yearlyText) a year") }
                 requestReviewAfterSaving()
             }
         }
@@ -106,145 +118,347 @@ struct SubscriptionDetailView: View {
         .zoomNavigationTransition(id: transitionID, in: transitionNamespace)
     }
 
-    // MARK: - Hero
+    // MARK: - Money
 
-    /// Branded hero banner: full-bleed teal gradient with logo + name + status in
-    /// white. Its background is two layers (see `.background` below) so the teal
-    /// stretches upward on pull-down instead of revealing the grey scroll
-    /// background, and scrolls *with* the hero so there's no parallax.
-    private var hero: some View {
-        VStack(spacing: Spacing.sm) {
-            BrandLogoView(subscription: subscription, size: 60)
-                .shadow(color: .black.opacity(0.18), radius: 10, y: 4)
-            VStack(spacing: Spacing.xs) {
+    /// Monthly cost in the preferred currency when a rate is known, otherwise
+    /// in the subscription's own. The same figure Home's total is built from.
+    private var monthly: (amount: Decimal, code: String) {
+        let native = subscription.currencyCode
+        if native != preferredCurrency,
+           let converted = currency.rates.convert(subscription.monthlyEquivalent,
+                                                  from: native, to: preferredCurrency) {
+            return (converted, preferredCurrency)
+        }
+        return (subscription.monthlyEquivalent, native)
+    }
+
+    private var monthlyText: String {
+        monthly.amount.formatted(.currency(code: monthly.code))
+    }
+
+    private var yearlyText: String {
+        (monthly.amount * 12).formatted(.currency(code: monthly.code))
+    }
+
+    private var billingText: String {
+        subscription.billingCycle == .custom
+            ? String(localized: "Every \(subscription.customCycleDays ?? 30) days")
+            : subscription.billingCycle.label
+    }
+
+    // MARK: - Header
+
+    private var header: some View {
+        HStack(spacing: Spacing.md) {
+            // On a card-coloured tile: transparent black marks (ChatGPT,
+            // Netflix) vanish against the black page background in dark mode.
+            BrandLogoView(subscription: subscription, size: 52)
+                .background(Color.cardBackground,
+                            in: .rect(cornerRadius: 52 * 0.28, style: .continuous))
+            VStack(alignment: .leading, spacing: 2) {
                 Text(subscription.name)
                     .font(.title2.weight(.bold))
-                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
                 HStack(spacing: Spacing.sm) {
                     Text(subscription.category.label)
-                        .foregroundStyle(.white.opacity(0.85))
-                    if subscription.isFreeTrial { heroBadge("Trial", a11y: "Free trial") }
-                    if subscription.isCancelled { heroBadge("Cancelled", a11y: "Cancelled") }
+                        .foregroundStyle(.secondary)
+                    if subscription.isFreeTrial { TrialBadge() }
+                    if subscription.isCancelled { CancelledBadge() }
                 }
                 .font(.subheadline)
             }
+            Spacer(minLength: 0)
         }
-        .foregroundStyle(.white)
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, Spacing.md)
-        // A band, not a third of the screen: the first card of facts should
-        // sit well above the fold.
-        .padding(.top, Spacing.sm)
-        .padding(.bottom, Spacing.md)
-        // Layer 1 (front): a vertical brand gradient, sized to the hero band.
-        // Top edge stays pure `.brand` so it meets Layer 2's solid fill with no
-        // seam; it just deepens gently downward (a diagonal angle made the top
-        // corners read as two distinct greens).
-        .background(alignment: .bottom) {
-            LinearGradient(colors: [.brand, .brandDeep],
-                           startPoint: .top,
-                           endPoint: .bottom)
-        }
-        // Layer 2 (back): a tall solid-brand fill anchored to the hero's bottom,
-        // extending far upward. It colours the top overscroll region (and behind
-        // the bar) teal and moves with the hero — so pull-down reveals teal, not
-        // grey, with no fixed slab to parallax against.
-        .background(alignment: .bottom) {
-            Color.brand
-                .frame(height: 1200)
-                .ignoresSafeArea(edges: .top)
-        }
-        // One element so VoiceOver reads "Netflix, Streaming, Free trial" as a
-        // unit instead of three fragments.
+        // "Netflix, Streaming, Free trial" as one VoiceOver stop.
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isHeader)
     }
 
-    /// White-on-translucent status pill, legible on the teal hero (the standard
-    /// `TrialBadge`/`CancelledBadge` are tuned for light cards).
-    private func heroBadge(_ text: LocalizedStringKey, a11y: String) -> some View {
-        Text(text)
-            .font(.caption2.weight(.semibold))
-            .padding(.horizontal, Spacing.sm)
-            .padding(.vertical, 2)
-            .background(.white.opacity(0.22), in: .capsule)
-            .foregroundStyle(.white)
-            .accessibilityLabel(a11y)
-            .transition(.scale.combined(with: .opacity))
+    // MARK: - Verdict
+
+    /// What the screen leads with: the next thing that will happen to this
+    /// subscription and what it costs, worked out from its state.
+    private struct Verdict {
+        var title: String
+        var systemImage: String
+        var tint: Color
+        var figure: String
+        var caption: String
+        /// How far through the trial or billing period today is, 0...1.
+        var progress: Double?
     }
 
-    // MARK: - Content
+    private var verdict: Verdict {
+        let calendar = Calendar.current
+        let now = Date()
+        let today = calendar.startOfDay(for: now)
 
-    private var content: some View {
-        VStack(spacing: Spacing.lg) {
-            if let url = subscription.providerURL {
-                openProviderButton(url)
+        if subscription.isCancelled {
+            let caption = subscription.cancelledAt.map {
+                String(localized: "Cancelled \($0.formatted(.dateTime.day().month())) · was \(subscription.priceLabel)")
+            } ?? String(localized: "Was \(subscription.priceLabel)")
+            return Verdict(title: String(localized: "Saving \(yearlyText) a year"),
+                           systemImage: "scissors",
+                           tint: .green,
+                           figure: yearlyText,
+                           caption: caption,
+                           progress: nil)
+        }
+
+        let renewal = subscription.projectedNextRenewal(asOf: now, calendar: calendar)
+        let days = calendar.dateComponents([.day], from: today,
+                                           to: calendar.startOfDay(for: renewal)).day ?? 0
+        let dateText = renewal.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated))
+
+        if subscription.isFreeTrial, let end = subscription.trialEndDate {
+            let title: String = switch days {
+            case ...0: String(localized: "Trial ends today")
+            case 1: String(localized: "Trial ends tomorrow")
+            default: inflected("Trial ends in ^[\(days) day](inflect: true)")
             }
+            return Verdict(title: title,
+                           systemImage: "bell.fill",
+                           tint: .attention,
+                           figure: subscription.formattedAmount,
+                           caption: "\(dateText) · \(String(localized: "then \(subscription.priceLabel)"))",
+                           progress: trialProgress(end: end, now: now))
+        }
 
-            card("Cost") {
-                detailRow("Amount", subscription.formattedAmount)
+        // Where the provider needs notice, the cancel-by date is the real
+        // deadline; lead with it once it is close.
+        if let deadline = subscription.cancelDeadline(asOf: now, calendar: calendar),
+           deadline.needsNotice, deadline.daysLeft <= 14 {
+            let date = deadline.date.formatted(.dateTime.day().month())
+            return Verdict(title: String(localized: "Cancel by \(date)"),
+                           systemImage: "exclamationmark.circle.fill",
+                           tint: .attention,
+                           figure: subscription.formattedAmount,
+                           caption: "\(dateText) · \(billingText)",
+                           progress: billingProgress(now: now, calendar: calendar))
+        }
+
+        let title: String = switch days {
+        case ...0: String(localized: "Renews today")
+        case 1: String(localized: "Renews tomorrow")
+        default: inflected("Renews in ^[\(days) day](inflect: true)")
+        }
+        return Verdict(title: title,
+                       systemImage: "arrow.trianglehead.2.clockwise",
+                       tint: .brand,
+                       figure: subscription.formattedAmount,
+                       caption: "\(dateText) · \(billingText)",
+                       progress: billingProgress(now: now, calendar: calendar))
+    }
+
+    /// `String(localized:)` leaves `^[…](inflect: true)` markup as literal
+    /// text; the attributed initialiser applies the grammar agreement.
+    private func inflected(_ resource: LocalizedStringResource) -> String {
+        String(AttributedString(localized: resource).characters)
+    }
+
+    private func fraction(from start: Date, to end: Date, now: Date) -> Double? {
+        let total = end.timeIntervalSince(start)
+        guard total > 0 else { return nil }
+        return min(max(now.timeIntervalSince(start) / total, 0), 1)
+    }
+
+    /// The trial's start isn't stored, so it is taken as the day the
+    /// subscription was added. Only shown once that is at least a day ago:
+    /// a trial added today would always read as an empty bar.
+    private func trialProgress(end: Date, now: Date) -> Double? {
+        guard now.timeIntervalSince(subscription.createdAt) >= 86_400 else { return nil }
+        return fraction(from: subscription.createdAt, to: end, now: now)
+    }
+
+    /// Progress through the current billing period: the last renewal before
+    /// today to the next one.
+    private func billingProgress(now: Date, calendar: Calendar) -> Double? {
+        let cycle = subscription.billingCycle
+        let anchor = subscription.nextRenewalDate
+        let next = cycle.firstOccurrence(onOrAfter: calendar.startOfDay(for: now), anchor: anchor,
+                                         customDays: subscription.customCycleDays, calendar: calendar)
+        let previous = cycle.date(byAddingCycles: next.index - 1, to: anchor,
+                                  customDays: subscription.customCycleDays, calendar: calendar)
+        return fraction(from: previous, to: next.date, now: now)
+    }
+
+    private var verdictCard: some View {
+        let v = verdict
+        return VStack(alignment: .leading, spacing: Spacing.sm) {
+            HStack(spacing: 6) {
+                Image(systemName: v.systemImage)
+                    .accessibilityHidden(true)
+                Text(v.title)
+            }
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(v.tint)
+            .contentTransition(.numericText())
+
+            Text(v.figure)
+                .font(.system(size: figureSize, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .contentTransition(.numericText())
+
+            Text(v.caption)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            if let progress = v.progress {
+                ProgressView(value: progress)
+                    .tint(v.tint)
+                    .padding(.top, Spacing.xs)
+                    .accessibilityHidden(true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(Spacing.lg)
+        .background(Color.cardBackground, in: .rect(cornerRadius: Radius.card + 8))
+        .accessibilityElement(children: .combine)
+        .animation(.snappy, value: subscription.isCancelled)
+        .animation(.snappy, value: subscription.isFreeTrial)
+    }
+
+    // MARK: - Cost
+
+    /// Monthly, yearly and cycle side by side, so the yearly size of a
+    /// "small" monthly charge is visible without arithmetic.
+    private var costCard: some View {
+        HStack(spacing: 0) {
+            stat("Per month", monthlyText)
+            Divider()
+            stat("Per year", yearlyText)
+            Divider()
+            stat("Billing", billingText)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .background(Color.cardBackground, in: .rect(cornerRadius: Radius.card))
+    }
+
+    private func stat(_ label: LocalizedStringKey, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.body.weight(.semibold))
+                .fontDesign(.rounded)
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label)
+        .accessibilityValue(value)
+    }
+
+    // MARK: - Reminders
+
+    private var remindersCard: some View {
+        card {
+            detailRow("Remind me", reminderText)
+            rowDivider
+            detailRow("Notice period", subscription.noticePeriod?.label ?? String(localized: "None"))
+            if let deadline = subscription.cancelDeadline(), deadline.needsNotice {
                 rowDivider
-                detailRow("Billing", subscription.billingCycle == .custom
-                          ? "Every \(subscription.customCycleDays ?? 30) days"
-                          : subscription.billingCycle.label)
-                // Only when it says something the Amount row doesn't: a
-                // monthly subscription in the user's own currency had the
-                // same figure twice. In another currency it shows the
-                // converted cost, the number Home's total is built from.
-                if let perMonth = perMonthText {
-                    rowDivider
-                    detailRow("Per month (approx.)", perMonth)
-                }
+                detailRow("Cancel by", deadline.date.formatted(.dateTime.day().month().year()))
             }
+        }
+    }
 
-            if !subscription.priceHistory.isEmpty {
-                card("Price history") {
-                    let history = subscription.priceHistory
-                    ForEach(Array(history.enumerated()), id: \.element.id) { index, change in
-                        priceChangeRow(change)
-                        if index < history.count - 1 { rowDivider }
+    private var reminderText: String {
+        ReminderLead.options.first { $0.days == subscription.reminderLeadDays }?.label
+            ?? inflected("^[\(subscription.reminderLeadDays) day](inflect: true) before")
+    }
+
+    // MARK: - Actions
+
+    private var actionBar: some View {
+        GlassEffectContainer(spacing: Spacing.sm) {
+            HStack(spacing: Spacing.sm) {
+                primaryButton
+                if let url = subscription.providerURL, !subscription.isCancelled {
+                    Button {
+                        openURL(url)
+                    } label: {
+                        Image(systemName: "arrow.up.forward.app")
+                            .font(.body.weight(.semibold))
+                            .frame(width: 24, height: 24)
                     }
-                }
-            }
-
-            card("Renewal") {
-                detailRow("Next renewal",
-                          subscription.projectedNextRenewal().formatted(.dateTime.day().month().year()))
-                if subscription.isFreeTrial, let end = subscription.trialEndDate {
-                    rowDivider
-                    detailRow("Trial ends", end.formatted(.dateTime.day().month().year()))
-                }
-                if let deadline = subscription.cancelDeadline() {
-                    rowDivider
-                    detailRow("Cancel by", deadline.date.formatted(.dateTime.day().month().year()))
-                }
-            }
-
-            if !subscription.notes.isEmpty {
-                card("Notes") {
-                    Text(subscription.notes)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, Spacing.md)
-                        .padding(.vertical, 14)
-                }
-            }
-
-            card { statusActions }
-
-            // On its own, below everything: the one action that can't be
-            // undone shouldn't share a card with "Mark as free trial".
-            card {
-                actionRow("Delete", systemImage: "trash", role: .destructive) {
-                    showDeleteConfirm = true
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .controlSize(.extraLarge)
+                    .accessibilityLabel("Open \(subscription.name)")
+                    .accessibilityHint("Opens \(url.host() ?? "the provider's website") in the app or browser")
                 }
             }
         }
         .padding(.horizontal, Spacing.md)
-        .padding(.top, Spacing.lg)
-        .padding(.bottom, Spacing.xl)
+        .padding(.bottom, Spacing.sm)
     }
+
+    /// Explicit HStack labels: a Label inside a full-width glass button
+    /// mis-centres its content.
+    @ViewBuilder
+    private var primaryButton: some View {
+        if subscription.isCancelled {
+            Button {
+                withAnimation(.snappy) { subscription.isCancelled = false }
+                subscription.cancelledAt = nil
+                subscription.updatedAt = Date()
+                stateChanged.toggle()
+                reschedule()
+            } label: {
+                HStack(spacing: Spacing.sm) {
+                    Image(systemName: "arrow.clockwise.circle")
+                        .accessibilityHidden(true)
+                    Text("Mark as active")
+                }
+                .font(.body.weight(.semibold))
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.glass)
+            .controlSize(.extraLarge)
+        } else {
+            // Guided flow: the sheet links to the provider's cancel page (or
+            // Apple's subscription manager) and marks it cancelled when done.
+            Button {
+                showCancelHelper = true
+            } label: {
+                HStack(spacing: Spacing.sm) {
+                    Image(systemName: "xmark.circle")
+                        .accessibilityHidden(true)
+                    Text(subscription.isFreeTrial ? "Cancel before it charges" : "Cancel subscription…")
+                }
+                .font(.body.weight(.semibold))
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.glassProminent)
+            .tint(.brand)
+            .controlSize(.extraLarge)
+        }
+    }
+
+    private func toggleFreeTrial() {
+        withAnimation(.snappy) {
+            subscription.isFreeTrial.toggle()
+            if subscription.isFreeTrial && subscription.trialEndDate == nil {
+                subscription.trialEndDate = subscription.nextRenewalDate
+            }
+        }
+        subscription.updatedAt = Date()
+        stateChanged.toggle()
+        reschedule()
+    }
+
+    // MARK: - Building blocks
 
     /// Grouped card: an optional secondary header above a rounded surface that
-    /// holds the rows — mirrors the system inset-grouped section look.
+    /// holds the rows, matching the system inset-grouped look.
     @ViewBuilder
     private func card(_ header: LocalizedStringKey? = nil,
                       @ViewBuilder _ content: () -> some View) -> some View {
@@ -264,78 +478,6 @@ struct SubscriptionDetailView: View {
     /// Leading-inset hairline between rows, matching grouped-list separators.
     private var rowDivider: some View {
         Divider().padding(.leading, Spacing.md)
-    }
-
-    /// Full-width glass CTA to the provider's site; universal links hand off to
-    /// the provider's app when installed. Explicit HStack — a Label inside a
-    /// full-width glass button mis-centers its content.
-    private func openProviderButton(_ url: URL) -> some View {
-        Button {
-            openURL(url)
-        } label: {
-            HStack(spacing: Spacing.sm) {
-                Image(systemName: "arrow.up.forward.app")
-                Text("Open \(subscription.name)")
-            }
-            .font(.subheadline.weight(.semibold))
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.xs)
-        }
-        .buttonStyle(.glass)
-        .accessibilityHint("Opens \(url.host() ?? "the provider's website") in the app or browser")
-    }
-
-    private var statusActions: some View {
-        VStack(spacing: 0) {
-            if subscription.isCancelled {
-                actionRow("Mark as active", systemImage: "arrow.clockwise.circle") {
-                    // Animate so the header badge and this label's icon morph
-                    // rather than snap; the model write itself is non-visual.
-                    withAnimation(.snappy) { subscription.isCancelled = false }
-                    subscription.cancelledAt = nil
-                    subscription.updatedAt = Date()
-                    stateChanged.toggle()
-                    reschedule()
-                }
-            } else {
-                // Guided flow instead of a bare state flip: the sheet links to
-                // the provider's cancel page (or Apple's subscription manager)
-                // and marks the sub cancelled once the user is done.
-                actionRow("Cancel subscription…", systemImage: "xmark.circle") {
-                    showCancelHelper = true
-                }
-            }
-            rowDivider
-            actionRow(subscription.isFreeTrial ? "Not a free trial" : "Mark as free trial",
-                      systemImage: "gift") {
-                withAnimation(.snappy) {
-                    subscription.isFreeTrial.toggle()
-                    if subscription.isFreeTrial && subscription.trialEndDate == nil {
-                        subscription.trialEndDate = subscription.nextRenewalDate
-                    }
-                }
-                subscription.updatedAt = Date()
-                stateChanged.toggle()
-                reschedule()
-            }
-        }
-    }
-
-    /// A tappable action row inside a card. Teal (accent) by default, red for the
-    /// destructive role — matching how the buttons read inside a grouped List.
-    private func actionRow(_ title: LocalizedStringKey, systemImage: String,
-                           role: ButtonRole? = nil,
-                           action: @escaping () -> Void) -> some View {
-        Button(role: role, action: action) {
-            Label(title, systemImage: systemImage)
-                .contentTransition(.symbolEffect(.replace))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, Spacing.md)
-                .padding(.vertical, 14)
-                .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(role == .destructive ? Color.red : Color.accentColor)
     }
 
     /// One price movement: date on the left, "£10.99 → £12.99" plus a tinted
@@ -369,7 +511,7 @@ struct SubscriptionDetailView: View {
         }
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, 14)
-        // Read as "Amount, £9.99 a month" rather than two separate stops.
+        // Read as "Notice period, 1 month" rather than two separate stops.
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(label)
         .accessibilityValue(value)
@@ -382,7 +524,7 @@ struct SubscriptionDetailView: View {
         dismiss()
     }
 
-    /// The app just saved the user money — the best moment it has to ask for
+    /// The app just saved the user money: the best moment it has to ask for
     /// a rating. Waits for the HUD to clear; `ReviewPrompter` applies the same
     /// gates and 120-day spacing as the post-add prompt, so the two never
     /// stack. Counts every tracked subscription: the one just cancelled still

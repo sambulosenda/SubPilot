@@ -49,7 +49,6 @@ struct SubscriptionListView: View {
     @State private var searchText = ""
     @State private var showManageProfiles = false
     @State private var showAssistant = false
-    @State private var showCutList = false
     /// `dismissToken`s of attention items the user chose to keep
     /// (comma-joined), so they stop asking for a decision.
     @AppStorage("keptAttentionTokens") private var keptAttentionRaw = ""
@@ -57,7 +56,10 @@ struct SubscriptionListView: View {
     /// skipped) in.
     @AppStorage("lastUsageCheckInMonth") private var lastUsageCheckInMonth = ""
     @State private var showUsageCheckIn = false
-    @State private var path: [Subscription] = []
+    /// One typed path for every push from Home. The cut list used to be a
+    /// separate `navigationDestination(isPresented:)`; opening a subscription
+    /// from it rewrote this path and popped both screens straight back.
+    @State private var path = NavigationPath()
     /// Shared namespace so a tapped row zooms into its detail screen and back.
     @Namespace private var detailTransition
 
@@ -153,7 +155,7 @@ struct SubscriptionListView: View {
                 AssistantView(showsClose: true, onOpen: { sub in
                     // Close the chat, then land on the subscription it named.
                     showAssistant = false
-                    path = [sub]
+                    path = NavigationPath([sub])
                 })
             }
             .sheet(isPresented: $showManageProfiles) {
@@ -176,7 +178,7 @@ struct SubscriptionListView: View {
                       let sub = subscriptions.first(where: {
                           $0.name.localizedCaseInsensitiveContains(args[i + 1])
                       }) else { return }
-                path = [sub]
+                path = NavigationPath([sub])
             }
             // `-StartTab assistant` predates the assistant leaving the tab bar;
             // keep it working for the screenshot scripts.
@@ -204,7 +206,7 @@ struct SubscriptionListView: View {
         return List {
             if searchText.isEmpty {
                 Section {
-                    DashboardHeader(metrics: metrics, onOpenCut: { showCutList = true })
+                    DashboardHeader(metrics: metrics, onOpenCut: { path.append(CutListRoute()) })
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
@@ -261,7 +263,7 @@ struct SubscriptionListView: View {
                                    transitionID: sub.id,
                                    transitionNamespace: detailTransition)
         }
-        .navigationDestination(isPresented: $showCutList) {
+        .navigationDestination(for: CutListRoute.self) { _ in
             CutListView(subscriptions: sorted(profileSubscriptions.filter(\.isCancelled)),
                         summary: metrics.cut)
         }
@@ -390,3 +392,7 @@ struct SubscriptionListView: View {
         .modelContainer(.preview)
         .environment(CurrencyService())
 }
+
+/// Route value for Home's "What you've cut" screen, so it shares the typed
+/// navigation path with the subscription detail pushes.
+private struct CutListRoute: Hashable {}
