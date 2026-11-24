@@ -1,0 +1,38 @@
+{
+  "configurations": [
+    {
+      "id": "C1C1C1C1-0000-0000-0000-000000000001",
+      "name": "Configuration 1",
+      "options": {}
+    }
+  ],
+  "defaultOptions": {
+    "targetForVariableExpansion": {
+      "containerPath": "container:Rubradar.xcodeproj",
+      "identifier": "4FD3FAC82FD0B47400C8A3E6",
+      "name": "Rubradar"
+    }
+  },
+  "testTargets": [
+    {
+      "parallelizable": true,
+      "target": {
+        "containerPath": "container:Rubradar.xcodeproj",
+        "identifier": "4FD3FAD52FD0B47500C8A3E6",
+        "name": "RubradarTests"
+      }
+    },
+    {
+      "parallelizable": true,
+      "skippedTests": [
+        "RubradarUITests/testPaywallBilledAmountProminence()"
+      ],
+      "target": {
+        "containerPath": "container:Rubradar.xcodeproj",
+        "identifier": "4FD3FADF2FD0B47500C8A3E6",
+        "name": "RubradarUITests"
+      }
+    }
+  ],
+  "version": 1
+}

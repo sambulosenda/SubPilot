@@ -1,10 +1,9 @@
 name: CI
 
+# Manual only: Xcode Cloud now runs the tests on pull requests into main.
+# Start this from the Actions tab when a GitHub-hosted run is wanted.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 concurrency:
   # Cancel superseded runs on the same ref to save runner minutes.
